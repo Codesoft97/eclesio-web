@@ -9,6 +9,7 @@ import {
   Loader2,
   Plus,
   RefreshCw,
+  Share2,
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -19,13 +20,19 @@ import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 
 import { EventFormModal } from "./event-form-modal";
+import { EventShareModal } from "./event-share-modal";
 import {
   createEvent,
   deleteEvent,
+  getEventShare,
   listEvents,
   updateEvent,
 } from "../event-service";
-import type { ChurchEvent, EventPayload } from "../event-types";
+import type {
+  ChurchEvent,
+  EventPayload,
+  EventShareResponse,
+} from "../event-types";
 
 const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
@@ -33,6 +40,26 @@ type ModalState =
   | { isOpen: false; mode: "create"; event: null; initialDate: Date }
   | { isOpen: true; mode: "create"; event: null; initialDate: Date }
   | { isOpen: true; mode: "edit"; event: ChurchEvent; initialDate: Date };
+
+type CopiedTarget = "message" | "url" | null;
+
+type ShareState =
+  | {
+      isOpen: false;
+      event: null;
+      share: null;
+      isLoading: false;
+      error: null;
+      copied: null;
+    }
+  | {
+      isOpen: true;
+      event: ChurchEvent;
+      share: EventShareResponse | null;
+      isLoading: boolean;
+      error: string | null;
+      copied: CopiedTarget;
+    };
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -51,7 +78,10 @@ function addMonths(date: Date, months: number) {
 }
 
 function isSameMonth(date: Date, month: Date) {
-  return date.getFullYear() === month.getFullYear() && date.getMonth() === month.getMonth();
+  return (
+    date.getFullYear() === month.getFullYear() &&
+    date.getMonth() === month.getMonth()
+  );
 }
 
 function isSameDay(firstDate: Date, secondDate: Date) {
@@ -128,11 +158,22 @@ function createClosedModalState(initialDate: Date): ModalState {
   };
 }
 
+const closedShareState: ShareState = {
+  isOpen: false,
+  event: null,
+  share: null,
+  isLoading: false,
+  error: null,
+  copied: null,
+};
+
 export function EventsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [events, setEvents] = useState<ChurchEvent[]>([]);
-  const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(new Date()));
+  const [visibleMonth, setVisibleMonth] = useState(() =>
+    startOfMonth(new Date()),
+  );
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -143,6 +184,7 @@ export function EventsPageClient() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [shareState, setShareState] = useState<ShareState>(closedShareState);
 
   useEffect(() => {
     let ignore = false;
@@ -226,6 +268,37 @@ export function EventsPageClient() {
     });
   }
 
+  async function openShareModal(event: ChurchEvent) {
+    setShareState({
+      isOpen: true,
+      event,
+      share: null,
+      isLoading: true,
+      error: null,
+      copied: null,
+    });
+
+    try {
+      const share = await getEventShare(event.id);
+
+      setShareState((current) =>
+        current.isOpen && current.event.id === event.id
+          ? { ...current, share, isLoading: false, error: null }
+          : current,
+      );
+    } catch (err) {
+      if (await handleUnauthorized(err)) {
+        return;
+      }
+
+      setShareState((current) =>
+        current.isOpen && current.event.id === event.id
+          ? { ...current, isLoading: false, error: getApiErrorMessage(err) }
+          : current,
+      );
+    }
+  }
+
   function closeModal() {
     if (isSubmitting) {
       return;
@@ -233,6 +306,10 @@ export function EventsPageClient() {
 
     setSubmitError(null);
     setModalState(createClosedModalState(selectedDate));
+  }
+
+  function closeShareModal() {
+    setShareState(closedShareState);
   }
 
   async function handleUnauthorized(err: unknown) {
@@ -243,6 +320,50 @@ export function EventsPageClient() {
     clearSession();
     router.push("/login");
     return true;
+  }
+
+  async function copyToClipboard(value: string, target: CopiedTarget) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setShareState((current) =>
+        current.isOpen ? { ...current, copied: target } : current,
+      );
+      window.setTimeout(() => {
+        setShareState((current) =>
+          current.isOpen ? { ...current, copied: null } : current,
+        );
+      }, 1600);
+    } catch {
+      setShareState((current) =>
+        current.isOpen
+          ? { ...current, error: "Nao foi possivel copiar automaticamente." }
+          : current,
+      );
+    }
+  }
+
+  function handleCopyShareMessage() {
+    if (shareState.isOpen && shareState.share) {
+      void copyToClipboard(shareState.share.message, "message");
+    }
+  }
+
+  function handleCopyShareUrl() {
+    if (shareState.isOpen && shareState.share) {
+      void copyToClipboard(shareState.share.shareUrl, "url");
+    }
+  }
+
+  function handleOpenWhatsapp() {
+    if (!shareState.isOpen || !shareState.share) {
+      return;
+    }
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(shareState.share.message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   }
 
   async function handleSubmit(payload: EventPayload) {
@@ -504,7 +625,15 @@ export function EventsPageClient() {
                   <p className="whitespace-pre-wrap text-sm leading-6 text-muted">
                     {event.description}
                   </p>
-                  <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                  <div className="mt-4 grid gap-2 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => void openShareModal(event)}
+                    >
+                      <Share2 size={16} />
+                      Compartilhar
+                    </Button>
                     <Button type="button" variant="ghost" onClick={() => openEditModal(event)}>
                       <Edit3 size={16} />
                       Editar
@@ -529,6 +658,20 @@ export function EventsPageClient() {
           </div>
         </aside>
       </div>
+
+      {shareState.isOpen ? (
+        <EventShareModal
+          event={shareState.event}
+          share={shareState.share}
+          isLoading={shareState.isLoading}
+          error={shareState.error}
+          copied={shareState.copied}
+          onClose={closeShareModal}
+          onCopyMessage={handleCopyShareMessage}
+          onCopyUrl={handleCopyShareUrl}
+          onOpenWhatsapp={handleOpenWhatsapp}
+        />
+      ) : null}
 
       {modalState.isOpen ? (
         <EventFormModal
