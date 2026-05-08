@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   BarChart3,
@@ -7,6 +7,8 @@ import {
   HandCoins,
   Home,
   LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -26,7 +28,12 @@ const navItems = [
   { href: "/app/relatorios", label: "Relatorios", icon: BarChart3 },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { session, clearSession } = useAuth();
@@ -47,24 +54,48 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="flex min-h-screen w-full flex-col border-r border-border bg-surface px-4 py-5 lg:w-72">
-      <div className="flex items-start gap-3 border-b border-border pb-5">
+    <aside
+      className={`flex min-h-screen w-full flex-col border-r border-border bg-surface py-5 transition-all duration-300 ${
+        isCollapsed ? "px-3" : "px-4"
+      }`}
+    >
+      <div
+        className={`flex border-b border-border pb-5 ${
+          isCollapsed ? "flex-col items-center gap-3" : "items-start gap-3"
+        }`}
+      >
         <LogoMark />
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">
-            {session?.church.name ?? "Igreja"}
-          </p>
-          <p className="truncate text-xs text-muted">{session?.user.name ?? "Representante"}</p>
-        </div>
+        {isCollapsed ? null : (
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-foreground">
+              {session?.church.name ?? "Igreja"}
+            </p>
+            <p className="truncate text-xs text-muted">
+              {session?.user.name ?? "Representante"}
+            </p>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center border border-border text-muted transition hover:border-accent hover:text-foreground"
+          aria-label={isCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
+          aria-expanded={!isCollapsed}
+          title={isCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
+        >
+          {isCollapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+        </button>
       </div>
 
-      <div className="mt-4 border border-border bg-surface-subtle p-3 text-xs text-muted">
-        <div className="mb-2 flex items-center gap-2 text-foreground">
-          <Church size={14} />
-          <span className="font-semibold">Conta ativa</span>
+      {isCollapsed ? null : (
+        <div className="mt-4 border border-border bg-surface-subtle p-3 text-xs text-muted">
+          <div className="mb-2 flex items-center gap-2 text-foreground">
+            <Church size={14} />
+            <span className="font-semibold">Conta ativa</span>
+          </div>
+          <p className="truncate">{session?.user.email ?? "Aguardando sessao"}</p>
         </div>
-        <p className="truncate">{session?.user.email ?? "Aguardando sessao"}</p>
-      </div>
+      )}
 
       <nav className="mt-6 grid gap-1">
         {navItems.map((item) => {
@@ -75,24 +106,38 @@ export function AppSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex h-11 items-center gap-3 border px-3 text-sm font-medium transition ${
+              aria-label={item.label}
+              title={isCollapsed ? item.label : undefined}
+              className={`flex h-11 items-center border text-sm font-medium transition ${
+                isCollapsed ? "justify-center px-0" : "gap-3 px-3"
+              } ${
                 isActive
                   ? "border-accent bg-accent text-accent-foreground"
                   : "border-transparent text-muted hover:border-border hover:bg-surface-subtle hover:text-foreground"
               }`}
             >
               <Icon size={17} />
-              {item.label}
+              {isCollapsed ? null : item.label}
             </Link>
           );
         })}
       </nav>
 
       <div className="mt-auto pt-6">
-        {error ? <p className="mb-3 text-xs text-danger">{error}</p> : null}
-        <Button type="button" variant="ghost" className="w-full justify-start" onClick={handleLogout} disabled={isPending}>
+        {error && !isCollapsed ? (
+          <p className="mb-3 text-xs text-danger">{error}</p>
+        ) : null}
+        <Button
+          type="button"
+          variant="ghost"
+          className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start"}`}
+          onClick={handleLogout}
+          disabled={isPending}
+          aria-label="Sair"
+          title={isCollapsed ? "Sair" : undefined}
+        >
           <LogOut size={17} />
-          {isPending ? "Saindo..." : "Sair"}
+          {isCollapsed ? null : isPending ? "Saindo..." : "Sair"}
         </Button>
       </div>
     </aside>
