@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --surface: #ffffff;
+  --surface-subtle: #fafafa;
+  --surface-strong: #e4e4e7;
+  --primary: #27272a;
+  --primary-foreground: #ffffff;
+  --accent: #eab308;
+  --accent-foreground: #18181b;
+  --muted: #71717a;
+  --border: #e4e4e7;
+  --ring: #eab308;
+  --danger: #dc2626;
+  --success: #15803d;
+  --font-eclesio-sans: "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-eclesio-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --surface: #18181b;
+  --surface-subtle: #27272a;
+  --surface-strong: #3f3f46;
+  --primary: #f4f4f5;
+  --primary-foreground: #18181b;
+  --accent: #eab308;
+  --accent-foreground: #18181b;
+  --muted: #a1a1aa;
+  --border: #3f3f46;
+  --ring: #eab308;
+  --danger: #f87171;
+  --success: #4ade80;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-strong: var(--surface-strong);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --font-sans: var(--font-eclesio-sans);
+  --font-mono: var(--font-eclesio-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--background);
+}
+
+body {
+  min-height: 100%;
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 8%, transparent), transparent 28rem),
+    var(--background);
+  color: var(--foreground);
+}
+
+button,
+a,
+input {
+  outline-color: var(--ring);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 35%, transparent);
+  color: var(--foreground);
+}
