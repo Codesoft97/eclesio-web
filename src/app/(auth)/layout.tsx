@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               Uma base limpa para cuidar da rotina da igreja.
             </h1>
             <p className="mt-5 text-sm leading-6 text-muted">
-              Cadastro, membros, dizimos, eventos e relatorios em uma interface discreta, rapida e centrada nos dados.
+              Cadastro, membros, financeiro, eventos e relatorios em uma interface discreta, rapida e centrada nos dados.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-3 text-xs text-muted">

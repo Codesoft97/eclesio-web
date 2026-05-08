@@ -2,7 +2,7 @@ import { Activity, CalendarDays, HandCoins, Users } from "lucide-react";
 
 const summaryCards = [
   { label: "Membros ativos", value: "0", icon: Users },
-  { label: "Dizimos no mes", value: "R$ 0,00", icon: HandCoins },
+  { label: "Saldo financeiro", value: "R$ 0,00", icon: HandCoins },
   { label: "Eventos proximos", value: "0", icon: CalendarDays },
   { label: "Pendencias", value: "0", icon: Activity },
 ];
@@ -61,7 +61,7 @@ export default function DashboardPage() {
           <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">Proximo passo</p>
           <h2 className="mt-3 text-xl font-semibold">Definir o modulo de membros</h2>
           <p className="mt-3 text-sm leading-6 opacity-75">
-            A navegacao ja esta pronta para receber telas internas. Podemos seguir com membros, dizimos, eventos ou permissoes.
+            A navegacao ja esta pronta para receber telas internas. Podemos seguir evoluindo membros, financeiro, eventos ou permissoes.
           </p>
           <div className="mt-5 h-1 w-20 bg-accent" />
         </article>
