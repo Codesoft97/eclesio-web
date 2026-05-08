@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { Check, Copy, ExternalLink, Loader2, Share2, X } from "lucide-react";
+import { Check, Copy, ExternalLink, Loader2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -37,7 +37,7 @@ export function EventShareModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-share-title"
-        className="w-full max-w-2xl border border-border bg-surface shadow-2xl"
+        className="max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto border border-border bg-surface shadow-2xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
@@ -103,7 +103,7 @@ export function EventShareModal({
                 </Button>
                 <Button type="button" onClick={onOpenWhatsapp}>
                   <ExternalLink size={16} />
-                  Abrir WhatsApp
+                  Enviar no WhatsApp
                 </Button>
               </div>
             </>
@@ -112,13 +112,9 @@ export function EventShareModal({
               Nao foi possivel carregar o compartilhamento deste evento.
             </p>
           )}
-
-          <div className="border-l-2 border-accent bg-surface-subtle p-3 text-sm leading-6 text-muted">
-            <Share2 className="mb-2 text-foreground" size={18} />
-            O envio fica sob responsabilidade do usuario nesta versao MVP. Isso evita disparos automaticos e mantem o controle nas maos da igreja.
-          </div>
         </div>
       </div>
     </div>
   );
 }
+

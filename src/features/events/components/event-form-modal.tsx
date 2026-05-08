@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useState } from "react";
 import { CalendarPlus, Save, X } from "lucide-react";
@@ -128,7 +128,7 @@ export function EventFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-modal-title"
-        className="w-full max-w-2xl border border-border bg-surface shadow-2xl"
+        className="max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto border border-border bg-surface shadow-2xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>

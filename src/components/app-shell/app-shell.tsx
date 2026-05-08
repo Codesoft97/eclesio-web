@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { AppMobileHeader } from "@/components/app-shell/app-mobile-header";
 import { AppMobileNav } from "@/components/app-shell/app-mobile-nav";
@@ -8,25 +8,41 @@ import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 const SIDEBAR_STORAGE_KEY = "eclesio.sidebar-collapsed";
+const SIDEBAR_EVENT = "eclesio-sidebar-change";
+
+function subscribe(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(SIDEBAR_EVENT, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(SIDEBAR_EVENT, callback);
+  };
+}
+
+function getSnapshot() {
+  return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) ?? "false";
+}
+
+function getServerSnapshot() {
+  return "false";
+}
+
+function setSidebarPreference(isCollapsed: boolean) {
+  window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isCollapsed));
+  window.dispatchEvent(new Event(SIDEBAR_EVENT));
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true";
-  });
-
-  useEffect(() => {
-    window.localStorage.setItem(
-      SIDEBAR_STORAGE_KEY,
-      String(isSidebarCollapsed),
-    );
-  }, [isSidebarCollapsed]);
+  const sidebarSnapshot = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+  const isSidebarCollapsed = sidebarSnapshot === "true";
 
   function toggleSidebar() {
-    setIsSidebarCollapsed((current) => !current);
+    setSidebarPreference(!isSidebarCollapsed);
   }
 
   return (

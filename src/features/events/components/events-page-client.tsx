@@ -255,7 +255,12 @@ export function EventsPageClient() {
 
   function openCreateModal(date = selectedDate) {
     setSubmitError(null);
-    setModalState({ isOpen: true, mode: "create", event: null, initialDate: date });
+    setModalState({
+      isOpen: true,
+      mode: "create",
+      event: null,
+      initialDate: date,
+    });
   }
 
   function openEditModal(event: ChurchEvent) {
@@ -421,23 +426,25 @@ export function EventsPageClient() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-8 flex flex-col justify-between gap-4 border-b border-border pb-6 xl:flex-row xl:items-end">
+      <div className="mb-6 flex flex-col justify-between gap-4 border-b border-border pb-5 sm:mb-8 sm:pb-6 xl:flex-row xl:items-end">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
             Agenda
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-foreground">Eventos</h1>
+          <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
+            Eventos
+          </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
             Visualize o calendario da igreja, navegue pelos meses e gerencie os eventos de cada dia.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="border border-border bg-surface px-4 py-3 text-sm shadow-sm">
+        <div className="grid gap-3 sm:flex sm:items-center">
+          <div className="flex items-center justify-between border border-border bg-surface px-4 py-3 text-sm shadow-sm sm:block">
             <span className="text-muted">Eventos no mes</span>
             <strong className="ml-3 text-foreground">{visibleMonthEvents.length}</strong>
           </div>
-          <Button type="button" onClick={() => openCreateModal()}>
+          <Button type="button" className="w-full sm:w-auto" onClick={() => openCreateModal()}>
             <Plus size={17} />
             Novo evento
           </Button>
@@ -445,7 +452,7 @@ export function EventsPageClient() {
       </div>
 
       {error ? (
-        <div className="mb-4 flex flex-col gap-3 border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 grid gap-3 border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex sm:items-center sm:justify-between">
           <span>{error}</span>
           <Button type="button" variant="ghost" onClick={refreshEvents}>
             <RefreshCw size={16} />
@@ -456,34 +463,35 @@ export function EventsPageClient() {
 
       <div className="grid gap-4 xl:grid-cols-[1fr_24rem]">
         <section className="border border-border bg-surface shadow-sm">
-          <div className="flex flex-col gap-4 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="grid gap-4 border-b border-border p-3 sm:p-4 lg:flex lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center bg-surface-subtle text-foreground">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-surface-subtle text-foreground">
                 <CalendarDays size={18} />
               </span>
               <div>
-                <h2 className="text-lg font-semibold capitalize text-foreground">
+                <h2 className="text-base font-semibold capitalize text-foreground sm:text-lg">
                   {formatMonthTitle(visibleMonth)}
                 </h2>
-                <p className="text-xs text-muted">Clique em um dia para ver detalhes</p>
+                <p className="text-xs text-muted">Toque em um dia para ver detalhes</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="ghost" onClick={goToPreviousMonth}>
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+              <Button type="button" variant="ghost" className="h-10 px-3" onClick={goToPreviousMonth}>
                 <ChevronLeft size={16} />
                 Anterior
               </Button>
-              <Button type="button" variant="ghost" onClick={goToToday}>
+              <Button type="button" variant="ghost" className="h-10 px-3" onClick={goToToday}>
                 Hoje
               </Button>
-              <Button type="button" variant="ghost" onClick={goToNextMonth}>
+              <Button type="button" variant="ghost" className="h-10 px-3" onClick={goToNextMonth}>
                 Proximo
                 <ChevronRight size={16} />
               </Button>
               <Button
                 type="button"
                 variant="ghost"
+                className="h-10 px-3"
                 onClick={refreshEvents}
                 disabled={isLoading}
               >
@@ -498,19 +506,19 @@ export function EventsPageClient() {
           </div>
 
           {isLoading ? (
-            <div className="grid min-h-[34rem] place-items-center p-8 text-center text-sm text-muted">
+            <div className="grid min-h-80 place-items-center p-8 text-center text-sm text-muted md:min-h-[34rem]">
               <div>
                 <Loader2 className="mx-auto mb-3 animate-spin text-accent" size={24} />
                 Carregando eventos...
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <div className="min-w-[820px] p-4">
-                <div className="grid grid-cols-7 border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
+            <>
+              <div className="p-3 md:hidden">
+                <div className="grid grid-cols-7 border border-border bg-surface-subtle text-center text-[10px] uppercase tracking-[0.08em] text-muted">
                   {weekDays.map((day) => (
-                    <div key={day} className="px-3 py-3 font-semibold">
-                      {day}
+                    <div key={day} className="py-2 font-semibold">
+                      {day.slice(0, 1)}
                     </div>
                   ))}
                 </div>
@@ -521,64 +529,123 @@ export function EventsPageClient() {
                     const isCurrentMonth = isSameMonth(day, visibleMonth);
                     const isSelected = isSameDay(day, selectedDate);
                     const isToday = isSameDay(day, new Date());
-                    const hiddenEventsCount = Math.max(dayEvents.length - 3, 0);
+                    const visibleDots = dayEvents.slice(0, 3);
+                    const hiddenEventsCount = Math.max(dayEvents.length - visibleDots.length, 0);
 
                     return (
                       <button
                         key={getDateKey(day)}
                         type="button"
                         onClick={() => selectDate(day)}
-                        className={`min-h-32 cursor-pointer border-b border-r border-border p-2 text-left transition hover:bg-surface-subtle ${
+                        aria-label={`${day.getDate()} - ${dayEvents.length} evento(s)`}
+                        className={`min-h-16 cursor-pointer border-b border-r border-border p-1.5 text-center transition hover:bg-surface-subtle ${
                           isSelected ? "bg-accent/10 ring-2 ring-inset ring-accent" : "bg-surface"
-                        } ${isCurrentMonth ? "text-foreground" : "text-muted opacity-60"}`}
+                        } ${isCurrentMonth ? "text-foreground" : "text-muted opacity-50"}`}
                       >
-                        <div className="mb-2 flex items-center justify-between gap-2">
-                          <span
-                            className={`flex h-7 w-7 items-center justify-center text-sm font-semibold ${
-                              isToday
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-surface-subtle text-foreground"
-                            }`}
-                          >
-                            {day.getDate()}
-                          </span>
-                          {dayEvents.length > 0 ? (
-                            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                              {dayEvents.length}
-                            </span>
-                          ) : null}
-                        </div>
-
-                        <div className="grid gap-1">
-                          {dayEvents.slice(0, 3).map((event) => (
-                            <span
-                              key={event.id}
-                              className="truncate border-l-2 border-accent bg-surface-subtle px-2 py-1 text-[11px] font-medium text-foreground"
-                            >
-                              {formatEventTime(event.startsAt)} {event.title}
-                            </span>
-                          ))}
-                          {hiddenEventsCount > 0 ? (
-                            <span className="text-[11px] font-medium text-muted">
-                              +{hiddenEventsCount} evento(s)
-                            </span>
-                          ) : null}
-                        </div>
+                        <span
+                          className={`mx-auto flex h-7 w-7 items-center justify-center text-xs font-semibold ${
+                            isToday
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-surface-subtle text-foreground"
+                          }`}
+                        >
+                          {day.getDate()}
+                        </span>
+                        {dayEvents.length > 0 ? (
+                          <div className="mt-1 grid justify-items-center gap-1">
+                            <div className="flex justify-center gap-0.5">
+                              {visibleDots.map((event) => (
+                                <span key={event.id} className="h-1.5 w-1.5 rounded-full bg-accent" />
+                              ))}
+                            </div>
+                            {hiddenEventsCount > 0 ? (
+                              <span className="text-[9px] font-semibold text-muted">
+                                +{hiddenEventsCount}
+                              </span>
+                            ) : null}
+                          </div>
+                        ) : null}
                       </button>
                     );
                   })}
                 </div>
               </div>
-            </div>
+
+              <div className="hidden overflow-x-auto md:block">
+                <div className="min-w-[820px] p-4">
+                  <div className="grid grid-cols-7 border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
+                    {weekDays.map((day) => (
+                      <div key={day} className="px-3 py-3 font-semibold">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-7 border-l border-border">
+                    {calendarDays.map((day) => {
+                      const dayEvents = getEventsForDate(events, day);
+                      const isCurrentMonth = isSameMonth(day, visibleMonth);
+                      const isSelected = isSameDay(day, selectedDate);
+                      const isToday = isSameDay(day, new Date());
+                      const hiddenEventsCount = Math.max(dayEvents.length - 3, 0);
+
+                      return (
+                        <button
+                          key={getDateKey(day)}
+                          type="button"
+                          onClick={() => selectDate(day)}
+                          className={`min-h-32 cursor-pointer border-b border-r border-border p-2 text-left transition hover:bg-surface-subtle ${
+                            isSelected ? "bg-accent/10 ring-2 ring-inset ring-accent" : "bg-surface"
+                          } ${isCurrentMonth ? "text-foreground" : "text-muted opacity-60"}`}
+                        >
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <span
+                              className={`flex h-7 w-7 items-center justify-center text-sm font-semibold ${
+                                isToday
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-surface-subtle text-foreground"
+                              }`}
+                            >
+                              {day.getDate()}
+                            </span>
+                            {dayEvents.length > 0 ? (
+                              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                                {dayEvents.length}
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <div className="grid gap-1">
+                            {dayEvents.slice(0, 3).map((event) => (
+                              <span
+                                key={event.id}
+                                className="truncate border-l-2 border-accent bg-surface-subtle px-2 py-1 text-[11px] font-medium text-foreground"
+                              >
+                                {formatEventTime(event.startsAt)} {event.title}
+                              </span>
+                            ))}
+                            {hiddenEventsCount > 0 ? (
+                              <span className="text-[11px] font-medium text-muted">
+                                +{hiddenEventsCount} evento(s)
+                              </span>
+                            ) : null}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </section>
 
-        <aside className="border border-border bg-surface shadow-sm">
+        <aside className="border border-border bg-surface shadow-sm xl:sticky xl:top-5 xl:self-start">
           <div className="border-b border-border p-4">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
               Dia selecionado
             </p>
-            <h2 className="mt-2 text-xl font-semibold capitalize text-foreground">
+            <h2 className="mt-2 text-lg font-semibold capitalize text-foreground sm:text-xl">
               {formatSelectedDate(selectedDate)}
             </h2>
             <p className="mt-1 text-sm text-muted">
@@ -596,7 +663,7 @@ export function EventsPageClient() {
             </Button>
           </div>
 
-          <div className="grid gap-3 p-4">
+          <div className="grid gap-3 p-3 sm:p-4">
             {selectedEvents.length === 0 ? (
               <div className="border border-dashed border-border bg-surface-subtle p-5 text-center">
                 <CalendarClock className="mx-auto mb-3 text-muted" size={24} />
