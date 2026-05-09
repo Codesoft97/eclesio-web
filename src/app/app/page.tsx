@@ -1,7 +1,8 @@
-import { Activity, CalendarDays, HandCoins, Users } from "lucide-react";
+import { Activity, CalendarDays, HandCoins, UserCog, Users } from "lucide-react";
 
 const summaryCards = [
   { label: "Membros ativos", value: "0", icon: Users },
+  { label: "Obreiros", value: "0", icon: UserCog },
   { label: "Saldo financeiro", value: "R$ 0,00", icon: HandCoins },
   { label: "Eventos proximos", value: "0", icon: CalendarDays },
   { label: "Pendencias", value: "0", icon: Activity },
@@ -23,7 +24,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {summaryCards.map((card) => {
           const Icon = card.icon;
 
@@ -48,7 +49,7 @@ export default function DashboardPage() {
             <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">Hoje</span>
           </div>
           <div className="grid gap-3">
-            {["Cadastro de membros", "Agenda da semana", "Lancamentos financeiros"].map((item) => (
+            {["Cadastro de membros", "Gestao de obreiros", "Lancamentos financeiros"].map((item) => (
               <div key={item} className="flex items-center justify-between border border-border bg-surface-subtle p-3 text-sm">
                 <span className="text-foreground">{item}</span>
                 <span className="text-muted">Aguardando modulo</span>
@@ -59,9 +60,9 @@ export default function DashboardPage() {
 
         <article className="border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface">
           <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">Proximo passo</p>
-          <h2 className="mt-3 text-xl font-semibold">Definir o modulo de membros</h2>
+          <h2 className="mt-3 text-xl font-semibold">Preparar escalas</h2>
           <p className="mt-3 text-sm leading-6 opacity-75">
-            A navegacao ja esta pronta para receber telas internas. Podemos seguir evoluindo membros, financeiro, eventos ou permissoes.
+            Com obreiros, ministerios e funcoes cadastrados, a proxima evolucao natural e montar escalas por evento.
           </p>
           <div className="mt-5 h-1 w-20 bg-accent" />
         </article>

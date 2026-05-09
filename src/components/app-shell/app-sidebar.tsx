@@ -9,6 +9,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  UserCog,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -23,6 +24,7 @@ import { useAuth } from "@/features/auth/auth-provider";
 const navItems = [
   { href: "/app", label: "Inicio", icon: Home },
   { href: "/app/membros", label: "Membros", icon: Users },
+  { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
   { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
   { href: "/app/relatorios", label: "Relatorios", icon: BarChart3 },
