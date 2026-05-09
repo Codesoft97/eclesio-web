@@ -7,6 +7,7 @@ import {
   Copy,
   Loader2,
   Send,
+  Trash2,
   UserCheck,
   XCircle,
 } from "lucide-react";
@@ -28,6 +29,8 @@ interface EventScheduleSummaryProps {
   eventTitle?: string;
   eventStartsAt?: string;
   showConfirmationActions?: boolean;
+  deletingAssignmentId?: string | null;
+  onDeleteAssignment?: (assignment: EventScheduleAssignment) => void;
 }
 
 type GroupedSchedule = {
@@ -178,6 +181,8 @@ export function EventScheduleSummary({
   eventTitle,
   eventStartsAt,
   showConfirmationActions = true,
+  deletingAssignmentId = null,
+  onDeleteAssignment,
 }: EventScheduleSummaryProps) {
   const [copied, setCopied] = useState<CopiedTarget>(null);
 
@@ -265,24 +270,49 @@ export function EventScheduleSummary({
                           </span>
                         </div>
 
-                        {showConfirmationActions ? (
-                          <div className="grid gap-2 sm:grid-cols-2">
-                            <button
-                              type="button"
-                              onClick={() => void handleCopyLink(assignment)}
-                              className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-border bg-surface px-3 text-xs font-semibold text-foreground transition hover:border-accent hover:text-accent"
-                            >
-                              {isCopied ? <Check size={14} /> : <Copy size={14} />}
-                              {isCopied ? "Link copiado" : "Copiar link"}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenWhatsapp(assignment)}
-                              className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-3 text-xs font-semibold text-accent-foreground transition hover:bg-yellow-400"
-                            >
-                              <Send size={14} />
-                              WhatsApp
-                            </button>
+                        {showConfirmationActions || onDeleteAssignment ? (
+                          <div
+                            className={`grid gap-2 ${
+                              onDeleteAssignment
+                                ? "sm:grid-cols-3"
+                                : "sm:grid-cols-2"
+                            }`}
+                          >
+                            {showConfirmationActions ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => void handleCopyLink(assignment)}
+                                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-border bg-surface px-3 text-xs font-semibold text-foreground transition hover:border-accent hover:text-accent"
+                                >
+                                  {isCopied ? <Check size={14} /> : <Copy size={14} />}
+                                  {isCopied ? "Link copiado" : "Copiar link"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenWhatsapp(assignment)}
+                                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-3 text-xs font-semibold text-accent-foreground transition hover:bg-yellow-400"
+                                >
+                                  <Send size={14} />
+                                  WhatsApp
+                                </button>
+                              </>
+                            ) : null}
+                            {onDeleteAssignment ? (
+                              <button
+                                type="button"
+                                onClick={() => onDeleteAssignment(assignment)}
+                                disabled={deletingAssignmentId === assignment.id}
+                                className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-danger/40 bg-danger/10 px-3 text-xs font-semibold text-danger transition hover:border-danger disabled:cursor-not-allowed disabled:opacity-60"
+                              >
+                                {deletingAssignmentId === assignment.id ? (
+                                  <Loader2 className="animate-spin" size={14} />
+                                ) : (
+                                  <Trash2 size={14} />
+                                )}
+                                Remover
+                              </button>
+                            ) : null}
                           </div>
                         ) : null}
                       </div>

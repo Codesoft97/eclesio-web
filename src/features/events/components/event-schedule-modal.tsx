@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { CheckCircle2, Loader2, Plus, Save, Trash2, UserCheck, X } from "lucide-react";
+import { CheckCircle2, Loader2, Plus, UserCheck, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
@@ -21,18 +21,15 @@ interface EventScheduleModalProps {
   workers: Worker[];
   isLoading: boolean;
   isSubmitting: boolean;
-  deletingAssignmentId: string | null;
   error: string | null;
   successMessage: string | null;
   onClose: () => void;
   onSubmit: (payload: EventSchedulePayload) => void;
   onClearFeedback: () => void;
-  onDeleteAssignment: (assignmentId: string) => void;
 }
 
 type ScheduleFormAssignment = EventScheduleAssignmentPayload & {
   localId: string;
-  persistedId?: string;
 };
 
 function createLocalId() {
@@ -43,37 +40,62 @@ function createLocalId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function buildFormAssignments(
-  schedule: EventSchedule | null,
-): ScheduleFormAssignment[] {
-  return (
-    schedule?.assignments.map((assignment) => ({
-      localId: assignment.id,
-      persistedId: assignment.id,
-      ministryId: assignment.ministryId,
-      roleId: assignment.roleId,
-      workerId: assignment.workerId,
-    })) ?? []
-  );
+function getExistingWorkerIds(schedule: EventSchedule | null) {
+  return new Set(schedule?.assignments.map((assignment) => assignment.workerId) ?? []);
 }
 
 function buildEmptyAssignment(
   ministries: WorkerMinistry[],
   workers: Worker[],
+  unavailableWorkerIds: Set<string> = new Set(),
 ): ScheduleFormAssignment {
+  for (const ministry of ministries) {
+    for (const role of ministry.roles) {
+      const worker = workers.find(
+        (item) =>
+          item.ministryId === ministry.id &&
+          item.roleId === role.id &&
+          !unavailableWorkerIds.has(item.id),
+      );
+
+      if (worker) {
+        return {
+          localId: createLocalId(),
+          ministryId: ministry.id,
+          roleId: role.id,
+          workerId: worker.id,
+        };
+      }
+    }
+  }
+
   const firstMinistry = ministries[0];
   const firstRole = firstMinistry?.roles[0];
-  const firstWorker = workers.find(
-    (worker) =>
-      worker.ministryId === firstMinistry?.id && worker.roleId === firstRole?.id,
-  );
 
   return {
     localId: createLocalId(),
     ministryId: firstMinistry?.id ?? "",
     roleId: firstRole?.id ?? "",
-    workerId: firstWorker?.id ?? "",
+    workerId: "",
   };
+}
+
+function buildInitialAssignments(
+  schedule: EventSchedule | null,
+  ministries: WorkerMinistry[],
+  workers: Worker[],
+): ScheduleFormAssignment[] {
+  if (ministries.length === 0 || workers.length === 0) {
+    return [];
+  }
+
+  const assignment = buildEmptyAssignment(
+    ministries,
+    workers,
+    getExistingWorkerIds(schedule),
+  );
+
+  return assignment.workerId ? [assignment] : [];
 }
 
 export function EventScheduleModal({
@@ -83,57 +105,81 @@ export function EventScheduleModal({
   workers,
   isLoading,
   isSubmitting,
-  deletingAssignmentId,
   error,
   successMessage,
   onClose,
   onSubmit,
   onClearFeedback,
-  onDeleteAssignment,
 }: EventScheduleModalProps) {
   const [assignments, setAssignments] = useState<ScheduleFormAssignment[]>(() =>
-    buildFormAssignments(schedule),
+    buildInitialAssignments(schedule, ministries, workers),
   );
   const [localError, setLocalError] = useState<string | null>(null);
 
-
-
+  const existingWorkerIds = useMemo(() => getExistingWorkerIds(schedule), [schedule]);
   const workersById = useMemo(
     () => new Map(workers.map((worker) => [worker.id, worker])),
     [workers],
   );
 
+  const hasWorkerBase = ministries.length > 0 && workers.length > 0;
+
   function getRoles(ministryId: string) {
     return ministries.find((ministry) => ministry.id === ministryId)?.roles ?? [];
   }
 
-  function getAvailableWorkers(ministryId: string, roleId: string) {
+  function getUnavailableWorkerIds(currentLocalId?: string) {
+    const unavailableWorkerIds = new Set(existingWorkerIds);
+
+    for (const assignment of assignments) {
+      if (assignment.localId !== currentLocalId && assignment.workerId) {
+        unavailableWorkerIds.add(assignment.workerId);
+      }
+    }
+
+    return unavailableWorkerIds;
+  }
+
+  function hasAvailableWorker(unavailableWorkerIds: Set<string>) {
+    return workers.some((worker) => !unavailableWorkerIds.has(worker.id));
+  }
+
+  function getAvailableWorkers(
+    ministryId: string,
+    roleId: string,
+    currentLocalId: string,
+  ) {
+    const unavailableWorkerIds = getUnavailableWorkerIds(currentLocalId);
+
     return workers.filter(
-      (worker) => worker.ministryId === ministryId && worker.roleId === roleId,
+      (worker) =>
+        worker.ministryId === ministryId &&
+        worker.roleId === roleId &&
+        !unavailableWorkerIds.has(worker.id),
     );
   }
 
   function addAssignment() {
     setLocalError(null);
     onClearFeedback();
-    setAssignments((current) => [
-      ...current,
-      buildEmptyAssignment(ministries, workers),
-    ]);
-  }
 
-  function removeAssignment(assignment: ScheduleFormAssignment) {
-    setLocalError(null);
-    onClearFeedback();
+    const unavailableWorkerIds = getUnavailableWorkerIds();
 
-    if (assignment.persistedId) {
-      onDeleteAssignment(assignment.persistedId);
+    if (!hasAvailableWorker(unavailableWorkerIds)) {
+      setLocalError("Todos os obreiros disponíveis já estão nesta escala.");
       return;
     }
 
-    setAssignments((current) =>
-      current.filter((item) => item.localId !== assignment.localId),
-    );
+    setAssignments((current) => [
+      ...current,
+      buildEmptyAssignment(ministries, workers, unavailableWorkerIds),
+    ]);
+  }
+
+  function removeAssignment(localId: string) {
+    setLocalError(null);
+    onClearFeedback();
+    setAssignments((current) => current.filter((item) => item.localId !== localId));
   }
 
   function updateAssignment(
@@ -149,11 +195,15 @@ export function EventScheduleModal({
           return assignment;
         }
 
+        const unavailableWorkerIds = getUnavailableWorkerIds(localId);
+
         if (field === "ministryId") {
           const firstRole = getRoles(value)[0];
           const firstWorker = workers.find(
             (worker) =>
-              worker.ministryId === value && worker.roleId === firstRole?.id,
+              worker.ministryId === value &&
+              worker.roleId === firstRole?.id &&
+              !unavailableWorkerIds.has(worker.id),
           );
 
           return {
@@ -168,7 +218,8 @@ export function EventScheduleModal({
           const firstWorker = workers.find(
             (worker) =>
               worker.ministryId === assignment.ministryId &&
-              worker.roleId === value,
+              worker.roleId === value &&
+              !unavailableWorkerIds.has(worker.id),
           );
 
           return {
@@ -199,6 +250,11 @@ export function EventScheduleModal({
       }),
     );
 
+    if (payloadAssignments.length === 0) {
+      setLocalError("Adicione pelo menos um obreiro antes de salvar.");
+      return;
+    }
+
     const hasMissingFields = payloadAssignments.some(
       (assignment) =>
         !assignment.ministryId || !assignment.roleId || !assignment.workerId,
@@ -212,6 +268,11 @@ export function EventScheduleModal({
     const workerIds = new Set<string>();
 
     for (const assignment of payloadAssignments) {
+      if (existingWorkerIds.has(assignment.workerId)) {
+        setLocalError("Este obreiro já está nesta escala.");
+        return;
+      }
+
       if (workerIds.has(assignment.workerId)) {
         setLocalError("O mesmo obreiro não pode aparecer duas vezes na escala.");
         return;
@@ -222,8 +283,6 @@ export function EventScheduleModal({
 
     onSubmit({ assignments: payloadAssignments });
   }
-
-  const hasWorkerBase = ministries.length > 0 && workers.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-end bg-foreground/25 px-3 py-4 backdrop-blur-sm sm:place-items-center">
@@ -236,7 +295,7 @@ export function EventScheduleModal({
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-              Escala de obreiros
+              Adicionar à escala
             </p>
             <h2
               id="event-schedule-title"
@@ -245,7 +304,8 @@ export function EventScheduleModal({
               {event.title}
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted">
-              Monte a escala desta ocorrência especifica do evento.
+              Adicione novos obreiros sem alterar quem já está escalado ou os
+              status de confirmação já recebidos.
             </p>
           </div>
           <button
@@ -263,7 +323,7 @@ export function EventScheduleModal({
           <div className="grid min-h-72 place-items-center p-8 text-sm text-muted">
             <div>
               <Loader2 className="mx-auto mb-3 animate-spin text-accent" size={24} />
-              Carregando escala...
+              Carregando escala atual...
             </div>
           </div>
         ) : (
@@ -281,10 +341,11 @@ export function EventScheduleModal({
                 <div className="border border-dashed border-border bg-surface-subtle p-6 text-center">
                   <UserCheck className="mx-auto mb-3 text-muted" size={26} />
                   <h3 className="text-base font-semibold text-foreground">
-                    Nenhum obreiro escalado
+                    Nenhum novo obreiro para adicionar
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-muted">
-                    Adicione os obreiros que servirão neste evento.
+                    Todos os obreiros disponíveis já podem estar nesta escala, ou
+                    ainda não há obreiros cadastrados para selecionar.
                   </p>
                 </div>
               ) : (
@@ -293,9 +354,9 @@ export function EventScheduleModal({
                   const availableWorkers = getAvailableWorkers(
                     assignment.ministryId,
                     assignment.roleId,
+                    assignment.localId,
                   );
                   const selectedWorker = workersById.get(assignment.workerId);
-                  const isDeleting = deletingAssignmentId === assignment.persistedId;
 
                   return (
                     <div
@@ -314,7 +375,7 @@ export function EventScheduleModal({
                               eventChange.target.value,
                             )
                           }
-                          disabled={isSubmitting || isDeleting}
+                          disabled={isSubmitting}
                           required
                         >
                           <option value="">Selecione</option>
@@ -338,7 +399,7 @@ export function EventScheduleModal({
                               eventChange.target.value,
                             )
                           }
-                          disabled={isSubmitting || isDeleting}
+                          disabled={isSubmitting}
                           required
                         >
                           <option value="">Selecione</option>
@@ -362,7 +423,7 @@ export function EventScheduleModal({
                               eventChange.target.value,
                             )
                           }
-                          disabled={isSubmitting || isDeleting}
+                          disabled={isSubmitting}
                           required
                         >
                           <option value="">Selecione</option>
@@ -374,7 +435,7 @@ export function EventScheduleModal({
                         </select>
                         {assignment.roleId && availableWorkers.length === 0 ? (
                           <span className="text-xs text-muted">
-                            Nenhum obreiro cadastrado para esta função.
+                            Nenhum obreiro disponível para esta função.
                           </span>
                         ) : selectedWorker ? (
                           <span className="text-xs text-muted">
@@ -385,17 +446,13 @@ export function EventScheduleModal({
 
                       <Button
                         type="button"
-                        variant="danger"
+                        variant="ghost"
                         className="h-11 xl:mb-0"
-                        onClick={() => removeAssignment(assignment)}
-                        disabled={isSubmitting || isDeleting}
+                        onClick={() => removeAssignment(assignment.localId)}
+                        disabled={isSubmitting}
                       >
-                        {isDeleting ? (
-                          <Loader2 className="animate-spin" size={16} />
-                        ) : (
-                          <Trash2 size={16} />
-                        )}
-                        Remover
+                        <X size={16} />
+                        Remover linha
                       </Button>
                     </div>
                   );
@@ -424,25 +481,25 @@ export function EventScheduleModal({
                 disabled={!hasWorkerBase || isSubmitting}
               >
                 <Plus size={17} />
-                Adicionar obreiro
+                Adicionar outro obreiro
               </Button>
               <p className="text-xs leading-5 text-muted">
-                Salvar substitui a escala atual pela lista acima. Para limpar a
-                escala, remova todos os itens e salve.
+                Salvar adiciona apenas os obreiros acima. Os obreiros já
+                escalados continuam com o mesmo status e o mesmo link.
               </p>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !hasWorkerBase}>
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" size={17} />
                 ) : successMessage ? (
                   <CheckCircle2 size={17} />
                 ) : (
-                  <Save size={17} />
+                  <Plus size={17} />
                 )}
                 {isSubmitting
                   ? "Salvando..."
                   : successMessage
-                    ? "Escala salva"
-                    : "Salvar escala"}
+                    ? "Adicionado"
+                    : "Adicionar à escala"}
               </Button>
             </div>
           </form>

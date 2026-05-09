@@ -15,7 +15,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-provider";
@@ -31,13 +31,13 @@ import { EventScheduleModal } from "./event-schedule-modal";
 import { EventScheduleSummary } from "./event-schedule-summary";
 import { EventShareModal } from "./event-share-modal";
 import {
+  addEventScheduleAssignments,
   createEvent,
   deleteEvent,
   deleteEventScheduleAssignment,
   getEventSchedule,
   getEventShare,
   listEvents,
-  setEventSchedule,
   updateEvent,
 } from "../event-service";
 import type {
@@ -93,7 +93,6 @@ type ScheduleState =
       schedule: null;
       isLoading: false;
       isSubmitting: false;
-      deletingAssignmentId: null;
       error: null;
       successMessage: null;
     }
@@ -103,7 +102,6 @@ type ScheduleState =
       schedule: EventSchedule | null;
       isLoading: boolean;
       isSubmitting: boolean;
-      deletingAssignmentId: string | null;
       error: string | null;
       successMessage: string | null;
     };
@@ -233,7 +231,6 @@ const closedScheduleState: ScheduleState = {
   schedule: null,
   isLoading: false,
   isSubmitting: false,
-  deletingAssignmentId: null,
   error: null,
   successMessage: null,
 };
@@ -262,6 +259,9 @@ export function EventsPageClient() {
     useState<ScheduleState>(closedScheduleState);
   const [schedulePreviews, setSchedulePreviews] = useState<SchedulePreviewMap>({});
   const [loadingSchedulePreviewIds, setLoadingSchedulePreviewIds] = useState<string[]>([]);
+  const [deletingScheduleAssignmentId, setDeletingScheduleAssignmentId] =
+    useState<string | null>(null);
+  const loadingSchedulePreviewIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     let ignore = false;
@@ -321,14 +321,16 @@ export function EventsPageClient() {
     const missingEventIds = selectedEventIds.filter(
       (eventId) =>
         !schedulePreviews[eventId] &&
-        !loadingSchedulePreviewIds.includes(eventId),
+        !loadingSchedulePreviewIdsRef.current.has(eventId),
     );
 
     if (missingEventIds.length === 0) {
       return;
     }
 
-    let ignore = false;
+    for (const eventId of missingEventIds) {
+      loadingSchedulePreviewIdsRef.current.add(eventId);
+    }
 
     setLoadingSchedulePreviewIds((current) =>
       Array.from(new Set([...current, ...missingEventIds])),
@@ -336,18 +338,48 @@ export function EventsPageClient() {
 
     async function loadSchedulePreviews() {
       try {
-        const scheduleEntries = await Promise.all(
-          missingEventIds.map(async (eventId) => [
+        const scheduleEntries = await Promise.allSettled(
+          missingEventIds.map(async (eventId) => ({
             eventId,
-            await getEventSchedule(eventId),
-          ] as const),
+            schedule: await getEventSchedule(eventId),
+          })),
         );
+        const successfulSchedules = scheduleEntries
+          .filter(
+            (
+              result,
+            ): result is PromiseFulfilledResult<{
+              eventId: string;
+              schedule: EventSchedule;
+            }> => result.status === "fulfilled",
+          )
+          .map((result) => result.value);
 
-        if (!ignore) {
+        if (successfulSchedules.length > 0) {
           setSchedulePreviews((current) => ({
             ...current,
-            ...Object.fromEntries(scheduleEntries),
+            ...Object.fromEntries(
+              successfulSchedules.map(({ eventId, schedule }) => [
+                eventId,
+                schedule,
+              ]),
+            ),
           }));
+        }
+
+        const failedSchedule = scheduleEntries.find(
+          (result): result is PromiseRejectedResult =>
+            result.status === "rejected",
+        );
+
+        if (failedSchedule) {
+          if (isUnauthorizedApiError(failedSchedule.reason)) {
+            clearSession();
+            router.push("/login");
+            return;
+          }
+
+          setError(getApiErrorMessage(failedSchedule.reason));
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -356,31 +388,20 @@ export function EventsPageClient() {
           return;
         }
 
-        if (!ignore) {
-          setError(getApiErrorMessage(err));
-        }
+        setError(getApiErrorMessage(err));
       } finally {
-        if (!ignore) {
-          setLoadingSchedulePreviewIds((current) =>
-            current.filter((eventId) => !missingEventIds.includes(eventId)),
-          );
+        for (const eventId of missingEventIds) {
+          loadingSchedulePreviewIdsRef.current.delete(eventId);
         }
+
+        setLoadingSchedulePreviewIds((current) =>
+          current.filter((eventId) => !missingEventIds.includes(eventId)),
+        );
       }
     }
 
     void loadSchedulePreviews();
-
-    return () => {
-      ignore = true;
-    };
-  }, [
-    clearSession,
-    loadingSchedulePreviewIds,
-    router,
-    schedulePreviews,
-    selectedEventIdsKey,
-  ]);
-
+  }, [clearSession, router, schedulePreviews, selectedEventIdsKey]);
   function refreshEvents() {
     setReloadKey((current) => current + 1);
   }
@@ -459,16 +480,21 @@ export function EventsPageClient() {
   }
 
   async function openScheduleModal(event: ChurchEvent) {
+    const cachedSchedule = schedulePreviews[event.id] ?? null;
+
     setScheduleState({
       isOpen: true,
       event,
-      schedule: null,
-      isLoading: true,
+      schedule: cachedSchedule,
+      isLoading: !cachedSchedule,
       isSubmitting: false,
-      deletingAssignmentId: null,
       error: null,
       successMessage: null,
     });
+
+    if (cachedSchedule) {
+      return;
+    }
 
     try {
       const schedule = await getEventSchedule(event.id);
@@ -478,6 +504,7 @@ export function EventsPageClient() {
           ? { ...current, schedule, isLoading: false, error: null, successMessage: null }
           : current,
       );
+      setSchedulePreviews((current) => ({ ...current, [event.id]: schedule }));
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -490,7 +517,6 @@ export function EventsPageClient() {
       );
     }
   }
-
   function closeModal() {
     if (isSubmitting) {
       return;
@@ -595,17 +621,21 @@ export function EventsPageClient() {
     }
 
     const eventId = scheduleState.event.id;
+    const successMessage =
+      payload.assignments.length > 1
+        ? "Obreiros adicionados à escala."
+        : "Obreiro adicionado à escala.";
 
     setScheduleState((current) =>
       current.isOpen ? { ...current, isSubmitting: true, error: null, successMessage: null } : current,
     );
 
     try {
-      const schedule = await setEventSchedule(eventId, payload);
+      const schedule = await addEventScheduleAssignments(eventId, payload);
 
       setScheduleState((current) =>
         current.isOpen && current.event.id === eventId
-          ? { ...current, schedule, isSubmitting: false, error: null, successMessage: "Escala salva com sucesso." }
+          ? { ...current, schedule, isSubmitting: false, error: null, successMessage }
           : current,
       );
       setSchedulePreviews((current) => ({ ...current, [eventId]: schedule }));
@@ -627,16 +657,23 @@ export function EventsPageClient() {
     }
   }
 
-  async function handleDeleteScheduleAssignment(assignmentId: string) {
-    if (!scheduleState.isOpen) {
+  async function handleDeleteScheduleAssignment(
+    eventId: string,
+    assignmentId: string,
+  ) {
+    const confirmed = window.confirm(
+      "Deseja remover este obreiro da escala? O link de confirmação dele deixará de funcionar.",
+    );
+
+    if (!confirmed) {
       return;
     }
 
-    const eventId = scheduleState.event.id;
-
+    setDeletingScheduleAssignmentId(assignmentId);
+    setError(null);
     setScheduleState((current) =>
-      current.isOpen
-        ? { ...current, deletingAssignmentId: assignmentId, error: null, successMessage: null }
+      current.isOpen && current.event.id === eventId
+        ? { ...current, error: null, successMessage: null }
         : current,
     );
 
@@ -647,7 +684,6 @@ export function EventsPageClient() {
         current.isOpen && current.event.id === eventId
           ? {
               ...current,
-              deletingAssignmentId: null,
               successMessage: "Obreiro removido da escala.",
               schedule: current.schedule
                 ? {
@@ -682,16 +718,16 @@ export function EventsPageClient() {
         return;
       }
 
+      const message = getApiErrorMessage(err);
+
       setScheduleState((current) =>
         current.isOpen && current.event.id === eventId
-          ? {
-              ...current,
-              deletingAssignmentId: null,
-              error: getApiErrorMessage(err),
-              successMessage: null,
-            }
+          ? { ...current, error: message, successMessage: null }
           : current,
       );
+      setError(message);
+    } finally {
+      setDeletingScheduleAssignmentId(null);
     }
   }
 
@@ -1086,6 +1122,10 @@ export function EventsPageClient() {
                         eventTitle={event.title}
                         eventStartsAt={event.startsAt}
                         emptyMessage="Nenhum obreiro escalado para este evento."
+                        deletingAssignmentId={deletingScheduleAssignmentId}
+                        onDeleteAssignment={(assignment) =>
+                          void handleDeleteScheduleAssignment(event.id, assignment.id)
+                        }
                       />
                     </div>
 
@@ -1163,15 +1203,11 @@ export function EventsPageClient() {
           workers={workers}
           isLoading={scheduleState.isLoading}
           isSubmitting={scheduleState.isSubmitting}
-          deletingAssignmentId={scheduleState.deletingAssignmentId}
           error={scheduleState.error}
           successMessage={scheduleState.successMessage}
           onClose={closeScheduleModal}
           onSubmit={(payload) => void handleScheduleSubmit(payload)}
           onClearFeedback={clearScheduleFeedback}
-          onDeleteAssignment={(assignmentId) =>
-            void handleDeleteScheduleAssignment(assignmentId)
-          }
         />
       ) : null}
 

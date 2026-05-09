@@ -31,7 +31,20 @@ export async function getEventShare(eventId: string) {
 }
 
 export async function getEventSchedule(eventId: string) {
-  const { data } = await api.get<EventSchedule>(`/events/${eventId}/schedule`);
+  const { data } = await api.get<EventSchedule>(`/events/${eventId}/schedule`, {
+    params: { cacheKey: Date.now() },
+  });
+  return data;
+}
+
+export async function addEventScheduleAssignments(
+  eventId: string,
+  payload: EventSchedulePayload,
+) {
+  const { data } = await api.post<EventSchedule>(
+    `/events/${eventId}/schedule/assignments`,
+    payload,
+  );
   return data;
 }
 
