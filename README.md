@@ -22,7 +22,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 O backend usa cookies httpOnly. Por isso, as requisicoes Axios usam `withCredentials: true`.
 
-Para ativar o PostHog no lançamento, preencha `NEXT_PUBLIC_POSTHOG_TOKEN` com o token do projeto no PostHog. Se o token ficar vazio, o SDK não é inicializado.
+Para ativar o PostHog no lançamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT_PUBLIC_POSTHOG_TOKEN` com a Project API Key pública do projeto, que começa com `phc_`. Configure `NEXT_PUBLIC_POSTHOG_HOST` com o host da mesma região do projeto, por exemplo `https://us.i.posthog.com` ou `https://eu.i.posthog.com`. Se alterar variáveis públicas na Vercel, faça um novo deploy para elas entrarem no bundle do frontend.
 
 ## Rotas iniciais
 
