@@ -28,6 +28,7 @@ import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 
 import { EventFormModal } from "./event-form-modal";
 import { EventScheduleModal } from "./event-schedule-modal";
+import { EventScheduleSummary } from "./event-schedule-summary";
 import { EventShareModal } from "./event-share-modal";
 import {
   createEvent,
@@ -82,6 +83,8 @@ type ShareState =
       error: string | null;
       copied: CopiedTarget;
     };
+
+type SchedulePreviewMap = Record<string, EventSchedule>;
 
 type ScheduleState =
   | {
@@ -257,6 +260,8 @@ export function EventsPageClient() {
   const [shareState, setShareState] = useState<ShareState>(closedShareState);
   const [scheduleState, setScheduleState] =
     useState<ScheduleState>(closedScheduleState);
+  const [schedulePreviews, setSchedulePreviews] = useState<SchedulePreviewMap>({});
+  const [loadingSchedulePreviewIds, setLoadingSchedulePreviewIds] = useState<string[]>([]);
 
   useEffect(() => {
     let ignore = false;
@@ -303,10 +308,78 @@ export function EventsPageClient() {
 
   const calendarDays = getCalendarDays(visibleMonth);
   const selectedEvents = getEventsForDate(events, selectedDate);
+  const selectedEventIdsKey = selectedEvents.map((event) => event.id).join(":");
   const visibleMonthEvents = getEventsForMonth(events, visibleMonth);
   const recurringEventsCount = visibleMonthEvents.filter(
     (event) => event.isRecurring,
   ).length;
+
+  useEffect(() => {
+    const selectedEventIds = selectedEventIdsKey
+      ? selectedEventIdsKey.split(":")
+      : [];
+    const missingEventIds = selectedEventIds.filter(
+      (eventId) =>
+        !schedulePreviews[eventId] &&
+        !loadingSchedulePreviewIds.includes(eventId),
+    );
+
+    if (missingEventIds.length === 0) {
+      return;
+    }
+
+    let ignore = false;
+
+    setLoadingSchedulePreviewIds((current) =>
+      Array.from(new Set([...current, ...missingEventIds])),
+    );
+
+    async function loadSchedulePreviews() {
+      try {
+        const scheduleEntries = await Promise.all(
+          missingEventIds.map(async (eventId) => [
+            eventId,
+            await getEventSchedule(eventId),
+          ] as const),
+        );
+
+        if (!ignore) {
+          setSchedulePreviews((current) => ({
+            ...current,
+            ...Object.fromEntries(scheduleEntries),
+          }));
+        }
+      } catch (err) {
+        if (isUnauthorizedApiError(err)) {
+          clearSession();
+          router.push("/login");
+          return;
+        }
+
+        if (!ignore) {
+          setError(getApiErrorMessage(err));
+        }
+      } finally {
+        if (!ignore) {
+          setLoadingSchedulePreviewIds((current) =>
+            current.filter((eventId) => !missingEventIds.includes(eventId)),
+          );
+        }
+      }
+    }
+
+    void loadSchedulePreviews();
+
+    return () => {
+      ignore = true;
+    };
+  }, [
+    clearSession,
+    loadingSchedulePreviewIds,
+    router,
+    schedulePreviews,
+    selectedEventIdsKey,
+  ]);
 
   function refreshEvents() {
     setReloadKey((current) => current + 1);
@@ -535,6 +608,7 @@ export function EventsPageClient() {
           ? { ...current, schedule, isSubmitting: false, error: null, successMessage: "Escala salva com sucesso." }
           : current,
       );
+      setSchedulePreviews((current) => ({ ...current, [eventId]: schedule }));
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -586,6 +660,23 @@ export function EventsPageClient() {
             }
           : current,
       );
+      setSchedulePreviews((current) => {
+        const schedule = current[eventId];
+
+        if (!schedule) {
+          return current;
+        }
+
+        return {
+          ...current,
+          [eventId]: {
+            ...schedule,
+            assignments: schedule.assignments.filter(
+              (assignment) => assignment.id !== assignmentId,
+            ),
+          },
+        };
+      });
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -628,6 +719,11 @@ export function EventsPageClient() {
     try {
       await deleteEvent(event.id);
       setEvents((current) => current.filter((item) => item.id !== event.id));
+      setSchedulePreviews((current) => {
+        const nextSchedules = { ...current };
+        delete nextSchedules[event.id];
+        return nextSchedules;
+      });
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -974,6 +1070,23 @@ export function EventsPageClient() {
                     <p className="whitespace-pre-wrap text-sm leading-6 text-muted">
                       {event.description}
                     </p>
+
+                    <div className="mt-4 border-t border-border pt-4">
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-foreground">
+                          Escala de obreiros
+                        </p>
+                        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                          {schedulePreviews[event.id]?.assignments.length ?? 0} pessoa(s)
+                        </span>
+                      </div>
+                      <EventScheduleSummary
+                        schedule={schedulePreviews[event.id]}
+                        isLoading={loadingSchedulePreviewIds.includes(event.id)}
+                        emptyMessage="Nenhum obreiro escalado para este evento."
+                      />
+                    </div>
+
                     <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                       <Button
                         type="button"
