@@ -438,9 +438,7 @@ export function EventScheduleModal({
                             Nenhum obreiro disponível para esta função.
                           </span>
                         ) : selectedWorker ? (
-                          <span className="text-xs text-muted">
-                            {selectedWorker.ministry.name} / {selectedWorker.role.name}
-                          </span>
+                          ""
                         ) : null}
                       </label>
 

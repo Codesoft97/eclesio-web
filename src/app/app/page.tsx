@@ -42,6 +42,47 @@ const initialSummary: DashboardSummary = {
   pendingTransactionsCount: 0,
 };
 
+const calendarWeekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+
+function pad(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+function getDateKey(date: Date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function isSameMonth(date: Date, month: Date) {
+  return (
+    date.getFullYear() === month.getFullYear() &&
+    date.getMonth() === month.getMonth()
+  );
+}
+
+function isSameDay(firstDate: Date, secondDate: Date) {
+  return getDateKey(firstDate) === getDateKey(secondDate);
+}
+
+function getCalendarDays(month: Date) {
+  const firstDay = startOfMonth(month);
+  const firstWeekday = firstDay.getDay();
+  const calendarStart = new Date(
+    firstDay.getFullYear(),
+    firstDay.getMonth(),
+    1 - firstWeekday,
+  );
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(calendarStart);
+    date.setDate(calendarStart.getDate() + index);
+    return date;
+  });
+}
+
 function formatEventDate(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
     weekday: "short",
@@ -59,6 +100,13 @@ function formatCurrency(value: string) {
     style: "currency",
     currency: "BRL",
   }).format(Number.isFinite(amount) ? amount : 0);
+}
+
+function formatMonthTitle(value: Date) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    month: "long",
+    year: "numeric",
+  }).format(value);
 }
 
 function getUpcomingEvents(events: ChurchEvent[]) {
@@ -82,6 +130,8 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [calendarMonth] = useState(() => startOfMonth(new Date()));
+  const [today] = useState(() => new Date());
 
   useEffect(() => {
     let ignore = false;
@@ -150,6 +200,30 @@ export default function DashboardPage() {
 
   const upcomingEvents = useMemo(() => getUpcomingEvents(events), [events]);
   const visibleUpcomingEvents = upcomingEvents.slice(0, 5);
+  const calendarDays = useMemo(
+    () => getCalendarDays(calendarMonth),
+    [calendarMonth],
+  );
+  const eventCountsByDate = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    for (const event of events) {
+      const eventDate = new Date(event.startsAt);
+
+      if (!isSameMonth(eventDate, calendarMonth)) {
+        continue;
+      }
+
+      const dateKey = getDateKey(eventDate);
+      counts.set(dateKey, (counts.get(dateKey) ?? 0) + 1);
+    }
+
+    return counts;
+  }, [calendarMonth, events]);
+  const calendarMonthEventsCount = Array.from(eventCountsByDate.values()).reduce(
+    (total, count) => total + count,
+    0,
+  );
 
   const summaryCards = [
     { label: "Membros ativos", value: String(summary.membersCount), icon: Users },
@@ -312,12 +386,69 @@ export default function DashboardPage() {
           <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">
             Rotina da semana
           </p>
-          <h2 className="mt-3 text-xl font-semibold">Escalas em foco</h2>
-          <p className="mt-3 text-sm leading-6 opacity-75">
-            A Home mostra uma leitura rápida dos próximos compromissos. Para
-            editar ou montar escalas, acesse o calendário de eventos.
-          </p>
+          <h2 className="mt-3 text-xl font-semibold">Eventos do mês</h2>
           <div className="mt-5 h-1 w-20 bg-accent" />
+
+          <div className="mt-7 border border-white/10 bg-white/[0.04] p-4 dark:border-border dark:bg-surface-subtle">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] opacity-60">
+                  Calendário do mês
+                </p>
+                <h3 className="mt-1 text-base font-semibold capitalize">
+                  {formatMonthTitle(calendarMonth)}
+                </h3>
+              </div>
+              <span className="border border-accent/40 bg-accent/10 px-2 py-1 text-xs font-semibold text-accent">
+                {calendarMonthEventsCount} evento(s)
+              </span>
+            </div>
+
+            <div className="mt-5 grid grid-cols-7 gap-1 text-center font-mono text-[10px] uppercase tracking-[0.12em] opacity-55">
+              {calendarWeekDays.map((weekDay) => (
+                <span key={weekDay}>{weekDay}</span>
+              ))}
+            </div>
+
+            <div className="mt-2 grid grid-cols-7 gap-1.5">
+              {calendarDays.map((day) => {
+                const dateKey = getDateKey(day);
+                const eventsCount = eventCountsByDate.get(dateKey) ?? 0;
+                const hasEvents = eventsCount > 0;
+                const isCurrentMonth = isSameMonth(day, calendarMonth);
+                const isToday = isSameDay(day, today);
+
+                return (
+                  <Link
+                    key={dateKey}
+                    href="/app/eventos"
+                    title={
+                      hasEvents
+                        ? `${eventsCount} evento(s) em ${day.toLocaleDateString("pt-BR")}`
+                        : `Sem eventos em ${day.toLocaleDateString("pt-BR")}`
+                    }
+                    className={`relative flex min-h-10 cursor-pointer flex-col items-center justify-center border text-xs font-semibold transition hover:border-accent hover:text-accent ${
+                      hasEvents
+                        ? "border-accent bg-accent text-accent-foreground hover:text-accent-foreground"
+                        : "border-white/10 bg-white/[0.03] text-primary-foreground/75 dark:border-border dark:text-foreground/70"
+                    } ${!isCurrentMonth ? "opacity-25" : ""} ${
+                      isToday && !hasEvents ? "border-accent/70 text-accent" : ""
+                    }`}
+                  >
+                    <span>{day.getDate()}</span>
+                    {hasEvents ? (
+                      <span className="mt-0.5 h-1.5 w-1.5 bg-current" />
+                    ) : null}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 flex items-center gap-3 text-xs opacity-70">
+              <span className="h-2 w-2 bg-accent" />
+              Dias destacados indicam eventos cadastrados no mês.
+            </div>
+          </div>
         </article>
       </section>
     </div>
