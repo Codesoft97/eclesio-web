@@ -455,7 +455,7 @@ export function EventsPageClient() {
     } catch {
       setShareState((current) =>
         current.isOpen
-          ? { ...current, error: "Nao foi possivel copiar automaticamente." }
+          ? { ...current, error: "Não foi possível copiar automaticamente." }
           : current,
       );
     }
@@ -599,10 +599,10 @@ export function EventsPageClient() {
 
   async function handleDelete(event: ChurchEvent) {
     const recurrenceSuffix = event.isRecurring
-      ? " Apenas esta ocorrencia sera excluida."
+      ? " Apenas esta ocorrência será excluída."
       : "";
     const confirmed = window.confirm(
-      `Deseja excluir o evento ${event.title}? Esta acao nao podera ser desfeita.${recurrenceSuffix}`,
+      `Deseja excluir o evento ${event.title}? Esta ação não poderá ser desfeita.${recurrenceSuffix}`,
     );
 
     if (!confirmed) {
@@ -637,13 +637,13 @@ export function EventsPageClient() {
             Eventos e cultos
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Visualize o calendario da igreja, crie cultos recorrentes e monte a escala de obreiros para cada evento.
+            Visualize o calendário da igreja, crie cultos recorrentes e monte a escala de obreiros para cada evento.
           </p>
         </div>
 
         <div className="grid gap-3 sm:flex sm:items-center">
           <div className="flex items-center justify-between border border-border bg-surface px-4 py-3 text-sm shadow-sm sm:block">
-            <span className="text-muted">Eventos no mes</span>
+            <span className="text-muted">Eventos no mês</span>
             <strong className="ml-3 text-foreground">
               {visibleMonthEvents.length}
             </strong>
@@ -716,7 +716,7 @@ export function EventsPageClient() {
                 className="h-10 px-3"
                 onClick={goToNextMonth}
               >
-                Proximo
+                Próximo
                 <ChevronRight size={16} />
               </Button>
               <Button
@@ -929,7 +929,7 @@ export function EventsPageClient() {
                   Nenhum evento neste dia
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-muted">
-                  Use o botao acima para adicionar o primeiro evento desta data.
+                  Use o botão acima para adicionar o primeiro evento desta data.
                 </p>
               </div>
             ) : (

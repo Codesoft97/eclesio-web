@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useState } from "react";
 import { Save, UserPlus, X } from "lucide-react";
@@ -71,9 +71,9 @@ export function MemberFormModal({
   const subtitle =
     mode === "create"
       ? "Cadastre os primeiros dados do membro da igreja."
-      : "Atualize as informacoes principais deste membro.";
+      : "Atualize as informações principais deste membro.";
   const submitLabel =
-    mode === "create" ? "Cadastrar membro" : "Salvar alteracoes";
+    mode === "create" ? "Cadastrar membro" : "Salvar alterações";
   const Icon = mode === "create" ? UserPlus : Save;
 
   return (

@@ -53,13 +53,13 @@ export function RoleFormModal({
     const name = form.name.trim().replace(/\s+/g, " ");
 
     if (name.length < 2) {
-      setLocalError("Informe uma funcao com pelo menos 2 caracteres.");
+      setLocalError("Informe uma função com pelo menos 2 caracteres.");
       return;
     }
 
     if (mode === "create") {
       if (!form.ministryId) {
-        setLocalError("Selecione um ministerio.");
+        setLocalError("Selecione um ministério.");
         return;
       }
 
@@ -70,12 +70,12 @@ export function RoleFormModal({
     onSubmit({ name });
   }
 
-  const title = mode === "create" ? "Nova funcao" : "Editar funcao";
+  const title = mode === "create" ? "Nova função" : "Editar função";
   const subtitle =
     mode === "create"
-      ? "Adicione uma funcao dentro de um ministerio."
-      : "Atualize o nome desta funcao.";
-  const submitLabel = mode === "create" ? "Cadastrar funcao" : "Salvar alteracoes";
+      ? "Adicione uma função dentro de um ministério."
+      : "Atualize o nome desta função.";
+  const submitLabel = mode === "create" ? "Cadastrar função" : "Salvar alterações";
   const Icon = mode === "create" ? BadgePlus : Save;
 
   return (
@@ -89,7 +89,7 @@ export function RoleFormModal({
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-              Funcoes
+              Funções
             </p>
             <h2
               id="role-modal-title"
@@ -113,7 +113,7 @@ export function RoleFormModal({
         <form onSubmit={handleSubmit} className="grid gap-4 p-5">
           {mode === "create" ? (
             <label className="grid gap-2 text-sm font-medium text-foreground">
-              <span>Ministerio</span>
+              <span>Ministério</span>
               <select
                 className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
                 value={form.ministryId}
@@ -121,7 +121,7 @@ export function RoleFormModal({
                 required
               >
                 <option value="" disabled>
-                  Selecione um ministerio
+                  Selecione um ministério
                 </option>
                 {ministries.map((ministry) => (
                   <option key={ministry.id} value={ministry.id}>
@@ -133,7 +133,7 @@ export function RoleFormModal({
           ) : null}
 
           <Field
-            label="Nome da funcao"
+            label="Nome da função"
             value={form.name}
             onChange={(event) => updateField("name", event.target.value)}
             placeholder="Portaria"

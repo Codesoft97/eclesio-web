@@ -1,4 +1,4 @@
-﻿import axios from "axios";
+import axios from "axios";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api",
@@ -17,7 +17,7 @@ export function getApiErrorMessage(error: unknown) {
     const message = error.response?.data?.message;
 
     if (Array.isArray(message)) {
-      return message[0] ?? "Nao foi possivel concluir a solicitacao.";
+      return message[0] ?? "Não foi possível concluir a solicitação.";
     }
 
     if (typeof message === "string") {
@@ -25,5 +25,5 @@ export function getApiErrorMessage(error: unknown) {
     }
   }
 
-  return "Nao foi possivel concluir a solicitacao.";
+  return "Não foi possível concluir a solicitação.";
 }

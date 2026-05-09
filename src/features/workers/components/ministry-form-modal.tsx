@@ -69,7 +69,7 @@ export function MinistryFormModal({
       const roles = parseRoles(form.roles);
 
       if (roles.length === 0) {
-        setLocalError("Informe pelo menos uma funcao para o ministerio.");
+        setLocalError("Informe pelo menos uma função para o ministério.");
         return;
       }
 
@@ -80,12 +80,12 @@ export function MinistryFormModal({
     onSubmit({ name });
   }
 
-  const title = mode === "create" ? "Novo ministerio" : "Editar ministerio";
+  const title = mode === "create" ? "Novo ministério" : "Editar ministério";
   const subtitle =
     mode === "create"
-      ? "Todo ministerio precisa nascer com pelo menos uma funcao."
-      : "Altere o nome do ministerio. Funcoes sao gerenciadas separadamente.";
-  const submitLabel = mode === "create" ? "Cadastrar ministerio" : "Salvar alteracoes";
+      ? "Todo ministério precisa nascer com pelo menos uma função."
+      : "Altere o nome do ministério. Funções são gerenciadas separadamente.";
+  const submitLabel = mode === "create" ? "Cadastrar ministério" : "Salvar alterações";
   const Icon = mode === "create" ? Landmark : Save;
 
   return (
@@ -99,7 +99,7 @@ export function MinistryFormModal({
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-              Ministerios
+              Ministérios
             </p>
             <h2
               id="ministry-modal-title"
@@ -122,16 +122,16 @@ export function MinistryFormModal({
 
         <form onSubmit={handleSubmit} className="grid gap-4 p-5">
           <Field
-            label="Nome do ministerio"
+            label="Nome do ministério"
             value={form.name}
             onChange={(event) => updateField("name", event.target.value)}
-            placeholder="Recepcao"
+            placeholder="Recepção"
             required
           />
 
           {mode === "create" ? (
             <label className="grid gap-2 text-sm font-medium text-foreground">
-              <span>Funcoes iniciais</span>
+              <span>Funções iniciais</span>
               <textarea
                 className="min-h-28 resize-y border border-border bg-surface px-3 py-3 text-sm text-foreground transition placeholder:text-muted focus:border-accent focus:outline-none"
                 value={form.roles}

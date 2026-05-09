@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   Edit3,
@@ -152,7 +152,7 @@ export function MembersPageClient() {
 
   async function handleDelete(member: Member) {
     const confirmed = window.confirm(
-      `Deseja excluir o membro ${member.name}? Esta acao nao podera ser desfeita.`,
+      `Deseja excluir o membro ${member.name}? Esta ação não poderá ser desfeita.`,
     );
 
     if (!confirmed) {
@@ -243,7 +243,7 @@ export function MembersPageClient() {
               </span>
               <h3 className="text-lg font-semibold text-foreground">Nenhum membro cadastrado</h3>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Comece adicionando o primeiro membro. Depois vamos evoluir esta area com filtros, familias e historico.
+                Comece adicionando o primeiro membro. Depois vamos evoluir esta área com filtros, famílias e histórico.
               </p>
               <Button type="button" className="mt-5" onClick={openCreateModal}>
                 <Plus size={17} />

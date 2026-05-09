@@ -11,7 +11,7 @@ export default function RegisterPage() {
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-foreground">Cadastrar igreja</h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Crie a conta da igreja e o usuario administrador em um unico passo.
+          Crie a conta da igreja e o usuário administrador em um único passo.
         </p>
       </div>
       <RegisterForm />

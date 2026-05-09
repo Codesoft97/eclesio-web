@@ -25,9 +25,9 @@ O backend usa cookies httpOnly. Por isso, as requisicoes Axios usam `withCredent
 ## Rotas iniciais
 
 - `/login`: acesso do representante
-- `/cadastro`: cadastro da igreja e usuario administrador
+- `/cadastro`: cadastro da igreja e usuário administrador
 - `/app`: dashboard inicial com sidebar
-- `/app/membros`: placeholder do modulo de membros
-- `/app/dizimos`: placeholder do modulo financeiro
+- `/app/membros`: placeholder do módulo de membros
+- `/app/dizimos`: placeholder do módulo financeiro
 - `/app/eventos`: placeholder de eventos
 - `/app/relatorios`: placeholder de relatorios

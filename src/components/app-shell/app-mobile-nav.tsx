@@ -12,12 +12,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/app", label: "Inicio", icon: Home },
+  { href: "/app", label: "Início", icon: Home },
   { href: "/app/membros", label: "Membros", icon: Users },
   { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
   { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
-  { href: "/app/relatorios", label: "Relatorios", icon: BarChart3 },
+  { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 
 export function AppMobileNav() {

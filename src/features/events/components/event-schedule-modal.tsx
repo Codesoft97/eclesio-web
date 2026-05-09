@@ -197,7 +197,7 @@ export function EventScheduleModal({
     );
 
     if (hasMissingFields) {
-      setLocalError("Preencha ministerio, funcao e obreiro em todos os itens.");
+      setLocalError("Preencha ministério, função e obreiro em todos os itens.");
       return;
     }
 
@@ -205,7 +205,7 @@ export function EventScheduleModal({
 
     for (const assignment of payloadAssignments) {
       if (workerIds.has(assignment.workerId)) {
-        setLocalError("O mesmo obreiro nao pode aparecer duas vezes na escala.");
+        setLocalError("O mesmo obreiro não pode aparecer duas vezes na escala.");
         return;
       }
 
@@ -237,7 +237,7 @@ export function EventScheduleModal({
               {event.title}
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted">
-              Monte a escala desta ocorrencia especifica do evento.
+              Monte a escala desta ocorrência especifica do evento.
             </p>
           </div>
           <button
@@ -262,8 +262,8 @@ export function EventScheduleModal({
           <form onSubmit={handleSubmit} className="grid gap-4 p-5">
             {!hasWorkerBase ? (
               <div className="border border-dashed border-border bg-surface-subtle p-5 text-sm leading-6 text-muted">
-                Cadastre ministerios, funcoes e obreiros antes de montar uma
-                escala. Depois volte aqui para vincular cada funcao ao obreiro
+                Cadastre ministérios, funções e obreiros antes de montar uma
+                escala. Depois volte aqui para vincular cada função ao obreiro
                 responsavel.
               </div>
             ) : null}
@@ -295,7 +295,7 @@ export function EventScheduleModal({
                       className="grid gap-3 border border-border bg-surface-subtle p-4 xl:grid-cols-[1fr_1fr_1.4fr_auto] xl:items-end"
                     >
                       <label className="grid gap-2 text-sm font-medium text-foreground">
-                        <span>Ministerio #{index + 1}</span>
+                        <span>Ministério #{index + 1}</span>
                         <select
                           className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
                           value={assignment.ministryId}
@@ -319,7 +319,7 @@ export function EventScheduleModal({
                       </label>
 
                       <label className="grid gap-2 text-sm font-medium text-foreground">
-                        <span>Funcao</span>
+                        <span>Função</span>
                         <select
                           className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
                           value={assignment.roleId}
@@ -366,7 +366,7 @@ export function EventScheduleModal({
                         </select>
                         {assignment.roleId && availableWorkers.length === 0 ? (
                           <span className="text-xs text-muted">
-                            Nenhum obreiro cadastrado para esta funcao.
+                            Nenhum obreiro cadastrado para esta função.
                           </span>
                         ) : selectedWorker ? (
                           <span className="text-xs text-muted">

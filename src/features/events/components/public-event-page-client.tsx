@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { CalendarDays, Church, Loader2, Share2 } from "lucide-react";
 import Link from "next/link";
@@ -27,7 +27,7 @@ function buildShareMessage(event: PublicChurchEvent) {
   }
 
   return [
-    `Voce esta convidado para o evento: ${event.title}`,
+    `Você está convidado para o evento: ${event.title}`,
     `Igreja: ${event.church.name}`,
     `Data e hora: ${formatEventDateTime(event.startsAt)}`,
     "",
@@ -93,7 +93,7 @@ export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps
             Eclesio
           </Link>
           <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-            Evento publico
+            Evento público
           </span>
         </div>
 
@@ -106,7 +106,7 @@ export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps
           </div>
         ) : error || !event ? (
           <div className="border border-danger/30 bg-danger/10 p-6 text-sm text-danger">
-            {error ?? "Evento nao encontrado."}
+            {error ?? "Evento não encontrado."}
           </div>
         ) : (
           <article className="border border-border bg-surface shadow-sm">
@@ -129,7 +129,7 @@ export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps
             <div className="grid gap-6 p-6">
               <div>
                 <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-                  Descricao
+                  Descrição
                 </p>
                 <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-foreground">
                   {event.description}

@@ -100,7 +100,7 @@ export function WorkerFormModal({
     }
 
     if (!payload.ministryId || !payload.roleId) {
-      setLocalError("Selecione um ministerio e uma funcao.");
+      setLocalError("Selecione um ministério e uma função.");
       return;
     }
 
@@ -110,9 +110,9 @@ export function WorkerFormModal({
   const title = mode === "create" ? "Novo obreiro" : "Editar obreiro";
   const subtitle =
     mode === "create"
-      ? "Vincule uma pessoa a um ministerio e funcao."
-      : "Atualize as informacoes e o vinculo deste obreiro.";
-  const submitLabel = mode === "create" ? "Cadastrar obreiro" : "Salvar alteracoes";
+      ? "Vincule uma pessoa a um ministério e função."
+      : "Atualize as informações e o vínculo deste obreiro.";
+  const submitLabel = mode === "create" ? "Cadastrar obreiro" : "Salvar alterações";
   const Icon = mode === "create" ? UserPlus : Save;
 
   return (
@@ -171,7 +171,7 @@ export function WorkerFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-foreground">
-              <span>Ministerio</span>
+              <span>Ministério</span>
               <select
                 className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
                 value={form.ministryId}
@@ -179,7 +179,7 @@ export function WorkerFormModal({
                 required
               >
                 <option value="" disabled>
-                  Selecione um ministerio
+                  Selecione um ministério
                 </option>
                 {ministries.map((ministry) => (
                   <option key={ministry.id} value={ministry.id}>
@@ -190,7 +190,7 @@ export function WorkerFormModal({
             </label>
 
             <label className="grid gap-2 text-sm font-medium text-foreground">
-              <span>Funcao</span>
+              <span>Função</span>
               <select
                 className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 value={form.roleId}
@@ -199,7 +199,7 @@ export function WorkerFormModal({
                 required
               >
                 <option value="" disabled>
-                  Selecione uma funcao
+                  Selecione uma função
                 </option>
                 {availableRoles.map((role) => (
                   <option key={role.id} value={role.id}>

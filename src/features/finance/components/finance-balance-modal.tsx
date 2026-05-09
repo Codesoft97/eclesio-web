@@ -66,7 +66,7 @@ export function FinanceBalanceModal({
               Ajustar saldo
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted">
-              Defina o saldo atual da conta da igreja. Transacoes futuras partem desse valor.
+              Defina o saldo atual da conta da igreja. Transações futuras partem desse valor.
             </p>
           </div>
           <button

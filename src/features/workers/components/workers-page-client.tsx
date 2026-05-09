@@ -306,7 +306,7 @@ export function WorkersPageClient() {
 
   async function handleDeleteWorker(worker: Worker) {
     const confirmed = window.confirm(
-      `Deseja excluir o obreiro ${worker.name}? Esta acao nao podera ser desfeita.`,
+      `Deseja excluir o obreiro ${worker.name}? Esta ação não poderá ser desfeita.`,
     );
 
     if (!confirmed) {
@@ -332,7 +332,7 @@ export function WorkersPageClient() {
 
   async function handleDeleteMinistry(ministry: WorkerMinistry) {
     const confirmed = window.confirm(
-      `Deseja excluir o ministerio ${ministry.name}? As funcoes vinculadas tambem serao excluidas se nao houver obreiros vinculados.`,
+      `Deseja excluir o ministério ${ministry.name}? As funções vinculadas também serão excluídas se não houver obreiros vinculados.`,
     );
 
     if (!confirmed) {
@@ -358,7 +358,7 @@ export function WorkersPageClient() {
 
   async function handleDeleteRole(role: WorkerRole) {
     const confirmed = window.confirm(
-      `Deseja excluir a funcao ${role.name}? Ela nao podera ser removida se houver obreiros vinculados.`,
+      `Deseja excluir a função ${role.name}? Ela não poderá ser removida se houver obreiros vinculados.`,
     );
 
     if (!confirmed) {
@@ -387,20 +387,20 @@ export function WorkersPageClient() {
       <div className="mb-6 flex flex-col justify-between gap-4 border-b border-border pb-5 sm:mb-8 sm:pb-6 xl:flex-row xl:items-end">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-            Servico
+            Serviço
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
             Obreiros
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Gerencie obreiros, ministerios e funcoes. Esta base sera usada depois para montar as escalas.
+            Gerencie obreiros, ministérios e funções. Esta base será usada depois para montar as escalas.
           </p>
         </div>
 
         <div className="grid gap-3 sm:flex sm:items-center">
           <Button type="button" variant="ghost" onClick={openCreateMinistryModal}>
             <Landmark size={17} />
-            Novo ministerio
+            Novo ministério
           </Button>
           <Button type="button" onClick={openCreateWorkerModal}>
             <Plus size={17} />
@@ -432,7 +432,7 @@ export function WorkersPageClient() {
 
         <article className="border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm font-medium text-muted">Ministerios</p>
+            <p className="text-sm font-medium text-muted">Ministérios</p>
             <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-foreground">
               <Landmark size={17} />
             </span>
@@ -444,7 +444,7 @@ export function WorkersPageClient() {
 
         <article className="border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm font-medium text-muted">Funcoes</p>
+            <p className="text-sm font-medium text-muted">Funções</p>
             <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-accent">
               <ShieldCheck size={17} />
             </span>
@@ -503,7 +503,7 @@ export function WorkersPageClient() {
                   Nenhum obreiro cadastrado
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-muted">
-                  Cadastre o primeiro obreiro vinculando ministerio e funcao. Depois vamos usar isso nas escalas.
+                  Cadastre o primeiro obreiro vinculando ministério e função. Depois vamos usar isso nas escalas.
                 </p>
                 <Button type="button" className="mt-5" onClick={openCreateWorkerModal}>
                   <Plus size={17} />
@@ -535,11 +535,11 @@ export function WorkersPageClient() {
 
                     <div className="mb-4 grid gap-2 text-sm">
                       <div className="flex items-center justify-between border border-border bg-surface px-3 py-2">
-                        <span className="text-muted">Ministerio</span>
+                        <span className="text-muted">Ministério</span>
                         <strong className="text-foreground">{worker.ministry.name}</strong>
                       </div>
                       <div className="flex items-center justify-between border border-border bg-surface px-3 py-2">
-                        <span className="text-muted">Funcao</span>
+                        <span className="text-muted">Função</span>
                         <strong className="text-foreground">{worker.role.name}</strong>
                       </div>
                     </div>
@@ -576,11 +576,11 @@ export function WorkersPageClient() {
                   <thead className="border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
                     <tr>
                       <th className="px-4 py-3 font-semibold">Nome</th>
-                      <th className="px-4 py-3 font-semibold">WhatsApp</th>
-                      <th className="px-4 py-3 font-semibold">Ministerio</th>
-                      <th className="px-4 py-3 font-semibold">Funcao</th>
+                      <th className="px-4 py-3 font-semibold">Whatsapp</th>
+                      <th className="px-4 py-3 font-semibold">Ministério</th>
+                      <th className="px-4 py-3 font-semibold">Função</th>
                       <th className="px-4 py-3 font-semibold">Cadastro</th>
-                      <th className="px-4 py-3 text-right font-semibold">Acoes</th>
+                      <th className="px-4 py-3 text-right font-semibold">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -652,10 +652,10 @@ export function WorkersPageClient() {
           <div className="grid gap-3 border-b border-border p-4 sm:flex sm:items-center sm:justify-between xl:grid xl:items-start">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-                Ministerios
+                Ministérios
               </p>
               <h2 className="mt-2 text-lg font-semibold text-foreground">
-                Funcoes por area
+                Funções por área
               </h2>
               <p className="mt-1 text-sm text-muted">
                 Personalize a estrutura da igreja.
@@ -663,7 +663,7 @@ export function WorkersPageClient() {
             </div>
             <Button type="button" variant="ghost" onClick={() => openCreateRoleModal()}>
               <BadgePlus size={16} />
-              Nova funcao
+              Nova função
             </Button>
           </div>
 
@@ -677,7 +677,7 @@ export function WorkersPageClient() {
                   <div>
                     <h3 className="font-semibold text-foreground">{ministry.name}</h3>
                     <p className="mt-1 text-xs text-muted">
-                      {ministry.roles.length} funcao(oes)
+                      {ministry.roles.length} funções
                     </p>
                   </div>
                   <div className="flex shrink-0 gap-1">
@@ -685,7 +685,7 @@ export function WorkersPageClient() {
                       type="button"
                       className="flex h-8 w-8 cursor-pointer items-center justify-center border border-border bg-surface text-muted transition hover:border-accent hover:text-foreground"
                       onClick={() => openEditMinistryModal(ministry)}
-                      aria-label={`Editar ministerio ${ministry.name}`}
+                      aria-label={`Editar ministério ${ministry.name}`}
                     >
                       <Edit3 size={14} />
                     </button>
@@ -694,7 +694,7 @@ export function WorkersPageClient() {
                       className="flex h-8 w-8 cursor-pointer items-center justify-center border border-danger/40 bg-surface text-danger transition hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                       onClick={() => void handleDeleteMinistry(ministry)}
                       disabled={deletingMinistryId === ministry.id}
-                      aria-label={`Excluir ministerio ${ministry.name}`}
+                      aria-label={`Excluir ministério ${ministry.name}`}
                     >
                       {deletingMinistryId === ministry.id ? (
                         <Loader2 className="animate-spin" size={14} />
@@ -716,7 +716,7 @@ export function WorkersPageClient() {
                         type="button"
                         className="cursor-pointer text-muted transition hover:text-foreground"
                         onClick={() => openEditRoleModal(role)}
-                        aria-label={`Editar funcao ${role.name}`}
+                        aria-label={`Editar função ${role.name}`}
                       >
                         <Edit3 size={12} />
                       </button>
@@ -725,7 +725,7 @@ export function WorkersPageClient() {
                         className="cursor-pointer text-danger transition hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
                         onClick={() => void handleDeleteRole(role)}
                         disabled={deletingRoleId === role.id}
-                        aria-label={`Excluir funcao ${role.name}`}
+                        aria-label={`Excluir função ${role.name}`}
                       >
                         {deletingRoleId === role.id ? (
                           <Loader2 className="animate-spin" size={12} />
@@ -744,7 +744,7 @@ export function WorkersPageClient() {
                   onClick={() => openCreateRoleModal(ministry.id)}
                 >
                   <BadgePlus size={15} />
-                  Adicionar funcao
+                  Adicionar função
                 </Button>
               </article>
             ))}

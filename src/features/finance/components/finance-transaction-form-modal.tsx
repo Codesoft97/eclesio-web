@@ -112,7 +112,7 @@ export function FinanceTransactionFormModal({
     const selectedCategory = form.category as FinancialTransactionCategory;
 
     if (form.title.trim().replace(/\s+/g, " ").length < 2) {
-      setLocalError("Informe um titulo com pelo menos 2 caracteres.");
+      setLocalError("Informe um título com pelo menos 2 caracteres.");
       return;
     }
 
@@ -143,15 +143,15 @@ export function FinanceTransactionFormModal({
     onSubmit(payload);
   }
 
-  const title = mode === "create" ? "Nova transacao" : "Editar transacao";
+  const title = mode === "create" ? "Nova transação" : "Editar transação";
   const subtitle =
     mode === "create"
       ? "Registre uma receita ou despesa da igreja."
       : transaction?.isEffective
-        ? "Ao editar uma transacao efetivada, o saldo sera ajustado automaticamente."
-        : "Atualize os dados desta transacao pendente.";
+        ? "Ao editar uma transação efetivada, o saldo será ajustado automaticamente."
+        : "Atualize os dados desta transação pendente.";
   const submitLabel =
-    mode === "create" ? "Cadastrar transacao" : "Salvar alteracoes";
+    mode === "create" ? "Cadastrar transação" : "Salvar alterações";
   const Icon = mode === "create" ? BanknoteArrowUp : Save;
   const categoryOptions = getCategoryOptions(form.type, categories);
 
@@ -189,7 +189,7 @@ export function FinanceTransactionFormModal({
 
         <form onSubmit={handleSubmit} className="grid gap-4 p-5">
           <Field
-            label="Titulo"
+            label="Título"
             value={form.title}
             onChange={(event) => updateField("title", event.target.value)}
             placeholder="Dizimo mensal"
@@ -265,7 +265,7 @@ export function FinanceTransactionFormModal({
               <span>
                 <span className="font-semibold">Efetivar agora</span>
                 <span className="mt-1 block text-muted">
-                  Se marcado, o saldo sera atualizado imediatamente.
+                  Se marcado, o saldo será atualizado imediatamente.
                 </span>
               </span>
             </label>
@@ -275,8 +275,8 @@ export function FinanceTransactionFormModal({
                 className="mt-0.5 shrink-0 text-accent"
                 size={17}
               />
-              Esta transacao ja foi efetivada. A efetivacao nao pode ser desfeita,
-              mas alteracoes de valor ou tipo ajustam o saldo automaticamente.
+              Esta transação já foi efetivada. A efetivação não pode ser desfeita,
+              mas alterações de valor ou tipo ajustam o saldo automaticamente.
             </div>
           ) : null}
 

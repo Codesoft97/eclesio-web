@@ -4,7 +4,7 @@ const summaryCards = [
   { label: "Membros ativos", value: "0", icon: Users },
   { label: "Obreiros", value: "0", icon: UserCog },
   { label: "Saldo financeiro", value: "R$ 0,00", icon: HandCoins },
-  { label: "Eventos proximos", value: "0", icon: CalendarDays },
+  { label: "Eventos próximos", value: "0", icon: CalendarDays },
   { label: "Pendencias", value: "0", icon: Activity },
 ];
 
@@ -14,9 +14,9 @@ export default function DashboardPage() {
       <div className="mb-8 flex flex-col justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-end">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">Painel</p>
-          <h1 className="mt-2 text-3xl font-semibold text-foreground">Visao geral</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-foreground">Visão geral</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Uma primeira tela operacional para acompanhar indicadores e atalhos. Os dados reais entram nas proximas etapas.
+            Uma primeira tela operacional para acompanhar indicadores e atalhos. Os dados reais entram nas próximas etapas.
           </p>
         </div>
         <div className="border border-border bg-surface px-4 py-3 text-sm text-muted">
@@ -49,20 +49,20 @@ export default function DashboardPage() {
             <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">Hoje</span>
           </div>
           <div className="grid gap-3">
-            {["Cadastro de membros", "Gestao de obreiros", "Lancamentos financeiros"].map((item) => (
+            {["Cadastro de membros", "Gestão de obreiros", "Lançamentos financeiros"].map((item) => (
               <div key={item} className="flex items-center justify-between border border-border bg-surface-subtle p-3 text-sm">
                 <span className="text-foreground">{item}</span>
-                <span className="text-muted">Aguardando modulo</span>
+                <span className="text-muted">Aguardando módulo</span>
               </div>
             ))}
           </div>
         </article>
 
         <article className="border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">Proximo passo</p>
+          <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">Próximo passo</p>
           <h2 className="mt-3 text-xl font-semibold">Preparar escalas</h2>
           <p className="mt-3 text-sm leading-6 opacity-75">
-            Com obreiros, ministerios e funcoes cadastrados, a proxima evolucao natural e montar escalas por evento.
+            Com obreiros, ministérios e funções cadastrados, a próxima evolução natural e montar escalas por evento.
           </p>
           <div className="mt-5 h-1 w-20 bg-accent" />
         </article>

@@ -79,7 +79,7 @@ export function EventShareModal({
           ) : share ? (
             <>
               <div className="grid gap-2">
-                <span className="text-sm font-medium text-foreground">Link publico</span>
+                <span className="text-sm font-medium text-foreground">Link público</span>
                 <div className="break-all border border-border bg-surface-subtle p-3 font-mono text-xs text-muted">
                   {share.shareUrl}
                 </div>
@@ -109,7 +109,7 @@ export function EventShareModal({
             </>
           ) : (
             <p className="border border-border bg-surface-subtle p-3 text-sm text-muted">
-              Nao foi possivel carregar o compartilhamento deste evento.
+              Não foi possível carregar o compartilhamento deste evento.
             </p>
           )}
         </div>

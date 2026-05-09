@@ -108,12 +108,12 @@ export function EventFormModal({
     }
 
     if (payload.title.length < 2) {
-      setLocalError("Informe um titulo com pelo menos 2 caracteres.");
+      setLocalError("Informe um título com pelo menos 2 caracteres.");
       return;
     }
 
     if (payload.description.length < 3) {
-      setLocalError("Informe uma descricao com pelo menos 3 caracteres.");
+      setLocalError("Informe uma descrição com pelo menos 3 caracteres.");
       return;
     }
 
@@ -123,9 +123,9 @@ export function EventFormModal({
   const title = mode === "create" ? "Novo evento" : "Editar evento";
   const subtitle =
     mode === "create"
-      ? "Agende uma atividade no calendario da igreja. Se for culto recorrente, criamos as ocorrencias semanais do ano."
-      : "Atualize esta ocorrencia. Em eventos recorrentes, a alteracao vale apenas para este dia.";
-  const submitLabel = mode === "create" ? "Cadastrar evento" : "Salvar alteracoes";
+      ? "Agende uma atividade no calendário da igreja. Se for culto recorrente, criamos as ocorrências semanais do ano."
+      : "Atualize esta ocorrência. Em eventos recorrentes, a alteração vale apenas para este dia.";
+  const submitLabel = mode === "create" ? "Cadastrar evento" : "Salvar alterações";
   const Icon = mode === "create" ? CalendarPlus : Save;
 
   return (
@@ -162,7 +162,7 @@ export function EventFormModal({
 
         <form onSubmit={handleSubmit} className="grid gap-4 p-5">
           <Field
-            label="Titulo"
+            label="Título"
             value={form.title}
             onChange={(eventChange) =>
               updateField("title", eventChange.target.value)
@@ -172,7 +172,7 @@ export function EventFormModal({
           />
 
           <label className="grid gap-2 text-sm font-medium text-foreground">
-            <span>Descricao</span>
+            <span>Descrição</span>
             <textarea
               className="min-h-32 resize-y border border-border bg-surface px-3 py-3 text-sm text-foreground transition placeholder:text-muted focus:border-accent focus:outline-none"
               value={form.description}
@@ -218,18 +218,18 @@ export function EventFormModal({
               <span>
                 <span className="flex items-center gap-2 font-semibold">
                   <Repeat2 size={16} />
-                  Repetir semanalmente ate o fim do ano
+                  Repetir semanalmente até o fim do ano
                 </span>
                 <span className="mt-1 block leading-6 text-muted">
-                  Ideal para cultos fixos. A recorrencia usa o mesmo dia da
-                  semana da data selecionada, nao o dia do mes.
+                  Ideal para cultos fixos. A recorrência usa o mesmo dia da
+                  semana da data selecionada, não o dia do mês.
                 </span>
               </span>
             </label>
           ) : event?.isRecurring ? (
             <div className="border border-accent/30 bg-accent/10 p-4 text-sm leading-6 text-foreground">
-              Este evento faz parte de uma recorrencia. Nesta versao, editar ou
-              excluir afeta apenas esta ocorrencia.
+              Este evento faz parte de uma recorrência. Nesta versão, editar ou
+              excluir afeta apenas esta ocorrência.
             </div>
           ) : null}
 

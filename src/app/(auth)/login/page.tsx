@@ -16,7 +16,7 @@ export default function LoginPage() {
       </div>
       <LoginForm />
       <p className="mt-6 text-sm text-muted">
-        Ainda nao cadastrou sua igreja?{" "}
+        Ainda não cadastrou sua igreja?{" "}
         <Link href="/cadastro" className="font-semibold text-foreground underline decoration-accent underline-offset-4">
           Criar cadastro
         </Link>

@@ -5,7 +5,7 @@ import { AppProviders } from "@/components/providers/app-providers";
 
 export const metadata: Metadata = {
   title: "Eclesio",
-  description: "Gestao simples e segura para igrejas.",
+  description: "Gestão simples e segura para igrejas.",
 };
 
 export default function RootLayout({

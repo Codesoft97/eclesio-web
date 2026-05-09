@@ -22,12 +22,12 @@ import { logout } from "@/features/auth/auth-service";
 import { useAuth } from "@/features/auth/auth-provider";
 
 const navItems = [
-  { href: "/app", label: "Inicio", icon: Home },
+  { href: "/app", label: "Início", icon: Home },
   { href: "/app/membros", label: "Membros", icon: Users },
   { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
   { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
-  { href: "/app/relatorios", label: "Relatorios", icon: BarChart3 },
+  { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 
 interface AppSidebarProps {
@@ -95,7 +95,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
             <Church size={14} />
             <span className="font-semibold">Conta ativa</span>
           </div>
-          <p className="truncate">{session?.user.email ?? "Aguardando sessao"}</p>
+          <p className="truncate">{session?.user.email ?? "Aguardando sessão"}</p>
         </div>
       )}
 

@@ -49,15 +49,15 @@ import type {
 const defaultCategories: FinancialCategories = {
   revenue: [
     { value: "OFFERINGS", label: "Ofertas" },
-    { value: "TITHES", label: "Dizimos" },
-    { value: "DONATIONS", label: "Doacoes" },
+    { value: "TITHES", label: "Dízimos" },
+    { value: "DONATIONS", label: "Doações" },
   ],
   expense: [
-    { value: "MAINTENANCE", label: "Manutencao" },
-    { value: "FOOD", label: "Alimentacao" },
+    { value: "MAINTENANCE", label: "Manutenção" },
+    { value: "FOOD", label: "Alimentação" },
     { value: "INSTRUMENTS", label: "Instrumentos" },
     { value: "TECHNOLOGY", label: "Tecnologia" },
-    { value: "FURNITURE", label: "Moveis" },
+    { value: "FURNITURE", label: "Móveis" },
     { value: "STRUCTURE", label: "Estrutura" },
   ],
 };
@@ -366,7 +366,7 @@ export function FinancePageClient() {
 
   async function handleSettle(transaction: FinancialTransaction) {
     const confirmed = window.confirm(
-      `Deseja efetivar a transacao ${transaction.title}? Esta acao nao podera ser desfeita.`,
+      `Deseja efetivar a transação ${transaction.title}? Esta ação não poderá ser desfeita.`,
     );
 
     if (!confirmed) {
@@ -392,7 +392,7 @@ export function FinancePageClient() {
 
   async function handleDelete(transaction: FinancialTransaction) {
     const confirmed = window.confirm(
-      `Deseja excluir a transacao ${transaction.title}? Se ela estiver efetivada, o saldo sera ajustado.`,
+      `Deseja excluir a transação ${transaction.title}? Se ela estiver efetivada, o saldo será ajustado.`,
     );
 
     if (!confirmed) {
@@ -427,7 +427,7 @@ export function FinancePageClient() {
             Financeiro
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Acompanhe saldo, receitas, despesas e transacoes pendentes da igreja.
+            Acompanhe saldo, receitas, despesas e transações pendentes da igreja.
           </p>
         </div>
 
@@ -438,7 +438,7 @@ export function FinancePageClient() {
           </Button>
           <Button type="button" onClick={openCreateModal}>
             <Plus size={17} />
-            Nova transacao
+            Nova transação
           </Button>
         </div>
       </div>
@@ -515,7 +515,7 @@ export function FinancePageClient() {
                 {formatMonthTitle(visibleMonth)}
               </h2>
               <p className="text-xs text-muted">
-                Transacoes ordenadas por data mais recente
+                Transações ordenadas por data mais recente
               </p>
             </div>
           </div>
@@ -544,7 +544,7 @@ export function FinancePageClient() {
               className="h-10 px-3"
               onClick={goToNextMonth}
             >
-              Proximo
+              Próximo
               <ArrowRight size={16} />
             </Button>
             <input
@@ -552,7 +552,7 @@ export function FinancePageClient() {
               className="h-10 min-w-36 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground focus:border-accent focus:outline-none"
               value={visibleMonth}
               onChange={(event) => setVisibleMonth(event.target.value)}
-              aria-label="Selecionar mes"
+              aria-label="Selecionar mês"
             />
             <Button
               type="button"
@@ -585,14 +585,14 @@ export function FinancePageClient() {
                 <CircleDollarSign size={24} />
               </span>
               <h3 className="text-lg font-semibold text-foreground">
-                Nenhuma transacao neste mes
+                Nenhuma transação neste mês
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted">
                 Cadastre a primeira receita ou despesa para iniciar o historico financeiro.
               </p>
               <Button type="button" className="mt-5" onClick={openCreateModal}>
                 <Plus size={17} />
-                Cadastrar transacao
+                Cadastrar transação
               </Button>
             </div>
           </div>
@@ -683,7 +683,7 @@ export function FinancePageClient() {
                 <thead className="border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Data</th>
-                    <th className="px-4 py-3 font-semibold">Titulo</th>
+                    <th className="px-4 py-3 font-semibold">Título</th>
                     <th className="px-4 py-3 font-semibold">Tipo</th>
                     <th className="px-4 py-3 font-semibold">Categoria</th>
                     <th className="px-4 py-3 font-semibold">Valor</th>
