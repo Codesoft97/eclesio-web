@@ -1,14 +1,33 @@
-import { Loader2, UserCheck } from "lucide-react";
+"use client";
+
+import {
+  Check,
+  CheckCircle2,
+  CircleDashed,
+  Copy,
+  Loader2,
+  Send,
+  UserCheck,
+  XCircle,
+} from "lucide-react";
+import { useState } from "react";
 
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
 
-import type { EventSchedule, EventScheduleAssignment } from "../event-types";
+import type {
+  EventSchedule,
+  EventScheduleAssignment,
+  EventScheduleConfirmationStatus,
+} from "../event-types";
 
 interface EventScheduleSummaryProps {
   schedule: EventSchedule | null | undefined;
   isLoading?: boolean;
   compact?: boolean;
   emptyMessage?: string;
+  eventTitle?: string;
+  eventStartsAt?: string;
+  showConfirmationActions?: boolean;
 }
 
 type GroupedSchedule = {
@@ -19,6 +38,36 @@ type GroupedSchedule = {
     roleName: string;
     assignments: EventScheduleAssignment[];
   }[];
+};
+
+type CopiedTarget = {
+  assignmentId: string;
+  target: "link";
+} | null;
+
+const statusDetails: Record<
+  EventScheduleConfirmationStatus,
+  {
+    label: string;
+    icon: typeof CircleDashed;
+    className: string;
+  }
+> = {
+  PENDING: {
+    label: "Pendente",
+    icon: CircleDashed,
+    className: "border-accent/40 bg-accent/10 text-foreground",
+  },
+  ACCEPTED: {
+    label: "Aceitou",
+    icon: CheckCircle2,
+    className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  },
+  DECLINED: {
+    label: "Recusou",
+    icon: XCircle,
+    className: "border-danger/30 bg-danger/10 text-danger",
+  },
 };
 
 function groupAssignments(assignments: EventScheduleAssignment[]) {
@@ -57,12 +106,95 @@ function groupAssignments(assignments: EventScheduleAssignment[]) {
   return groups;
 }
 
+function formatEventDateTime(value: string) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "full",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+function buildConfirmationMessage({
+  assignment,
+  eventTitle,
+  eventStartsAt,
+}: {
+  assignment: EventScheduleAssignment;
+  eventTitle?: string;
+  eventStartsAt?: string;
+}) {
+  return [
+    `Olá, ${assignment.worker.name}! Você foi escalado(a) para servir.`,
+    eventTitle ? `Evento: ${eventTitle}` : null,
+    eventStartsAt ? `Data e hora: ${formatEventDateTime(eventStartsAt)}` : null,
+    `Ministério: ${assignment.ministry.name}`,
+    `Função: ${assignment.role.name}`,
+    "",
+    "Confirme se você poderá comparecer pelo link:",
+    assignment.confirmationUrl,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function buildWhatsappUrl(
+  assignment: EventScheduleAssignment,
+  eventTitle?: string,
+  eventStartsAt?: string,
+) {
+  const message = buildConfirmationMessage({
+    assignment,
+    eventTitle,
+    eventStartsAt,
+  });
+  const digits = assignment.worker.whatsapp.replace(/\D/g, "");
+  const normalizedPhone = digits.startsWith("55") ? digits : `55${digits}`;
+
+  return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;
+}
+
+function copyText(value: string) {
+  if (navigator.clipboard?.writeText) {
+    return navigator.clipboard.writeText(value);
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "true");
+  textarea.style.position = "absolute";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+
+  return Promise.resolve();
+}
+
 export function EventScheduleSummary({
   schedule,
   isLoading = false,
   compact = false,
   emptyMessage = "Nenhum obreiro escalado.",
+  eventTitle,
+  eventStartsAt,
+  showConfirmationActions = true,
 }: EventScheduleSummaryProps) {
+  const [copied, setCopied] = useState<CopiedTarget>(null);
+
+  async function handleCopyLink(assignment: EventScheduleAssignment) {
+    await copyText(assignment.confirmationUrl);
+    setCopied({ assignmentId: assignment.id, target: "link" });
+    window.setTimeout(() => setCopied(null), 1800);
+  }
+
+  function handleOpenWhatsapp(assignment: EventScheduleAssignment) {
+    window.open(
+      buildWhatsappUrl(assignment, eventTitle, eventStartsAt),
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 border border-border bg-surface p-3 text-sm text-muted">
@@ -100,20 +232,62 @@ export function EventScheduleSummary({
                 <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                   {role.roleName}
                 </p>
-                <div className="grid gap-1">
-                  {role.assignments.map((assignment) => (
-                    <div
-                      key={assignment.id}
-                      className="flex flex-col gap-0.5 border border-border bg-surface-subtle px-2 py-1.5 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <span className="font-medium">{assignment.worker.name}</span>
-                      {compact ? null : (
-                        <span className="text-xs text-muted">
-                          {formatBrazilianPhone(assignment.worker.whatsapp)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                <div className="grid gap-1.5">
+                  {role.assignments.map((assignment) => {
+                    const status = statusDetails[assignment.confirmationStatus];
+                    const StatusIcon = status.icon;
+                    const isCopied =
+                      copied?.assignmentId === assignment.id &&
+                      copied.target === "link";
+
+                    return (
+                      <div
+                        key={assignment.id}
+                        className="grid gap-2 border border-border bg-surface-subtle px-2 py-2 text-sm text-foreground"
+                      >
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0">
+                            <span className="block truncate font-medium">
+                              {assignment.worker.name}
+                            </span>
+                            {compact ? null : (
+                              <span className="text-xs text-muted">
+                                {formatBrazilianPhone(assignment.worker.whatsapp)}
+                              </span>
+                            )}
+                          </div>
+
+                          <span
+                            className={`inline-flex w-fit items-center gap-1 border px-2 py-1 text-xs font-semibold ${status.className}`}
+                          >
+                            <StatusIcon size={13} />
+                            {status.label}
+                          </span>
+                        </div>
+
+                        {showConfirmationActions ? (
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            <button
+                              type="button"
+                              onClick={() => void handleCopyLink(assignment)}
+                              className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-border bg-surface px-3 text-xs font-semibold text-foreground transition hover:border-accent hover:text-accent"
+                            >
+                              {isCopied ? <Check size={14} /> : <Copy size={14} />}
+                              {isCopied ? "Link copiado" : "Copiar link"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenWhatsapp(assignment)}
+                              className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-3 text-xs font-semibold text-accent-foreground transition hover:bg-yellow-400"
+                            >
+                              <Send size={14} />
+                              WhatsApp
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}

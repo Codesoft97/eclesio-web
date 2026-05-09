@@ -1083,6 +1083,8 @@ export function EventsPageClient() {
                       <EventScheduleSummary
                         schedule={schedulePreviews[event.id]}
                         isLoading={loadingSchedulePreviewIds.includes(event.id)}
+                        eventTitle={event.title}
+                        eventStartsAt={event.startsAt}
                         emptyMessage="Nenhum obreiro escalado para este evento."
                       />
                     </div>

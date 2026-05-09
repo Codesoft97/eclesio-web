@@ -7,6 +7,7 @@ import type {
   EventSchedulePayload,
   EventShareResponse,
   PublicChurchEvent,
+  PublicEventScheduleAssignment,
 } from "./event-types";
 
 export async function listEvents() {
@@ -55,6 +56,33 @@ export async function deleteEventScheduleAssignment(
 export async function getPublicEvent(shareToken: string) {
   const { data } = await api.get<PublicChurchEvent>(
     `/public/events/${shareToken}`,
+  );
+  return data;
+}
+
+export async function getPublicEventScheduleAssignment(
+  confirmationToken: string,
+) {
+  const { data } = await api.get<PublicEventScheduleAssignment>(
+    `/public/event-schedules/${confirmationToken}`,
+  );
+  return data;
+}
+
+export async function acceptPublicEventScheduleAssignment(
+  confirmationToken: string,
+) {
+  const { data } = await api.post<PublicEventScheduleAssignment>(
+    `/public/event-schedules/${confirmationToken}/accept`,
+  );
+  return data;
+}
+
+export async function declinePublicEventScheduleAssignment(
+  confirmationToken: string,
+) {
+  const { data } = await api.post<PublicEventScheduleAssignment>(
+    `/public/event-schedules/${confirmationToken}/decline`,
   );
   return data;
 }

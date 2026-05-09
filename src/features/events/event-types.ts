@@ -24,6 +24,11 @@ export interface EventShareResponse {
   message: string;
 }
 
+export type EventScheduleConfirmationStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "DECLINED";
+
 export interface EventScheduleAssignment {
   id: string;
   eventId: string;
@@ -43,6 +48,9 @@ export interface EventScheduleAssignment {
     name: string;
     whatsapp: string;
   };
+  confirmationStatus: EventScheduleConfirmationStatus;
+  confirmationUrl: string;
+  respondedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -74,5 +82,35 @@ export interface PublicChurchEvent {
   church: {
     name: string;
     slug: string;
+  };
+}
+
+export interface PublicEventScheduleAssignment {
+  confirmationToken: string;
+  confirmationStatus: EventScheduleConfirmationStatus;
+  respondedAt: string | null;
+  event: {
+    title: string;
+    description: string;
+    startsAt: string;
+    isRecurring: boolean;
+    recurrenceGroupId: string | null;
+    recurrenceEndsAt: string | null;
+    recurrenceWeekday: number | null;
+  };
+  church: {
+    name: string;
+    slug: string;
+  };
+  ministry: {
+    id: string;
+    name: string;
+  };
+  role: {
+    id: string;
+    name: string;
+  };
+  worker: {
+    name: string;
   };
 }

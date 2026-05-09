@@ -298,6 +298,8 @@ export default function DashboardPage() {
                   <EventScheduleSummary
                     schedule={schedules[event.id]}
                     compact
+                    eventTitle={event.title}
+                    eventStartsAt={event.startsAt}
                     emptyMessage="Ainda não há obreiros escalados para este evento."
                   />
                 </article>
