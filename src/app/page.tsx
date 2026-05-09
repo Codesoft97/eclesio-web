@@ -6,10 +6,10 @@ import {
   Church,
   HandCoins,
   LayoutDashboard,
-  Sparkles,
   UserCheck,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { AnalyticsLink } from "@/components/analytics/analytics-link";
@@ -109,20 +109,32 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ImageSlot({ label }: { label: string }) {
+function ProductScreenshot({
+  src,
+  alt,
+  label,
+}: {
+  src: string;
+  alt: string;
+  label: string;
+}) {
   return (
-    <div className="relative min-h-64 overflow-hidden border border-border bg-surface p-4 shadow-sm">
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_0%,transparent_48%,color-mix(in_oklab,var(--accent)_24%,transparent)_49%,transparent_51%,transparent_100%)]" />
-      <div className="relative grid min-h-56 place-items-center border border-dashed border-border bg-surface-subtle/80 p-6 text-center">
-        <div>
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-accent text-accent-foreground">
-            <Sparkles size={22} />
-          </div>
-          <p className="text-sm font-semibold text-foreground">{label}</p>
-          <p className="mt-2 text-xs leading-5 text-muted">
-            Espaço preparado para adicionar screenshots, mockups ou imagens do produto.
-          </p>
-        </div>
+    <div className="relative overflow-hidden border border-border bg-surface p-3 shadow-sm">
+      <div className="flex items-center justify-between border-b border-border px-2 pb-3">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
+          {label}
+        </p>
+        <span className="h-2.5 w-2.5 bg-accent" />
+      </div>
+      <div className="relative mt-3 aspect-[16/10] overflow-hidden border border-border bg-surface-subtle">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="object-cover object-top"
+          priority={src === "/home_screenshot.png"}
+        />
       </div>
     </div>
   );
@@ -218,54 +230,11 @@ export default function LandingPage() {
 
           <div className="relative">
             <div className="absolute -right-8 -top-8 h-32 w-32 border border-accent/30" />
-            <div className="relative border border-border bg-surface p-3 shadow-2xl">
-              <div className="grid gap-3 bg-primary p-4 text-primary-foreground dark:bg-surface-subtle dark:text-foreground">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4 dark:border-border">
-                  <div>
-                    <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">
-                      Painel Eclesio
-                    </p>
-                    <h2 className="mt-2 text-xl font-semibold">Visão geral</h2>
-                  </div>
-                  <span className="h-3 w-3 bg-accent" />
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    ["Membros ativos", "128"],
-                    ["Obreiros", "34"],
-                    ["Saldo", "R$ 12.480"],
-                    ["Pendências", "6"],
-                  ].map(([label, value]) => (
-                    <div key={label} className="bg-white/8 p-4 dark:bg-surface">
-                      <p className="text-xs opacity-70">{label}</p>
-                      <p className="mt-3 text-2xl font-semibold">{value}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="bg-white/8 p-4 dark:bg-surface">
-                  <p className="font-mono text-xs uppercase tracking-[0.16em] opacity-70">
-                    Próximo culto
-                  </p>
-                  <div className="mt-4 grid gap-3">
-                    {[
-                      ["Recepção", "Ana confirmou"],
-                      ["Ambiente", "Marcos pendente"],
-                      ["Banda", "Luiza confirmou"],
-                    ].map(([team, status]) => (
-                      <div
-                        key={team}
-                        className="flex items-center justify-between border border-white/10 p-3 text-sm dark:border-border"
-                      >
-                        <span>{team}</span>
-                        <span className="text-accent">{status}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProductScreenshot
+              src="/home_screenshot.png"
+              alt="Tela inicial do Eclesio com resumo, agenda e calendário mensal"
+              label="Painel Eclesio"
+            />
           </div>
         </div>
       </section>
@@ -303,7 +272,11 @@ export default function LandingPage() {
 
       <section className="border-y border-border bg-surface/60">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
-          <ImageSlot label="Screenshot do calendário e escalas" />
+          <ProductScreenshot
+            src="/eventos_screenshot.png"
+            alt="Tela de eventos do Eclesio com calendário mensal e escala de obreiros"
+            label="Eventos e escalas"
+          />
           <div className="flex flex-col justify-center">
             <SectionLabel>Operação mais leve</SectionLabel>
             <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
@@ -318,6 +291,38 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="flex flex-col justify-center">
+            <SectionLabel>Financeiro</SectionLabel>
+            <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
+              Uma visão clara de receitas, despesas e saldo da igreja.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
+              Acompanhe categorias, lançamentos pendentes, transações efetivadas e o saldo financeiro sem depender de planilhas espalhadas.
+            </p>
+            <div className="mt-6 grid gap-3">
+              {[
+                "Receitas e despesas organizadas por categoria",
+                "Saldo atualizado a partir das transações efetivadas",
+                "Pendências visíveis para manter a rotina em dia",
+              ].map((item) => (
+                <div key={item} className="flex gap-3 border border-border bg-surface p-4">
+                  <Check className="mt-0.5 shrink-0 text-accent" size={18} />
+                  <p className="text-sm leading-6 text-muted">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <ProductScreenshot
+            src="/financeiro_screenshot.png"
+            alt="Tela financeira do Eclesio com saldo e transações da igreja"
+            label="Financeiro da igreja"
+          />
         </div>
       </section>
 
