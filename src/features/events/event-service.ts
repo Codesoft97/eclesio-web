@@ -1,8 +1,10 @@
-﻿import { api } from "@/lib/api";
+import { api } from "@/lib/api";
 
 import type {
   ChurchEvent,
   EventPayload,
+  EventSchedule,
+  EventSchedulePayload,
   EventShareResponse,
   PublicChurchEvent,
 } from "./event-types";
@@ -25,6 +27,29 @@ export async function updateEvent(eventId: string, payload: EventPayload) {
 export async function getEventShare(eventId: string) {
   const { data } = await api.get<EventShareResponse>(`/events/${eventId}/share`);
   return data;
+}
+
+export async function getEventSchedule(eventId: string) {
+  const { data } = await api.get<EventSchedule>(`/events/${eventId}/schedule`);
+  return data;
+}
+
+export async function setEventSchedule(
+  eventId: string,
+  payload: EventSchedulePayload,
+) {
+  const { data } = await api.put<EventSchedule>(
+    `/events/${eventId}/schedule`,
+    payload,
+  );
+  return data;
+}
+
+export async function deleteEventScheduleAssignment(
+  eventId: string,
+  assignmentId: string,
+) {
+  await api.delete(`/events/${eventId}/schedule/${assignmentId}`);
 }
 
 export async function getPublicEvent(shareToken: string) {

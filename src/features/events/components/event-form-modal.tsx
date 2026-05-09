@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { CalendarPlus, Save, X } from "lucide-react";
+import { CalendarPlus, Repeat2, Save, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
@@ -59,6 +59,7 @@ function getInitialForm(event: ChurchEvent | null, initialDate: Date) {
       description: event.description,
       date: toDateInputValue(startsAt),
       time: toTimeInputValue(startsAt),
+      isRecurring: false,
     };
   }
 
@@ -67,6 +68,7 @@ function getInitialForm(event: ChurchEvent | null, initialDate: Date) {
     description: "",
     date: toDateInputValue(initialDate),
     time: "19:00",
+    isRecurring: false,
   };
 }
 
@@ -82,7 +84,7 @@ export function EventFormModal({
   const [form, setForm] = useState(() => getInitialForm(event, initialDate));
   const [localError, setLocalError] = useState<string | null>(null);
 
-  function updateField(field: keyof typeof form, value: string) {
+  function updateField(field: keyof typeof form, value: string | boolean) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
@@ -95,11 +97,15 @@ export function EventFormModal({
       return;
     }
 
-    const payload = {
+    const payload: EventPayload = {
       title: form.title.trim().replace(/\s+/g, " "),
       description: form.description.trim(),
       startsAt: toIsoWithTimezone(form.date, form.time),
     };
+
+    if (mode === "create" && form.isRecurring) {
+      payload.isRecurring = true;
+    }
 
     if (payload.title.length < 2) {
       setLocalError("Informe um titulo com pelo menos 2 caracteres.");
@@ -117,8 +123,8 @@ export function EventFormModal({
   const title = mode === "create" ? "Novo evento" : "Editar evento";
   const subtitle =
     mode === "create"
-      ? "Agende uma atividade no calendario da igreja."
-      : "Atualize as informacoes deste evento.";
+      ? "Agende uma atividade no calendario da igreja. Se for culto recorrente, criamos as ocorrencias semanais do ano."
+      : "Atualize esta ocorrencia. Em eventos recorrentes, a alteracao vale apenas para este dia.";
   const submitLabel = mode === "create" ? "Cadastrar evento" : "Salvar alteracoes";
   const Icon = mode === "create" ? CalendarPlus : Save;
 
@@ -158,7 +164,9 @@ export function EventFormModal({
           <Field
             label="Titulo"
             value={form.title}
-            onChange={(eventChange) => updateField("title", eventChange.target.value)}
+            onChange={(eventChange) =>
+              updateField("title", eventChange.target.value)
+            }
             placeholder="Culto de Domingo"
             required
           />
@@ -181,17 +189,49 @@ export function EventFormModal({
               label="Data"
               type="date"
               value={form.date}
-              onChange={(eventChange) => updateField("date", eventChange.target.value)}
+              onChange={(eventChange) =>
+                updateField("date", eventChange.target.value)
+              }
               required
             />
             <Field
               label="Hora"
               type="time"
               value={form.time}
-              onChange={(eventChange) => updateField("time", eventChange.target.value)}
+              onChange={(eventChange) =>
+                updateField("time", eventChange.target.value)
+              }
               required
             />
           </div>
+
+          {mode === "create" ? (
+            <label className="flex cursor-pointer items-start gap-3 border border-border bg-surface-subtle p-4 text-sm text-foreground">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 cursor-pointer accent-[var(--color-accent)]"
+                checked={form.isRecurring}
+                onChange={(eventChange) =>
+                  updateField("isRecurring", eventChange.target.checked)
+                }
+              />
+              <span>
+                <span className="flex items-center gap-2 font-semibold">
+                  <Repeat2 size={16} />
+                  Repetir semanalmente ate o fim do ano
+                </span>
+                <span className="mt-1 block leading-6 text-muted">
+                  Ideal para cultos fixos. A recorrencia usa o mesmo dia da
+                  semana da data selecionada, nao o dia do mes.
+                </span>
+              </span>
+            </label>
+          ) : event?.isRecurring ? (
+            <div className="border border-accent/30 bg-accent/10 p-4 text-sm leading-6 text-foreground">
+              Este evento faz parte de uma recorrencia. Nesta versao, editar ou
+              excluir afeta apenas esta ocorrencia.
+            </div>
+          ) : null}
 
           {localError || error ? (
             <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
@@ -218,4 +258,3 @@ export function EventFormModal({
     </div>
   );
 }
-

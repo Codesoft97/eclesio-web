@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   CalendarClock,
@@ -9,32 +9,54 @@ import {
   Loader2,
   Plus,
   RefreshCw,
+  Repeat2,
   Share2,
   Trash2,
+  UserCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-provider";
+import {
+  listWorkerMinistries,
+  listWorkers,
+} from "@/features/workers/worker-service";
+import type { Worker, WorkerMinistry } from "@/features/workers/worker-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 
 import { EventFormModal } from "./event-form-modal";
+import { EventScheduleModal } from "./event-schedule-modal";
 import { EventShareModal } from "./event-share-modal";
 import {
   createEvent,
   deleteEvent,
+  deleteEventScheduleAssignment,
+  getEventSchedule,
   getEventShare,
   listEvents,
+  setEventSchedule,
   updateEvent,
 } from "../event-service";
 import type {
   ChurchEvent,
   EventPayload,
+  EventSchedule,
+  EventSchedulePayload,
   EventShareResponse,
 } from "../event-types";
 
 const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+const recurrenceWeekDays = [
+  "domingo",
+  "segunda-feira",
+  "terca-feira",
+  "quarta-feira",
+  "quinta-feira",
+  "sexta-feira",
+  "sabado",
+];
 
 type ModalState =
   | { isOpen: false; mode: "create"; event: null; initialDate: Date }
@@ -59,6 +81,26 @@ type ShareState =
       isLoading: boolean;
       error: string | null;
       copied: CopiedTarget;
+    };
+
+type ScheduleState =
+  | {
+      isOpen: false;
+      event: null;
+      schedule: null;
+      isLoading: false;
+      isSubmitting: false;
+      deletingAssignmentId: null;
+      error: null;
+    }
+  | {
+      isOpen: true;
+      event: ChurchEvent;
+      schedule: EventSchedule | null;
+      isLoading: boolean;
+      isSubmitting: boolean;
+      deletingAssignmentId: string | null;
+      error: string | null;
     };
 
 function pad(value: number) {
@@ -133,6 +175,19 @@ function formatEventDateTime(value: string) {
   }).format(new Date(value));
 }
 
+function formatRecurrence(event: ChurchEvent) {
+  if (!event.isRecurring) {
+    return null;
+  }
+
+  const weekday =
+    event.recurrenceWeekday !== null
+      ? recurrenceWeekDays[event.recurrenceWeekday]
+      : null;
+
+  return weekday ? `Toda ${weekday}` : "Recorrente";
+}
+
 function getEventsForDate(events: ChurchEvent[], date: Date) {
   const dateKey = getDateKey(date);
 
@@ -167,10 +222,22 @@ const closedShareState: ShareState = {
   copied: null,
 };
 
+const closedScheduleState: ScheduleState = {
+  isOpen: false,
+  event: null,
+  schedule: null,
+  isLoading: false,
+  isSubmitting: false,
+  deletingAssignmentId: null,
+  error: null,
+};
+
 export function EventsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [events, setEvents] = useState<ChurchEvent[]>([]);
+  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [ministries, setMinistries] = useState<WorkerMinistry[]>([]);
   const [visibleMonth, setVisibleMonth] = useState(() =>
     startOfMonth(new Date()),
   );
@@ -185,6 +252,8 @@ export function EventsPageClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [shareState, setShareState] = useState<ShareState>(closedShareState);
+  const [scheduleState, setScheduleState] =
+    useState<ScheduleState>(closedScheduleState);
 
   useEffect(() => {
     let ignore = false;
@@ -194,10 +263,16 @@ export function EventsPageClient() {
       setError(null);
 
       try {
-        const data = await listEvents();
+        const [eventsData, ministriesData, workersData] = await Promise.all([
+          listEvents(),
+          listWorkerMinistries(),
+          listWorkers(),
+        ]);
 
         if (!ignore) {
-          setEvents(data);
+          setEvents(eventsData);
+          setMinistries(ministriesData);
+          setWorkers(workersData);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -226,6 +301,9 @@ export function EventsPageClient() {
   const calendarDays = getCalendarDays(visibleMonth);
   const selectedEvents = getEventsForDate(events, selectedDate);
   const visibleMonthEvents = getEventsForMonth(events, visibleMonth);
+  const recurringEventsCount = visibleMonthEvents.filter(
+    (event) => event.isRecurring,
+  ).length;
 
   function refreshEvents() {
     setReloadKey((current) => current + 1);
@@ -304,6 +382,38 @@ export function EventsPageClient() {
     }
   }
 
+  async function openScheduleModal(event: ChurchEvent) {
+    setScheduleState({
+      isOpen: true,
+      event,
+      schedule: null,
+      isLoading: true,
+      isSubmitting: false,
+      deletingAssignmentId: null,
+      error: null,
+    });
+
+    try {
+      const schedule = await getEventSchedule(event.id);
+
+      setScheduleState((current) =>
+        current.isOpen && current.event.id === event.id
+          ? { ...current, schedule, isLoading: false, error: null }
+          : current,
+      );
+    } catch (err) {
+      if (await handleUnauthorized(err)) {
+        return;
+      }
+
+      setScheduleState((current) =>
+        current.isOpen && current.event.id === event.id
+          ? { ...current, isLoading: false, error: getApiErrorMessage(err) }
+          : current,
+      );
+    }
+  }
+
   function closeModal() {
     if (isSubmitting) {
       return;
@@ -315,6 +425,10 @@ export function EventsPageClient() {
 
   function closeShareModal() {
     setShareState(closedShareState);
+  }
+
+  function closeScheduleModal() {
+    setScheduleState(closedScheduleState);
   }
 
   async function handleUnauthorized(err: unknown) {
@@ -398,9 +512,97 @@ export function EventsPageClient() {
     }
   }
 
+  async function handleScheduleSubmit(payload: EventSchedulePayload) {
+    if (!scheduleState.isOpen) {
+      return;
+    }
+
+    const eventId = scheduleState.event.id;
+
+    setScheduleState((current) =>
+      current.isOpen ? { ...current, isSubmitting: true, error: null } : current,
+    );
+
+    try {
+      const schedule = await setEventSchedule(eventId, payload);
+
+      setScheduleState((current) =>
+        current.isOpen && current.event.id === eventId
+          ? { ...current, schedule, isSubmitting: false, error: null }
+          : current,
+      );
+    } catch (err) {
+      if (await handleUnauthorized(err)) {
+        return;
+      }
+
+      setScheduleState((current) =>
+        current.isOpen && current.event.id === eventId
+          ? {
+              ...current,
+              isSubmitting: false,
+              error: getApiErrorMessage(err),
+            }
+          : current,
+      );
+    }
+  }
+
+  async function handleDeleteScheduleAssignment(assignmentId: string) {
+    if (!scheduleState.isOpen) {
+      return;
+    }
+
+    const eventId = scheduleState.event.id;
+
+    setScheduleState((current) =>
+      current.isOpen
+        ? { ...current, deletingAssignmentId: assignmentId, error: null }
+        : current,
+    );
+
+    try {
+      await deleteEventScheduleAssignment(eventId, assignmentId);
+
+      setScheduleState((current) =>
+        current.isOpen && current.event.id === eventId
+          ? {
+              ...current,
+              deletingAssignmentId: null,
+              schedule: current.schedule
+                ? {
+                    ...current.schedule,
+                    assignments: current.schedule.assignments.filter(
+                      (assignment) => assignment.id !== assignmentId,
+                    ),
+                  }
+                : current.schedule,
+            }
+          : current,
+      );
+    } catch (err) {
+      if (await handleUnauthorized(err)) {
+        return;
+      }
+
+      setScheduleState((current) =>
+        current.isOpen && current.event.id === eventId
+          ? {
+              ...current,
+              deletingAssignmentId: null,
+              error: getApiErrorMessage(err),
+            }
+          : current,
+      );
+    }
+  }
+
   async function handleDelete(event: ChurchEvent) {
+    const recurrenceSuffix = event.isRecurring
+      ? " Apenas esta ocorrencia sera excluida."
+      : "";
     const confirmed = window.confirm(
-      `Deseja excluir o evento ${event.title}? Esta acao nao podera ser desfeita.`,
+      `Deseja excluir o evento ${event.title}? Esta acao nao podera ser desfeita.${recurrenceSuffix}`,
     );
 
     if (!confirmed) {
@@ -432,19 +634,31 @@ export function EventsPageClient() {
             Agenda
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
-            Eventos
+            Eventos e cultos
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Visualize o calendario da igreja, navegue pelos meses e gerencie os eventos de cada dia.
+            Visualize o calendario da igreja, crie cultos recorrentes e monte a escala de obreiros para cada evento.
           </p>
         </div>
 
         <div className="grid gap-3 sm:flex sm:items-center">
           <div className="flex items-center justify-between border border-border bg-surface px-4 py-3 text-sm shadow-sm sm:block">
             <span className="text-muted">Eventos no mes</span>
-            <strong className="ml-3 text-foreground">{visibleMonthEvents.length}</strong>
+            <strong className="ml-3 text-foreground">
+              {visibleMonthEvents.length}
+            </strong>
           </div>
-          <Button type="button" className="w-full sm:w-auto" onClick={() => openCreateModal()}>
+          <div className="flex items-center justify-between border border-border bg-surface px-4 py-3 text-sm shadow-sm sm:block">
+            <span className="text-muted">Recorrentes</span>
+            <strong className="ml-3 text-foreground">
+              {recurringEventsCount}
+            </strong>
+          </div>
+          <Button
+            type="button"
+            className="w-full sm:w-auto"
+            onClick={() => openCreateModal()}
+          >
             <Plus size={17} />
             Novo evento
           </Button>
@@ -472,19 +686,36 @@ export function EventsPageClient() {
                 <h2 className="text-base font-semibold capitalize text-foreground sm:text-lg">
                   {formatMonthTitle(visibleMonth)}
                 </h2>
-                <p className="text-xs text-muted">Toque em um dia para ver detalhes</p>
+                <p className="text-xs text-muted">
+                  Toque em um dia para ver detalhes
+                </p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-              <Button type="button" variant="ghost" className="h-10 px-3" onClick={goToPreviousMonth}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-10 px-3"
+                onClick={goToPreviousMonth}
+              >
                 <ChevronLeft size={16} />
                 Anterior
               </Button>
-              <Button type="button" variant="ghost" className="h-10 px-3" onClick={goToToday}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-10 px-3"
+                onClick={goToToday}
+              >
                 Hoje
               </Button>
-              <Button type="button" variant="ghost" className="h-10 px-3" onClick={goToNextMonth}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-10 px-3"
+                onClick={goToNextMonth}
+              >
                 Proximo
                 <ChevronRight size={16} />
               </Button>
@@ -508,7 +739,10 @@ export function EventsPageClient() {
           {isLoading ? (
             <div className="grid min-h-80 place-items-center p-8 text-center text-sm text-muted md:min-h-[34rem]">
               <div>
-                <Loader2 className="mx-auto mb-3 animate-spin text-accent" size={24} />
+                <Loader2
+                  className="mx-auto mb-3 animate-spin text-accent"
+                  size={24}
+                />
                 Carregando eventos...
               </div>
             </div>
@@ -530,7 +764,10 @@ export function EventsPageClient() {
                     const isSelected = isSameDay(day, selectedDate);
                     const isToday = isSameDay(day, new Date());
                     const visibleDots = dayEvents.slice(0, 3);
-                    const hiddenEventsCount = Math.max(dayEvents.length - visibleDots.length, 0);
+                    const hiddenEventsCount = Math.max(
+                      dayEvents.length - visibleDots.length,
+                      0,
+                    );
 
                     return (
                       <button
@@ -539,8 +776,14 @@ export function EventsPageClient() {
                         onClick={() => selectDate(day)}
                         aria-label={`${day.getDate()} - ${dayEvents.length} evento(s)`}
                         className={`min-h-16 cursor-pointer border-b border-r border-border p-1.5 text-center transition hover:bg-surface-subtle ${
-                          isSelected ? "bg-accent/10 ring-2 ring-inset ring-accent" : "bg-surface"
-                        } ${isCurrentMonth ? "text-foreground" : "text-muted opacity-50"}`}
+                          isSelected
+                            ? "bg-accent/10 ring-2 ring-inset ring-accent"
+                            : "bg-surface"
+                        } ${
+                          isCurrentMonth
+                            ? "text-foreground"
+                            : "text-muted opacity-50"
+                        }`}
                       >
                         <span
                           className={`mx-auto flex h-7 w-7 items-center justify-center text-xs font-semibold ${
@@ -555,7 +798,12 @@ export function EventsPageClient() {
                           <div className="mt-1 grid justify-items-center gap-1">
                             <div className="flex justify-center gap-0.5">
                               {visibleDots.map((event) => (
-                                <span key={event.id} className="h-1.5 w-1.5 rounded-full bg-accent" />
+                                <span
+                                  key={event.id}
+                                  className={`h-1.5 w-1.5 rounded-full ${
+                                    event.isRecurring ? "bg-primary" : "bg-accent"
+                                  }`}
+                                />
                               ))}
                             </div>
                             {hiddenEventsCount > 0 ? (
@@ -595,8 +843,14 @@ export function EventsPageClient() {
                           type="button"
                           onClick={() => selectDate(day)}
                           className={`min-h-32 cursor-pointer border-b border-r border-border p-2 text-left transition hover:bg-surface-subtle ${
-                            isSelected ? "bg-accent/10 ring-2 ring-inset ring-accent" : "bg-surface"
-                          } ${isCurrentMonth ? "text-foreground" : "text-muted opacity-60"}`}
+                            isSelected
+                              ? "bg-accent/10 ring-2 ring-inset ring-accent"
+                              : "bg-surface"
+                          } ${
+                            isCurrentMonth
+                              ? "text-foreground"
+                              : "text-muted opacity-60"
+                          }`}
                         >
                           <div className="mb-2 flex items-center justify-between gap-2">
                             <span
@@ -619,7 +873,11 @@ export function EventsPageClient() {
                             {dayEvents.slice(0, 3).map((event) => (
                               <span
                                 key={event.id}
-                                className="truncate border-l-2 border-accent bg-surface-subtle px-2 py-1 text-[11px] font-medium text-foreground"
+                                className={`truncate border-l-2 bg-surface-subtle px-2 py-1 text-[11px] font-medium text-foreground ${
+                                  event.isRecurring
+                                    ? "border-primary"
+                                    : "border-accent"
+                                }`}
                               >
                                 {formatEventTime(event.startsAt)} {event.title}
                               </span>
@@ -667,60 +925,84 @@ export function EventsPageClient() {
             {selectedEvents.length === 0 ? (
               <div className="border border-dashed border-border bg-surface-subtle p-5 text-center">
                 <CalendarClock className="mx-auto mb-3 text-muted" size={24} />
-                <h3 className="text-sm font-semibold text-foreground">Nenhum evento neste dia</h3>
+                <h3 className="text-sm font-semibold text-foreground">
+                  Nenhum evento neste dia
+                </h3>
                 <p className="mt-2 text-sm leading-6 text-muted">
                   Use o botao acima para adicionar o primeiro evento desta data.
                 </p>
               </div>
             ) : (
-              selectedEvents.map((event) => (
-                <article
-                  key={event.id}
-                  className="border border-border bg-surface-subtle p-4"
-                >
-                  <div className="mb-3 flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-                        {formatEventDateTime(event.startsAt)}
-                      </p>
-                      <h3 className="mt-2 text-base font-semibold text-foreground">
-                        {event.title}
-                      </h3>
+              selectedEvents.map((event) => {
+                const recurrenceLabel = formatRecurrence(event);
+
+                return (
+                  <article
+                    key={event.id}
+                    className="border border-border bg-surface-subtle p-4"
+                  >
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
+                          {formatEventDateTime(event.startsAt)}
+                        </p>
+                        <h3 className="mt-2 text-base font-semibold text-foreground">
+                          {event.title}
+                        </h3>
+                        {recurrenceLabel ? (
+                          <span className="mt-2 inline-flex items-center gap-1 border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-semibold text-foreground">
+                            <Repeat2 size={13} />
+                            {recurrenceLabel}
+                          </span>
+                        ) : null}
+                      </div>
+                      <span className="h-2 w-2 shrink-0 bg-accent" />
                     </div>
-                    <span className="h-2 w-2 shrink-0 bg-accent" />
-                  </div>
-                  <p className="whitespace-pre-wrap text-sm leading-6 text-muted">
-                    {event.description}
-                  </p>
-                  <div className="mt-4 grid gap-2 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => void openShareModal(event)}
-                    >
-                      <Share2 size={16} />
-                      Compartilhar
-                    </Button>
-                    <Button type="button" variant="ghost" onClick={() => openEditModal(event)}>
-                      <Edit3 size={16} />
-                      Editar
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="danger"
-                      onClick={() => void handleDelete(event)}
-                      disabled={deletingId === event.id}
-                    >
-                      {deletingId === event.id ? (
-                        <Loader2 className="animate-spin" size={16} />
-                      ) : (
-                        <Trash2 size={16} />
-                      )}
-                      Excluir
-                    </Button>
-                  </div>
-                </article>
-              ))
+                    <p className="whitespace-pre-wrap text-sm leading-6 text-muted">
+                      {event.description}
+                    </p>
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => void openScheduleModal(event)}
+                      >
+                        <UserCheck size={16} />
+                        Escala
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => void openShareModal(event)}
+                      >
+                        <Share2 size={16} />
+                        Compartilhar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => openEditModal(event)}
+                      >
+                        <Edit3 size={16} />
+                        Editar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="danger"
+                        onClick={() => void handleDelete(event)}
+                        disabled={deletingId === event.id}
+                      >
+                        {deletingId === event.id ? (
+                          <Loader2 className="animate-spin" size={16} />
+                        ) : (
+                          <Trash2 size={16} />
+                        )}
+                        Excluir
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })
             )}
           </div>
         </aside>
@@ -737,6 +1019,29 @@ export function EventsPageClient() {
           onCopyMessage={handleCopyShareMessage}
           onCopyUrl={handleCopyShareUrl}
           onOpenWhatsapp={handleOpenWhatsapp}
+        />
+      ) : null}
+
+      {scheduleState.isOpen ? (
+        <EventScheduleModal
+          key={`${scheduleState.event.id}-${
+            scheduleState.schedule?.assignments
+              .map((assignment) => assignment.id)
+              .join(":") ?? "loading"
+          }`}
+          event={scheduleState.event}
+          schedule={scheduleState.schedule}
+          ministries={ministries}
+          workers={workers}
+          isLoading={scheduleState.isLoading}
+          isSubmitting={scheduleState.isSubmitting}
+          deletingAssignmentId={scheduleState.deletingAssignmentId}
+          error={scheduleState.error}
+          onClose={closeScheduleModal}
+          onSubmit={(payload) => void handleScheduleSubmit(payload)}
+          onDeleteAssignment={(assignmentId) =>
+            void handleDeleteScheduleAssignment(assignmentId)
+          }
         />
       ) : null}
 
