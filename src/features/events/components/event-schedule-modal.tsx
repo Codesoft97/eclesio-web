@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { Loader2, Plus, Save, Trash2, UserCheck, X } from "lucide-react";
+import { CheckCircle2, Loader2, Plus, Save, Trash2, UserCheck, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
@@ -23,8 +23,10 @@ interface EventScheduleModalProps {
   isSubmitting: boolean;
   deletingAssignmentId: string | null;
   error: string | null;
+  successMessage: string | null;
   onClose: () => void;
   onSubmit: (payload: EventSchedulePayload) => void;
+  onClearFeedback: () => void;
   onDeleteAssignment: (assignmentId: string) => void;
 }
 
@@ -83,8 +85,10 @@ export function EventScheduleModal({
   isSubmitting,
   deletingAssignmentId,
   error,
+  successMessage,
   onClose,
   onSubmit,
+  onClearFeedback,
   onDeleteAssignment,
 }: EventScheduleModalProps) {
   const [assignments, setAssignments] = useState<ScheduleFormAssignment[]>(() =>
@@ -111,6 +115,7 @@ export function EventScheduleModal({
 
   function addAssignment() {
     setLocalError(null);
+    onClearFeedback();
     setAssignments((current) => [
       ...current,
       buildEmptyAssignment(ministries, workers),
@@ -119,6 +124,7 @@ export function EventScheduleModal({
 
   function removeAssignment(assignment: ScheduleFormAssignment) {
     setLocalError(null);
+    onClearFeedback();
 
     if (assignment.persistedId) {
       onDeleteAssignment(assignment.persistedId);
@@ -136,6 +142,7 @@ export function EventScheduleModal({
     value: string,
   ) {
     setLocalError(null);
+    onClearFeedback();
     setAssignments((current) =>
       current.map((assignment) => {
         if (assignment.localId !== localId) {
@@ -182,6 +189,7 @@ export function EventScheduleModal({
   function handleSubmit(eventSubmit: FormEvent<HTMLFormElement>) {
     eventSubmit.preventDefault();
     setLocalError(null);
+    onClearFeedback();
 
     const payloadAssignments = assignments.map(
       ({ ministryId, roleId, workerId }) => ({
@@ -264,7 +272,7 @@ export function EventScheduleModal({
               <div className="border border-dashed border-border bg-surface-subtle p-5 text-sm leading-6 text-muted">
                 Cadastre ministérios, funções e obreiros antes de montar uma
                 escala. Depois volte aqui para vincular cada função ao obreiro
-                responsavel.
+                responsável.
               </div>
             ) : null}
 
@@ -276,7 +284,7 @@ export function EventScheduleModal({
                     Nenhum obreiro escalado
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-muted">
-                    Adicione os obreiros que servirao neste evento.
+                    Adicione os obreiros que servirão neste evento.
                   </p>
                 </div>
               ) : (
@@ -401,6 +409,13 @@ export function EventScheduleModal({
               </p>
             ) : null}
 
+            {successMessage && !localError && !error ? (
+              <div className="flex items-center gap-2 border border-success/30 bg-success/10 p-3 text-sm font-medium text-success">
+                <CheckCircle2 size={17} />
+                <span>{successMessage}</span>
+              </div>
+            ) : null}
+
             <div className="grid gap-3 border-t border-border pt-4 sm:grid-cols-[auto_1fr_auto] sm:items-center">
               <Button
                 type="button"
@@ -416,8 +431,18 @@ export function EventScheduleModal({
                 escala, remova todos os itens e salve.
               </p>
               <Button type="submit" disabled={isSubmitting}>
-                <Save size={17} />
-                {isSubmitting ? "Salvando..." : "Salvar escala"}
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" size={17} />
+                ) : successMessage ? (
+                  <CheckCircle2 size={17} />
+                ) : (
+                  <Save size={17} />
+                )}
+                {isSubmitting
+                  ? "Salvando..."
+                  : successMessage
+                    ? "Escala salva"
+                    : "Salvar escala"}
               </Button>
             </div>
           </form>

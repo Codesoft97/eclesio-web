@@ -9,19 +9,27 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Logo />
           <div className="max-w-sm">
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted">
-              Minimalista e focado
+              Gestão Simplificada
             </p>
             <h1 className="text-4xl font-semibold leading-tight text-foreground">
-              Uma base limpa para cuidar da rotina da igreja.
+              Cuide da sua igreja com mais clareza, ordem e propósito.
             </h1>
             <p className="mt-5 text-sm leading-6 text-muted">
-              Cadastro, membros, obreiros, financeiro, eventos e relatorios em uma interface discreta, rapida e centrada nos dados.
+              Gerencie membros, obreiros, finanças, eventos e relatórios tudo em um só lugar.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-3 text-xs text-muted">
-            <div className="border border-border bg-surface p-3">Auth seguro</div>
-            <div className="border border-border bg-surface p-3">Cookies httpOnly</div>
-            <div className="border border-border bg-surface p-3">Dados em foco</div>
+            <div className="border border-border bg-surface p-3">
+              Financeiro
+            </div>
+
+            <div className="border border-border bg-surface p-3">
+              Obreiros
+            </div>
+
+            <div className="border border-border bg-surface p-3">
+              Eventos
+            </div>
           </div>
         </section>
         <section className="flex min-h-screen flex-col px-5 py-6 sm:px-8 lg:px-12">

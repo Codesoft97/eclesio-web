@@ -1,45 +1,34 @@
+"use client";
+
 import Image from "next/image";
 
-interface ThemeLogoImageProps {
-  className?: string;
-}
-
-function ThemeLogoImage({ className = "h-12 w-12" }: ThemeLogoImageProps) {
-  return (
-    <>
-      <Image
-        src="/logo_eclesio_tema_light.png"
-        alt="Logo Eclesio"
-        width={512}
-        height={512}
-        sizes="48px"
-        className={`${className} object-contain dark:hidden`}
-        priority
-      />
-      <Image
-        src="/logo_eclesio_tema_dark.png"
-        alt="Logo Eclesio"
-        width={512}
-        height={512}
-        sizes="48px"
-        className={`${className} hidden object-contain dark:block`}
-        priority
-      />
-    </>
-  );
-}
+import { useTheme } from "@/components/theme/theme-provider";
 
 export function LogoMark() {
+  const { theme } = useTheme();
+  const logoSrc =
+    theme === "dark"
+      ? "/logo_eclesio_tema_dark.png"
+      : "/logo_eclesio_tema_light.png";
+
   return (
-    <div className="flex h-12 w-12 shrink-0 items-center justify-center">
-      <ThemeLogoImage />
+    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden">
+      <Image
+        src={logoSrc}
+        alt="Logo Eclesio"
+        width={512}
+        height={512}
+        sizes="160px"
+        className="h-16 w-16 object-contain"
+        priority
+      />
     </div>
   );
 }
 
 export function Logo() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       <LogoMark />
       <div className="leading-tight">
         <p className="text-sm font-bold text-foreground">Eclesio</p>

@@ -92,6 +92,7 @@ type ScheduleState =
       isSubmitting: false;
       deletingAssignmentId: null;
       error: null;
+      successMessage: null;
     }
   | {
       isOpen: true;
@@ -101,6 +102,7 @@ type ScheduleState =
       isSubmitting: boolean;
       deletingAssignmentId: string | null;
       error: string | null;
+      successMessage: string | null;
     };
 
 function pad(value: number) {
@@ -230,6 +232,7 @@ const closedScheduleState: ScheduleState = {
   isSubmitting: false,
   deletingAssignmentId: null,
   error: null,
+  successMessage: null,
 };
 
 export function EventsPageClient() {
@@ -391,6 +394,7 @@ export function EventsPageClient() {
       isSubmitting: false,
       deletingAssignmentId: null,
       error: null,
+      successMessage: null,
     });
 
     try {
@@ -398,7 +402,7 @@ export function EventsPageClient() {
 
       setScheduleState((current) =>
         current.isOpen && current.event.id === event.id
-          ? { ...current, schedule, isLoading: false, error: null }
+          ? { ...current, schedule, isLoading: false, error: null, successMessage: null }
           : current,
       );
     } catch (err) {
@@ -408,7 +412,7 @@ export function EventsPageClient() {
 
       setScheduleState((current) =>
         current.isOpen && current.event.id === event.id
-          ? { ...current, isLoading: false, error: getApiErrorMessage(err) }
+          ? { ...current, isLoading: false, error: getApiErrorMessage(err), successMessage: null }
           : current,
       );
     }
@@ -520,7 +524,7 @@ export function EventsPageClient() {
     const eventId = scheduleState.event.id;
 
     setScheduleState((current) =>
-      current.isOpen ? { ...current, isSubmitting: true, error: null } : current,
+      current.isOpen ? { ...current, isSubmitting: true, error: null, successMessage: null } : current,
     );
 
     try {
@@ -528,7 +532,7 @@ export function EventsPageClient() {
 
       setScheduleState((current) =>
         current.isOpen && current.event.id === eventId
-          ? { ...current, schedule, isSubmitting: false, error: null }
+          ? { ...current, schedule, isSubmitting: false, error: null, successMessage: "Escala salva com sucesso." }
           : current,
       );
     } catch (err) {
@@ -542,6 +546,7 @@ export function EventsPageClient() {
               ...current,
               isSubmitting: false,
               error: getApiErrorMessage(err),
+              successMessage: null,
             }
           : current,
       );
@@ -557,7 +562,7 @@ export function EventsPageClient() {
 
     setScheduleState((current) =>
       current.isOpen
-        ? { ...current, deletingAssignmentId: assignmentId, error: null }
+        ? { ...current, deletingAssignmentId: assignmentId, error: null, successMessage: null }
         : current,
     );
 
@@ -569,6 +574,7 @@ export function EventsPageClient() {
           ? {
               ...current,
               deletingAssignmentId: null,
+              successMessage: "Obreiro removido da escala.",
               schedule: current.schedule
                 ? {
                     ...current.schedule,
@@ -591,10 +597,17 @@ export function EventsPageClient() {
               ...current,
               deletingAssignmentId: null,
               error: getApiErrorMessage(err),
+              successMessage: null,
             }
           : current,
       );
     }
+  }
+
+  function clearScheduleFeedback() {
+    setScheduleState((current) =>
+      current.isOpen ? { ...current, error: null, successMessage: null } : current,
+    );
   }
 
   async function handleDelete(event: ChurchEvent) {
@@ -1037,8 +1050,10 @@ export function EventsPageClient() {
           isSubmitting={scheduleState.isSubmitting}
           deletingAssignmentId={scheduleState.deletingAssignmentId}
           error={scheduleState.error}
+          successMessage={scheduleState.successMessage}
           onClose={closeScheduleModal}
           onSubmit={(payload) => void handleScheduleSubmit(payload)}
+          onClearFeedback={clearScheduleFeedback}
           onDeleteAssignment={(assignmentId) =>
             void handleDeleteScheduleAssignment(assignmentId)
           }
