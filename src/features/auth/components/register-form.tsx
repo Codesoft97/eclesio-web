@@ -2,6 +2,7 @@
 
 import { Church } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,13 @@ export function RegisterForm() {
           whatsapp: getPhoneDigits(form.whatsapp),
         });
         setSession(session);
+        if (posthog.__loaded) {
+          posthog.capture("church_registered", {
+            church_id: session.church.id,
+            church_slug: session.church.slug,
+            user_role: session.user.role,
+          });
+        }
         router.push("/app");
       } catch (err) {
         setError(getApiErrorMessage(err));

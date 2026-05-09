@@ -2,6 +2,7 @@
 
 import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,13 @@ export function LoginForm() {
       try {
         const session = await login(form);
         setSession(session);
+        if (posthog.__loaded) {
+          posthog.capture("user_logged_in", {
+            church_id: session.church.id,
+            church_slug: session.church.slug,
+            user_role: session.user.role,
+          });
+        }
         router.push("/app");
       } catch (err) {
         setError(getApiErrorMessage(err));

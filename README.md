@@ -22,6 +22,8 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 O backend usa cookies httpOnly. Por isso, as requisicoes Axios usam `withCredentials: true`.
 
+Para ativar o PostHog no lançamento, preencha `NEXT_PUBLIC_POSTHOG_TOKEN` com o token do projeto no PostHog. Se o token ficar vazio, o SDK não é inicializado.
+
 ## Rotas iniciais
 
 - `/login`: acesso do representante
