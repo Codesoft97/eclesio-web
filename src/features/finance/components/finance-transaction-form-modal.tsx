@@ -5,6 +5,10 @@ import { BanknoteArrowDown, BanknoteArrowUp, Save, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import {
+  currencyInputToDecimal,
+  formatCurrencyInput,
+} from "@/lib/formatters/currency";
 
 import type {
   CreateFinancialTransactionPayload,
@@ -34,10 +38,6 @@ interface FinanceTransactionFormModalProps {
 
 function getDateInputValue(value: string) {
   return value.slice(0, 10);
-}
-
-function normalizeMoney(value: string) {
-  return value.trim().replace(",", ".");
 }
 
 function getInitialCategory(
@@ -73,8 +73,10 @@ export function FinanceTransactionFormModal({
       title: transaction?.title ?? "",
       type: initialType as FinancialTransactionType,
       category:
-        transaction?.category ?? getInitialCategory(initialType, categories) ?? "TITHES",
-      amount: transaction?.amount ?? "",
+        transaction?.category ??
+        getInitialCategory(initialType, categories) ??
+        "TITHES",
+      amount: transaction?.amount ? formatCurrencyInput(transaction.amount) : "",
       date: transaction ? getDateInputValue(transaction.date) : initialDate,
       isEffective: transaction?.isEffective ?? false,
     };
@@ -105,7 +107,7 @@ export function FinanceTransactionFormModal({
     event.preventDefault();
     setLocalError(null);
 
-    const amount = normalizeMoney(form.amount);
+    const amount = currencyInputToDecimal(form.amount);
     const categoryOptions = getCategoryOptions(form.type, categories);
     const selectedCategory = form.category as FinancialTransactionCategory;
 
@@ -115,7 +117,7 @@ export function FinanceTransactionFormModal({
     }
 
     if (!/^\d{1,12}(\.\d{1,2})?$/.test(amount) || Number(amount) <= 0) {
-      setLocalError("Informe um valor maior que zero, por exemplo 250.00.");
+      setLocalError("Informe um valor maior que zero, por exemplo R$ 250,00.");
       return;
     }
 
@@ -148,7 +150,8 @@ export function FinanceTransactionFormModal({
       : transaction?.isEffective
         ? "Ao editar uma transacao efetivada, o saldo sera ajustado automaticamente."
         : "Atualize os dados desta transacao pendente.";
-  const submitLabel = mode === "create" ? "Cadastrar transacao" : "Salvar alteracoes";
+  const submitLabel =
+    mode === "create" ? "Cadastrar transacao" : "Salvar alteracoes";
   const Icon = mode === "create" ? BanknoteArrowUp : Save;
   const categoryOptions = getCategoryOptions(form.type, categories);
 
@@ -233,9 +236,11 @@ export function FinanceTransactionFormModal({
             <Field
               label="Valor"
               value={form.amount}
-              onChange={(event) => updateField("amount", event.target.value)}
-              placeholder="250.00"
-              inputMode="decimal"
+              onChange={(event) =>
+                updateField("amount", formatCurrencyInput(event.target.value))
+              }
+              placeholder="R$ 250,00"
+              inputMode="numeric"
               required
             />
             <Field
@@ -266,7 +271,10 @@ export function FinanceTransactionFormModal({
             </label>
           ) : transaction?.isEffective ? (
             <div className="flex gap-3 border border-accent/40 bg-accent/10 p-3 text-sm text-foreground">
-              <BanknoteArrowDown className="mt-0.5 shrink-0 text-accent" size={17} />
+              <BanknoteArrowDown
+                className="mt-0.5 shrink-0 text-accent"
+                size={17}
+              />
               Esta transacao ja foi efetivada. A efetivacao nao pode ser desfeita,
               mas alteracoes de valor ou tipo ajustam o saldo automaticamente.
             </div>

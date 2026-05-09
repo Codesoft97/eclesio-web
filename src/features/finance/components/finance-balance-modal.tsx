@@ -5,6 +5,10 @@ import { Save, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import {
+  currencyInputToDecimal,
+  formatCurrencyInput,
+} from "@/lib/formatters/currency";
 
 import type { SetAccountBalancePayload } from "../finance-types";
 
@@ -16,10 +20,6 @@ interface FinanceBalanceModalProps {
   onSubmit: (payload: SetAccountBalancePayload) => void;
 }
 
-function normalizeMoney(value: string) {
-  return value.trim().replace(",", ".");
-}
-
 export function FinanceBalanceModal({
   currentBalance,
   isSubmitting,
@@ -27,17 +27,19 @@ export function FinanceBalanceModal({
   onClose,
   onSubmit,
 }: FinanceBalanceModalProps) {
-  const [balance, setBalance] = useState(currentBalance);
+  const [balance, setBalance] = useState(() =>
+    formatCurrencyInput(currentBalance),
+  );
   const [localError, setLocalError] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLocalError(null);
 
-    const normalizedBalance = normalizeMoney(balance);
+    const normalizedBalance = currencyInputToDecimal(balance);
 
     if (!/^\d{1,12}(\.\d{1,2})?$/.test(normalizedBalance)) {
-      setLocalError("Informe um saldo valido, por exemplo 1500.00.");
+      setLocalError("Informe um saldo valido, por exemplo R$ 1.500,00.");
       return;
     }
 
@@ -82,9 +84,11 @@ export function FinanceBalanceModal({
           <Field
             label="Saldo atual"
             value={balance}
-            onChange={(event) => setBalance(event.target.value)}
-            placeholder="1500.00"
-            inputMode="decimal"
+            onChange={(event) =>
+              setBalance(formatCurrencyInput(event.target.value))
+            }
+            placeholder="R$ 1.500,00"
+            inputMode="numeric"
             required
           />
 
