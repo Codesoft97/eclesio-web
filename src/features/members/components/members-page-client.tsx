@@ -13,6 +13,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  ConfirmationModal,
+  type ConfirmationModalProps,
+} from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
@@ -30,6 +34,11 @@ type ModalState =
   | { isOpen: false; mode: "create"; member: null }
   | { isOpen: true; mode: "create"; member: null }
   | { isOpen: true; mode: "edit"; member: Member };
+
+type ConfirmationState = Omit<
+  ConfirmationModalProps,
+  "isConfirming" | "onCancel"
+> | null;
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -55,6 +64,7 @@ export function MembersPageClient() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -150,15 +160,19 @@ export function MembersPageClient() {
     }
   }
 
-  async function handleDelete(member: Member) {
-    const confirmed = window.confirm(
-      `Deseja excluir o membro ${member.name}? Esta ação não poderá ser desfeita.`,
-    );
+  function handleDelete(member: Member) {
+    setConfirmation({
+      eyebrow: "Exclusão de membro",
+      title: "Excluir membro?",
+      description: `Deseja excluir o membro ${member.name}? Esta ação não poderá ser desfeita.`,
+      confirmLabel: "Excluir membro",
+      confirmingLabel: "Excluindo...",
+      variant: "danger",
+      onConfirm: () => void confirmDelete(member),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmDelete(member: Member) {
     setDeletingId(member.id);
     setError(null);
 
@@ -173,6 +187,7 @@ export function MembersPageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setDeletingId(null);
+      setConfirmation(null);
     }
   }
 
@@ -289,7 +304,7 @@ export function MembersPageClient() {
                         <Button
                           type="button"
                           variant="danger"
-                          onClick={() => void handleDelete(member)}
+                          onClick={() => handleDelete(member)}
                           disabled={deletingId === member.id}
                         >
                           {deletingId === member.id ? (
@@ -318,6 +333,14 @@ export function MembersPageClient() {
           error={submitError}
           onClose={closeModal}
           onSubmit={(payload) => void handleSubmit(payload)}
+        />
+      ) : null}
+
+      {confirmation ? (
+        <ConfirmationModal
+          {...confirmation}
+          isConfirming={Boolean(deletingId)}
+          onCancel={() => setConfirmation(null)}
         />
       ) : null}
     </div>

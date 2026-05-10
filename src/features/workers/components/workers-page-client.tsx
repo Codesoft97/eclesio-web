@@ -16,6 +16,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  ConfirmationModal,
+  type ConfirmationModalProps,
+} from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
@@ -62,6 +66,11 @@ type RoleModalState =
   | { isOpen: false; mode: "create"; role: null; initialMinistryId: string }
   | { isOpen: true; mode: "create"; role: null; initialMinistryId: string }
   | { isOpen: true; mode: "edit"; role: WorkerRole; initialMinistryId: string };
+
+type ConfirmationState = Omit<
+  ConfirmationModalProps,
+  "isConfirming" | "onCancel"
+> | null;
 
 const closedWorkerModal: WorkerModalState = {
   isOpen: false,
@@ -113,6 +122,7 @@ export function WorkersPageClient() {
     null,
   );
   const [deletingRoleId, setDeletingRoleId] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -304,15 +314,19 @@ export function WorkersPageClient() {
     }
   }
 
-  async function handleDeleteWorker(worker: Worker) {
-    const confirmed = window.confirm(
-      `Deseja excluir o obreiro ${worker.name}? Esta ação não poderá ser desfeita.`,
-    );
+  function handleDeleteWorker(worker: Worker) {
+    setConfirmation({
+      eyebrow: "Exclusão de obreiro",
+      title: "Excluir obreiro?",
+      description: `Deseja excluir o obreiro ${worker.name}? Esta ação não poderá ser desfeita.`,
+      confirmLabel: "Excluir obreiro",
+      confirmingLabel: "Excluindo...",
+      variant: "danger",
+      onConfirm: () => void confirmDeleteWorker(worker),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmDeleteWorker(worker: Worker) {
     setDeletingWorkerId(worker.id);
     setError(null);
 
@@ -327,18 +341,23 @@ export function WorkersPageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setDeletingWorkerId(null);
+      setConfirmation(null);
     }
   }
 
-  async function handleDeleteMinistry(ministry: WorkerMinistry) {
-    const confirmed = window.confirm(
-      `Deseja excluir o ministério ${ministry.name}? As funções vinculadas também serão excluídas se não houver obreiros vinculados.`,
-    );
+  function handleDeleteMinistry(ministry: WorkerMinistry) {
+    setConfirmation({
+      eyebrow: "Exclusão de ministério",
+      title: "Excluir ministério?",
+      description: `Deseja excluir o ministério ${ministry.name}? As funções vinculadas também serão excluídas se não houver obreiros vinculados.`,
+      confirmLabel: "Excluir ministério",
+      confirmingLabel: "Excluindo...",
+      variant: "danger",
+      onConfirm: () => void confirmDeleteMinistry(ministry),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmDeleteMinistry(ministry: WorkerMinistry) {
     setDeletingMinistryId(ministry.id);
     setError(null);
 
@@ -353,18 +372,23 @@ export function WorkersPageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setDeletingMinistryId(null);
+      setConfirmation(null);
     }
   }
 
-  async function handleDeleteRole(role: WorkerRole) {
-    const confirmed = window.confirm(
-      `Deseja excluir a função ${role.name}? Ela não poderá ser removida se houver obreiros vinculados.`,
-    );
+  function handleDeleteRole(role: WorkerRole) {
+    setConfirmation({
+      eyebrow: "Exclusão de função",
+      title: "Excluir função?",
+      description: `Deseja excluir a função ${role.name}? Ela não poderá ser removida se houver obreiros vinculados.`,
+      confirmLabel: "Excluir função",
+      confirmingLabel: "Excluindo...",
+      variant: "danger",
+      onConfirm: () => void confirmDeleteRole(role),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmDeleteRole(role: WorkerRole) {
     setDeletingRoleId(role.id);
     setError(null);
 
@@ -379,6 +403,7 @@ export function WorkersPageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setDeletingRoleId(null);
+      setConfirmation(null);
     }
   }
 
@@ -556,7 +581,7 @@ export function WorkersPageClient() {
                       <Button
                         type="button"
                         variant="danger"
-                        onClick={() => void handleDeleteWorker(worker)}
+                        onClick={() => handleDeleteWorker(worker)}
                         disabled={deletingWorkerId === worker.id}
                       >
                         {deletingWorkerId === worker.id ? (
@@ -627,7 +652,7 @@ export function WorkersPageClient() {
                             <Button
                               type="button"
                               variant="danger"
-                              onClick={() => void handleDeleteWorker(worker)}
+                              onClick={() => handleDeleteWorker(worker)}
                               disabled={deletingWorkerId === worker.id}
                             >
                               {deletingWorkerId === worker.id ? (
@@ -692,7 +717,7 @@ export function WorkersPageClient() {
                     <button
                       type="button"
                       className="flex h-8 w-8 cursor-pointer items-center justify-center border border-danger/40 bg-surface text-danger transition hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-                      onClick={() => void handleDeleteMinistry(ministry)}
+                      onClick={() => handleDeleteMinistry(ministry)}
                       disabled={deletingMinistryId === ministry.id}
                       aria-label={`Excluir ministério ${ministry.name}`}
                     >
@@ -723,7 +748,7 @@ export function WorkersPageClient() {
                       <button
                         type="button"
                         className="cursor-pointer text-danger transition hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
-                        onClick={() => void handleDeleteRole(role)}
+                        onClick={() => handleDeleteRole(role)}
                         disabled={deletingRoleId === role.id}
                         aria-label={`Excluir função ${role.name}`}
                       >
@@ -790,6 +815,16 @@ export function WorkersPageClient() {
           error={submitError}
           onClose={closeModals}
           onSubmit={(payload) => void handleRoleSubmit(payload)}
+        />
+      ) : null}
+
+      {confirmation ? (
+        <ConfirmationModal
+          {...confirmation}
+          isConfirming={Boolean(
+            deletingWorkerId || deletingMinistryId || deletingRoleId,
+          )}
+          onCancel={() => setConfirmation(null)}
         />
       ) : null}
     </div>

@@ -18,6 +18,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  ConfirmationModal,
+  type ConfirmationModalProps,
+} from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/features/auth/auth-provider";
 import {
   listWorkerMinistries,
@@ -105,6 +109,11 @@ type ScheduleState =
       error: string | null;
       successMessage: string | null;
     };
+
+type ConfirmationState = Omit<
+  ConfirmationModalProps,
+  "isConfirming" | "onCancel"
+> | null;
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -261,6 +270,7 @@ export function EventsPageClient() {
   const [loadingSchedulePreviewIds, setLoadingSchedulePreviewIds] = useState<string[]>([]);
   const [deletingScheduleAssignmentId, setDeletingScheduleAssignmentId] =
     useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
   const loadingSchedulePreviewIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -657,18 +667,26 @@ export function EventsPageClient() {
     }
   }
 
-  async function handleDeleteScheduleAssignment(
+  function handleDeleteScheduleAssignment(
     eventId: string,
     assignmentId: string,
   ) {
-    const confirmed = window.confirm(
-      "Deseja remover este obreiro da escala? O link de confirmação dele deixará de funcionar.",
-    );
+    setConfirmation({
+      eyebrow: "Remoção de escala",
+      title: "Remover obreiro da escala?",
+      description:
+        "Deseja remover este obreiro da escala? O link de confirmação dele deixará de funcionar.",
+      confirmLabel: "Remover da escala",
+      confirmingLabel: "Removendo...",
+      variant: "danger",
+      onConfirm: () => void confirmDeleteScheduleAssignment(eventId, assignmentId),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmDeleteScheduleAssignment(
+    eventId: string,
+    assignmentId: string,
+  ) {
     setDeletingScheduleAssignmentId(assignmentId);
     setError(null);
     setScheduleState((current) =>
@@ -728,6 +746,7 @@ export function EventsPageClient() {
       setError(message);
     } finally {
       setDeletingScheduleAssignmentId(null);
+      setConfirmation(null);
     }
   }
 
@@ -737,18 +756,23 @@ export function EventsPageClient() {
     );
   }
 
-  async function handleDelete(event: ChurchEvent) {
+  function handleDelete(event: ChurchEvent) {
     const recurrenceSuffix = event.isRecurring
       ? " Apenas esta ocorrência será excluída."
       : "";
-    const confirmed = window.confirm(
-      `Deseja excluir o evento ${event.title}? Esta ação não poderá ser desfeita.${recurrenceSuffix}`,
-    );
 
-    if (!confirmed) {
-      return;
-    }
+    setConfirmation({
+      eyebrow: "Exclusão de evento",
+      title: "Excluir evento?",
+      description: `Deseja excluir o evento ${event.title}? Esta ação não poderá ser desfeita.${recurrenceSuffix}`,
+      confirmLabel: "Excluir evento",
+      confirmingLabel: "Excluindo...",
+      variant: "danger",
+      onConfirm: () => void confirmDelete(event),
+    });
+  }
 
+  async function confirmDelete(event: ChurchEvent) {
     setDeletingId(event.id);
     setError(null);
 
@@ -768,6 +792,7 @@ export function EventsPageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setDeletingId(null);
+      setConfirmation(null);
     }
   }
 
@@ -1157,7 +1182,7 @@ export function EventsPageClient() {
                       <Button
                         type="button"
                         variant="danger"
-                        onClick={() => void handleDelete(event)}
+                        onClick={() => handleDelete(event)}
                         disabled={deletingId === event.id}
                       >
                         {deletingId === event.id ? (
@@ -1225,6 +1250,14 @@ export function EventsPageClient() {
           error={submitError}
           onClose={closeModal}
           onSubmit={(payload) => void handleSubmit(payload)}
+        />
+      ) : null}
+
+      {confirmation ? (
+        <ConfirmationModal
+          {...confirmation}
+          isConfirming={Boolean(deletingId || deletingScheduleAssignmentId)}
+          onCancel={() => setConfirmation(null)}
         />
       ) : null}
     </div>

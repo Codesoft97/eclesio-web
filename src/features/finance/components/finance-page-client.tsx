@@ -20,6 +20,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  ConfirmationModal,
+  type ConfirmationModalProps,
+} from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 
@@ -71,6 +75,11 @@ type ModalState =
       transaction: FinancialTransaction;
       initialDate: string;
     };
+
+type ConfirmationState = Omit<
+  ConfirmationModalProps,
+  "isConfirming" | "onCancel"
+> | null;
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -179,6 +188,7 @@ export function FinancePageClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [settlingId, setSettlingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -364,15 +374,19 @@ export function FinancePageClient() {
     }
   }
 
-  async function handleSettle(transaction: FinancialTransaction) {
-    const confirmed = window.confirm(
-      `Deseja efetivar a transação ${transaction.title}? Esta ação não poderá ser desfeita.`,
-    );
+  function handleSettle(transaction: FinancialTransaction) {
+    setConfirmation({
+      eyebrow: "Efetivação financeira",
+      title: "Efetivar transação?",
+      description: `Deseja efetivar a transação ${transaction.title}? Esta ação não poderá ser desfeita.`,
+      confirmLabel: "Efetivar transação",
+      confirmingLabel: "Efetivando...",
+      variant: "primary",
+      onConfirm: () => void confirmSettle(transaction),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmSettle(transaction: FinancialTransaction) {
     setSettlingId(transaction.id);
     setError(null);
 
@@ -387,18 +401,23 @@ export function FinancePageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setSettlingId(null);
+      setConfirmation(null);
     }
   }
 
-  async function handleDelete(transaction: FinancialTransaction) {
-    const confirmed = window.confirm(
-      `Deseja excluir a transação ${transaction.title}? Se ela estiver efetivada, o saldo será ajustado.`,
-    );
+  function handleDelete(transaction: FinancialTransaction) {
+    setConfirmation({
+      eyebrow: "Exclusão financeira",
+      title: "Excluir transação?",
+      description: `Deseja excluir a transação ${transaction.title}? Se ela estiver efetivada, o saldo será ajustado.`,
+      confirmLabel: "Excluir transação",
+      confirmingLabel: "Excluindo...",
+      variant: "danger",
+      onConfirm: () => void confirmDelete(transaction),
+    });
+  }
 
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmDelete(transaction: FinancialTransaction) {
     setDeletingId(transaction.id);
     setError(null);
 
@@ -413,6 +432,7 @@ export function FinancePageClient() {
       setError(getApiErrorMessage(err));
     } finally {
       setDeletingId(null);
+      setConfirmation(null);
     }
   }
 
@@ -641,7 +661,7 @@ export function FinancePageClient() {
                       <Button
                         type="button"
                         variant="ghost"
-                        onClick={() => void handleSettle(transaction)}
+                        onClick={() => handleSettle(transaction)}
                         disabled={settlingId === transaction.id}
                       >
                         {settlingId === transaction.id ? (
@@ -663,7 +683,7 @@ export function FinancePageClient() {
                     <Button
                       type="button"
                       variant="danger"
-                      onClick={() => void handleDelete(transaction)}
+                      onClick={() => handleDelete(transaction)}
                       disabled={deletingId === transaction.id}
                     >
                       {deletingId === transaction.id ? (
@@ -736,7 +756,7 @@ export function FinancePageClient() {
                             <Button
                               type="button"
                               variant="ghost"
-                              onClick={() => void handleSettle(transaction)}
+                              onClick={() => handleSettle(transaction)}
                               disabled={settlingId === transaction.id}
                             >
                               {settlingId === transaction.id ? (
@@ -758,7 +778,7 @@ export function FinancePageClient() {
                           <Button
                             type="button"
                             variant="danger"
-                            onClick={() => void handleDelete(transaction)}
+                            onClick={() => handleDelete(transaction)}
                             disabled={deletingId === transaction.id}
                           >
                             {deletingId === transaction.id ? (
@@ -804,6 +824,14 @@ export function FinancePageClient() {
           error={submitError}
           onClose={closeTransactionModal}
           onSubmit={(payload) => void handleTransactionSubmit(payload)}
+        />
+      ) : null}
+
+      {confirmation ? (
+        <ConfirmationModal
+          {...confirmation}
+          isConfirming={Boolean(settlingId || deletingId)}
+          onCancel={() => setConfirmation(null)}
         />
       ) : null}
     </div>
