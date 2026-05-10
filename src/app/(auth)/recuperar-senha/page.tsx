@@ -7,13 +7,13 @@ export default function PasswordRecoveryPage() {
     <div className="w-full max-w-md">
       <div className="mb-8">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-          Recupera??o de acesso
+          Recuperação de acesso
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-foreground">
           Redefinir senha
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Informe o email cadastrado, valide o c?digo recebido e escolha uma
+          Informe o email cadastrado, valide o código recebido e escolha uma
           nova senha para acessar o Eclesio.
         </p>
       </div>

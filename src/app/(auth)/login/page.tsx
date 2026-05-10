@@ -28,7 +28,7 @@ export default function LoginPage() {
           </Link>
         </p>
         <p>
-          Ainda n?o cadastrou sua igreja?{" "}
+          Ainda não cadastrou sua igreja?{" "}
           <Link
             href="/cadastro"
             className="font-semibold text-foreground underline decoration-accent underline-offset-4"
