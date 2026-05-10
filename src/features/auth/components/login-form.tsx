@@ -30,7 +30,6 @@ export function LoginForm() {
         if (posthog.__loaded) {
           posthog.capture("user_logged_in", {
             church_id: session.church.id,
-            church_slug: session.church.slug,
             user_role: session.user.role,
           });
         }

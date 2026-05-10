@@ -52,7 +52,6 @@ export function RegisterForm() {
         if (posthog.__loaded) {
           posthog.capture("church_registered", {
             church_id: session.church.id,
-            church_slug: session.church.slug,
             user_role: session.user.role,
           });
         }

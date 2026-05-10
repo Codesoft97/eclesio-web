@@ -29,15 +29,10 @@ export function PostHogIdentifier() {
 
     posthog.identify(session.user.id, {
       church_id: session.church.id,
-      church_name: session.church.name,
-      church_slug: session.church.slug,
-      email: session.user.email,
-      name: session.user.name,
       role: session.user.role,
     });
     posthog.group("church", session.church.id, {
-      name: session.church.name,
-      slug: session.church.slug,
+      has_authenticated_users: true,
     });
     identifiedUserIdRef.current = session.user.id;
   }, [session]);
