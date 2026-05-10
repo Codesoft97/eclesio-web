@@ -33,3 +33,28 @@ export interface RegisterPayload {
   password: string;
   passwordConfirmation: string;
 }
+
+export interface MessageResponse {
+  message: string;
+}
+
+export interface RequestPasswordRecoveryPayload {
+  email: string;
+}
+
+export interface VerifyPasswordRecoveryCodePayload {
+  email: string;
+  code: string;
+}
+
+export interface PasswordRecoveryVerificationResponse {
+  resetToken: string;
+  expiresInSeconds: number;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  resetToken: string;
+  password: string;
+  passwordConfirmation: string;
+}

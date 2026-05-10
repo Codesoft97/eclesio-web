@@ -1,6 +1,15 @@
 import { api } from "@/lib/api";
 
-import type { AuthSession, LoginPayload, RegisterPayload } from "./auth-types";
+import type {
+  AuthSession,
+  LoginPayload,
+  MessageResponse,
+  PasswordRecoveryVerificationResponse,
+  RegisterPayload,
+  RequestPasswordRecoveryPayload,
+  ResetPasswordPayload,
+  VerifyPasswordRecoveryCodePayload,
+} from "./auth-types";
 
 export async function login(payload: LoginPayload) {
   const { data } = await api.post<AuthSession>("/auth/login", payload);
@@ -14,4 +23,32 @@ export async function register(payload: RegisterPayload) {
 
 export async function logout() {
   await api.post("/auth/logout");
+}
+
+export async function requestPasswordRecovery(
+  payload: RequestPasswordRecoveryPayload,
+) {
+  const { data } = await api.post<MessageResponse>(
+    "/auth/password-recovery/request",
+    payload,
+  );
+  return data;
+}
+
+export async function verifyPasswordRecoveryCode(
+  payload: VerifyPasswordRecoveryCodePayload,
+) {
+  const { data } = await api.post<PasswordRecoveryVerificationResponse>(
+    "/auth/password-recovery/verify",
+    payload,
+  );
+  return data;
+}
+
+export async function resetPassword(payload: ResetPasswordPayload) {
+  const { data } = await api.post<MessageResponse>(
+    "/auth/password-recovery/reset",
+    payload,
+  );
+  return data;
 }

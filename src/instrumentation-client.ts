@@ -14,6 +14,10 @@ const SENSITIVE_PROPERTY_KEYS = new Set([
   "senha",
   "passwordConfirmation",
   "password_confirmation",
+  "code",
+  "codigo",
+  "resetToken",
+  "reset_token",
 ]);
 
 const MASKED_VALUE = "[masked]";
@@ -54,8 +58,10 @@ const posthogProjectKey = normalizePublicEnv(
   process.env.NEXT_PUBLIC_POSTHOG_KEY ?? process.env.NEXT_PUBLIC_POSTHOG_TOKEN,
 );
 const posthogHost =
-  normalizePublicEnv(process.env.NEXT_PUBLIC_POSTHOG_HOST)?.replace(/\/+$/, "") ??
-  "https://us.i.posthog.com";
+  normalizePublicEnv(process.env.NEXT_PUBLIC_POSTHOG_HOST)?.replace(
+    /\/+$/,
+    "",
+  ) ?? "https://us.i.posthog.com";
 
 if (typeof window !== "undefined" && posthogProjectKey) {
   if (!posthogProjectKey.startsWith("phc_")) {
@@ -76,7 +82,8 @@ if (typeof window !== "undefined" && posthogProjectKey) {
       },
       session_recording: {
         maskAllInputs: true,
-        maskTextSelector: "[data-ph-mask], [data-sensitive], [data-private], .ph-mask",
+        maskTextSelector:
+          "[data-ph-mask], [data-sensitive], [data-private], .ph-mask",
         blockSelector:
           "[data-ph-block], [data-sensitive-block], [data-private-block], .ph-block, .ph-no-capture",
       },
