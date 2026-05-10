@@ -10,26 +10,39 @@ npm run build
 npm run lint
 ```
 
-O dev server sobe em `http://localhost:3001` para deixar o backend local livre em `http://localhost:3000`.
+O dev server sobe em `http://localhost:3001` para deixar o backend local livre em `http://localhost:5000`.
 
 ## Ambiente
 
 Crie um `.env.local` a partir do `.env.example`:
 
 ```text
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+BACKEND_API_URL=http://localhost:5000
 ```
 
-O backend usa cookies httpOnly. Por isso, as requisicoes Axios usam `withCredentials: true`.
+Em desenvolvimento, o Axios usa `NEXT_PUBLIC_API_URL` diretamente.
 
-Para ativar o PostHog no lançamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT_PUBLIC_POSTHOG_TOKEN` com a Project API Key pública do projeto, que começa com `phc_`. Configure `NEXT_PUBLIC_POSTHOG_HOST` com o host da mesma região do projeto, por exemplo `https://us.i.posthog.com` ou `https://eu.i.posthog.com`. Se alterar variáveis públicas na Vercel, faça um novo deploy para elas entrarem no bundle do frontend.
+Em producao, o frontend chama `/api` no proprio dominio do Next/Vercel. O `next.config.ts` faz rewrite para `BACKEND_API_URL` ou, como fallback, para `NEXT_PUBLIC_API_URL`. Isso evita que o cookie HttpOnly do backend dependa de cookie third-party entre `vercel.app` e `onrender.com`.
+
+Na Vercel, configure preferencialmente:
+
+```text
+BACKEND_API_URL=https://eclesio-service.onrender.com
+```
+
+Depois de alterar variaveis de ambiente na Vercel, faca um novo deploy para o bundle receber as mudancas.
+
+O backend usa cookies HttpOnly. Por isso, as requisicoes Axios usam `withCredentials: true`.
+
+Para ativar o PostHog no lancamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT_PUBLIC_POSTHOG_TOKEN` com a Project API Key publica do projeto, que comeca com `phc_`. Configure `NEXT_PUBLIC_POSTHOG_HOST` com o host da mesma regiao do projeto, por exemplo `https://us.i.posthog.com` ou `https://eu.i.posthog.com`.
 
 ## Rotas iniciais
 
 - `/login`: acesso do representante
-- `/cadastro`: cadastro da igreja e usuário administrador
+- `/cadastro`: cadastro da igreja e usuario administrador
 - `/app`: dashboard inicial com sidebar
-- `/app/membros`: placeholder do módulo de membros
-- `/app/dizimos`: placeholder do módulo financeiro
-- `/app/eventos`: placeholder de eventos
+- `/app/membros`: modulo de membros
+- `/app/financeiro`: modulo financeiro
+- `/app/eventos`: modulo de eventos e escalas
 - `/app/relatorios`: placeholder de relatorios
