@@ -1,6 +1,6 @@
-# eclesio-web
+# gerencia-igreja-web
 
-Frontend do Eclesio construido com Next.js, React, TypeScript, Tailwind CSS e Axios.
+Frontend do Gerencia Igreja construido com Next.js, React, TypeScript, Tailwind CSS e Axios.
 
 ## Comandos
 
@@ -28,7 +28,7 @@ Em producao, o frontend chama `/api` no proprio dominio do Next/Vercel. O `next.
 Na Vercel, configure preferencialmente:
 
 ```text
-BACKEND_API_URL=https://eclesio-service.onrender.com
+BACKEND_API_URL=https://gerencia-igreja-service.onrender.com
 ```
 
 Depois de alterar variaveis de ambiente na Vercel, faca um novo deploy para o bundle receber as mudancas.

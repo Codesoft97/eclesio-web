@@ -15,8 +15,8 @@ interface ThemeContextValue {
   setTheme: (theme: Theme) => void;
 }
 
-const STORAGE_KEY = "eclesio.theme";
-const THEME_EVENT = "eclesio-theme-change";
+const STORAGE_KEY = "gerencia-igreja.theme";
+const THEME_EVENT = "gerencia-igreja-theme-change";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function subscribe(callback: () => void) {
@@ -32,7 +32,9 @@ function subscribe(callback: () => void) {
 function getSnapshot() {
   const storedTheme = window.localStorage.getItem(STORAGE_KEY);
 
-  return storedTheme === "dark" || storedTheme === "light" ? storedTheme : "light";
+  return storedTheme === "dark" || storedTheme === "light"
+    ? storedTheme
+    : "light";
 }
 
 function getServerSnapshot() {

@@ -10,7 +10,7 @@ export default function LoginPage() {
           Acesso
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-foreground">
-          Entrar no Eclesio
+          Entrar no Gerencia Igreja
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
           Use o email do representante para acessar a ?rea administrativa.

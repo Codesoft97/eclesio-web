@@ -4,7 +4,7 @@ import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
 
 export const metadata: Metadata = {
-  title: "Eclesio",
+  title: "Gerencia Igreja",
   description: "Gestão simples e segura para igrejas.",
 };
 

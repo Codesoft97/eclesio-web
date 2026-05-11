@@ -14,7 +14,7 @@ export default function PasswordRecoveryPage() {
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
           Informe o email cadastrado, valide o código recebido e escolha uma
-          nova senha para acessar o Eclesio.
+          nova senha para acessar o Gerencia Igreja.
         </p>
       </div>
       <PasswordRecoveryForm />

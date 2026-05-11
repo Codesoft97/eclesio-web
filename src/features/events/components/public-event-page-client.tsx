@@ -37,7 +37,9 @@ function buildShareMessage(event: PublicChurchEvent) {
   ].join("\n");
 }
 
-export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps) {
+export function PublicEventPageClient({
+  shareToken,
+}: PublicEventPageClientProps) {
   const [event, setEvent] = useState<PublicChurchEvent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +92,7 @@ export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between border-b border-border pb-5">
           <Link href="/login" className="text-sm font-semibold text-foreground">
-            Eclesio
+            Gerencia Igreja
           </Link>
           <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
             Evento público
@@ -100,7 +102,10 @@ export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps
         {isLoading ? (
           <div className="grid min-h-96 place-items-center border border-border bg-surface p-8 text-center text-sm text-muted shadow-sm">
             <div>
-              <Loader2 className="mx-auto mb-3 animate-spin text-accent" size={24} />
+              <Loader2
+                className="mx-auto mb-3 animate-spin text-accent"
+                size={24}
+              />
               Carregando evento...
             </div>
           </div>
@@ -137,11 +142,18 @@ export function PublicEventPageClient({ shareToken }: PublicEventPageClientProps
               </div>
 
               <div className="grid gap-3 border-l-2 border-accent bg-surface-subtle p-4 text-sm leading-6 text-muted">
-                <strong className="text-foreground">Compartilhe este convite</strong>
+                <strong className="text-foreground">
+                  Compartilhe este convite
+                </strong>
                 <span>
-                  Envie este evento para membros, visitantes ou grupos da igreja pelo WhatsApp.
+                  Envie este evento para membros, visitantes ou grupos da igreja
+                  pelo WhatsApp.
                 </span>
-                <Button type="button" className="w-full sm:w-auto" onClick={openWhatsapp}>
+                <Button
+                  type="button"
+                  className="w-full sm:w-auto"
+                  onClick={openWhatsapp}
+                >
                   <Share2 size={17} />
                   Compartilhar no WhatsApp
                 </Button>

@@ -79,8 +79,7 @@ const plans = [
     name: "Anual",
     price: "29,90",
     period: "/mês",
-    description:
-      "Economia em relação ao mensal.",
+    description: "Economia em relação ao mensal.",
     highlight: true,
     badge: "Mais escolhido",
     benefits: [
@@ -150,13 +149,15 @@ export default function LandingPage() {
           </Link>
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-muted md:flex">
-            <a className="transition hover:text-foreground" href="#funcionalidades">
+            <a
+              className="transition hover:text-foreground"
+              href="#funcionalidades"
+            >
               Funcionalidades
             </a>
             <a className="transition hover:text-foreground" href="#planos">
               Planos
             </a>
-
           </nav>
 
           <div className="flex items-center gap-2">
@@ -193,19 +194,22 @@ export default function LandingPage() {
               Organize a igreja inteira em um só lugar.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-muted sm:text-lg">
-              O Eclesio ajuda sua igreja a cuidar de membros, eventos, escalas de obreiros e financeiro com uma rotina simples e pronta para crescer junto com o ministério. Você pode testar gratuitamente, sem cartão de crédito e sem assinar nada.
+              O Gerencia Igreja ajuda sua igreja a cuidar de membros, eventos,
+              escalas de obreiros e financeiro com uma rotina simples e pronta
+              para crescer junto com o ministério. Você pode testar
+              gratuitamente, sem cartão de crédito e sem assinar nada.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <AnalyticsLink
-              href="/cadastro"
-              eventName="landing_cta_clicked"
-              eventProperties={{ location: "final", cta: "comecar_gratis" }}
-              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition hover:bg-yellow-400"
-            >
-              Começar grátis
-              <ArrowRight size={17} />
-            </AnalyticsLink>
+                href="/cadastro"
+                eventName="landing_cta_clicked"
+                eventProperties={{ location: "final", cta: "comecar_gratis" }}
+                className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition hover:bg-yellow-400"
+              >
+                Começar grátis
+                <ArrowRight size={17} />
+              </AnalyticsLink>
               <Link
                 href="/login"
                 className="inline-flex h-12 cursor-pointer items-center justify-center border border-border bg-surface px-6 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent"
@@ -220,7 +224,10 @@ export default function LandingPage() {
                 "Tudo em um só lugar",
                 "Preparado para automações",
               ].map((item) => (
-                <div key={item} className="flex items-center gap-2 text-sm text-muted">
+                <div
+                  key={item}
+                  className="flex items-center gap-2 text-sm text-muted"
+                >
                   <BadgeCheck size={16} className="text-accent" />
                   {item}
                 </div>
@@ -232,21 +239,26 @@ export default function LandingPage() {
             <div className="absolute -right-8 -top-8 h-32 w-32 border border-accent/30" />
             <ProductScreenshot
               src="/home_screenshot.png"
-              alt="Tela inicial do Eclesio com resumo, agenda e calendário mensal"
-              label="Painel Eclesio"
+              alt="Tela inicial do Gerencia Igreja com resumo, agenda e calendário mensal"
+              label="Painel Gerencia Igreja"
             />
           </div>
         </div>
       </section>
 
-      <section id="funcionalidades" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      <section
+        id="funcionalidades"
+        className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+      >
         <div className="mb-10 max-w-3xl">
           <SectionLabel>Funcionalidades</SectionLabel>
           <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
-            Tudo que a administração precisa, sem tirar o foco do cuidado pastoral.
+            Tudo que a administração precisa, sem tirar o foco do cuidado
+            pastoral.
           </h2>
           <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-            Comece pelo essencial e evolua com uma base organizada: pessoas, agenda, escalas, financeiro e visão de rotina.
+            Comece pelo essencial e evolua com uma base organizada: pessoas,
+            agenda, escalas, financeiro e visão de rotina.
           </p>
         </div>
 
@@ -262,8 +274,12 @@ export default function LandingPage() {
                 <div className="mb-5 flex h-11 w-11 items-center justify-center bg-surface-subtle text-foreground transition group-hover:bg-accent group-hover:text-accent-foreground">
                   <Icon size={20} />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-muted">{feature.description}</p>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-muted">
+                  {feature.description}
+                </p>
               </article>
             );
           })}
@@ -274,7 +290,7 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
           <ProductScreenshot
             src="/eventos_screenshot.png"
-            alt="Tela de eventos do Eclesio com calendário mensal e escala de obreiros"
+            alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
             label="Eventos e escalas"
           />
           <div className="flex flex-col justify-center">
@@ -284,7 +300,10 @@ export default function LandingPage() {
             </h2>
             <div className="mt-8 grid gap-4">
               {benefits.map((benefit) => (
-                <div key={benefit} className="flex gap-3 border border-border bg-surface p-4">
+                <div
+                  key={benefit}
+                  className="flex gap-3 border border-border bg-surface p-4"
+                >
                   <Check className="mt-0.5 shrink-0 text-accent" size={18} />
                   <p className="text-sm leading-6 text-muted">{benefit}</p>
                 </div>
@@ -302,7 +321,8 @@ export default function LandingPage() {
               Uma visão clara de receitas, despesas e saldo da igreja.
             </h2>
             <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-              Acompanhe categorias, lançamentos pendentes, transações efetivadas e o saldo financeiro sem depender de planilhas espalhadas.
+              Acompanhe categorias, lançamentos pendentes, transações efetivadas
+              e o saldo financeiro sem depender de planilhas espalhadas.
             </p>
             <div className="mt-6 grid gap-3">
               {[
@@ -310,7 +330,10 @@ export default function LandingPage() {
                 "Saldo atualizado a partir das transações efetivadas",
                 "Pendências visíveis para manter a rotina em dia",
               ].map((item) => (
-                <div key={item} className="flex gap-3 border border-border bg-surface p-4">
+                <div
+                  key={item}
+                  className="flex gap-3 border border-border bg-surface p-4"
+                >
                   <Check className="mt-0.5 shrink-0 text-accent" size={18} />
                   <p className="text-sm leading-6 text-muted">{item}</p>
                 </div>
@@ -320,7 +343,7 @@ export default function LandingPage() {
 
           <ProductScreenshot
             src="/financeiro_screenshot.png"
-            alt="Tela financeira do Eclesio com saldo e transações da igreja"
+            alt="Tela financeira do Gerencia Igreja com saldo e transações da igreja"
             label="Financeiro da igreja"
           />
         </div>
@@ -347,18 +370,23 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-      <section id="planos" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      <section
+        id="planos"
+        className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+      >
         <div className="mx-auto mb-10 max-w-3xl text-center">
           <SectionLabel>Planos</SectionLabel>
           <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
             Escolha o plano ideal para organizar sua igreja agora.
           </h2>
           <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-            Gerencie as finanças da sua Igreja sem surpresas no fim do mês, gerencie e compartilhe eventos com os membros e muito mais, realize seu cadastro e faça o teste gratuito .
+            Gerencie as finanças da sua Igreja sem surpresas no fim do mês,
+            gerencie e compartilhe eventos com os membros e muito mais, realize
+            seu cadastro e faça o teste gratuito .
           </p>
           <div className="mt-6 border border-accent/40 bg-accent/10 p-4 text-sm font-semibold text-foreground">
-            Basta criar a conta e testar gratuitamente sem adicionar cartão de crédito.
+            Basta criar a conta e testar gratuitamente sem adicionar cartão de
+            crédito.
           </div>
         </div>
 
@@ -384,7 +412,9 @@ export default function LandingPage() {
                     {plan.badge}
                   </span>
                   <h3 className="mt-5 text-2xl font-semibold">{plan.name}</h3>
-                  <p className={`mt-3 text-sm leading-7 ${plan.highlight ? "opacity-75" : "text-muted"}`}>
+                  <p
+                    className={`mt-3 text-sm leading-7 ${plan.highlight ? "opacity-75" : "text-muted"}`}
+                  >
                     {plan.description}
                   </p>
                 </div>
@@ -393,15 +423,23 @@ export default function LandingPage() {
               <div className="mb-6 border-y border-current/10 py-6">
                 <div className="flex items-end gap-1">
                   <span className="text-sm font-semibold">R$</span>
-                  <span className="text-5xl font-semibold tracking-tight">{plan.price}</span>
-                  <span className={`pb-2 text-sm ${plan.highlight ? "opacity-70" : "text-muted"}`}>
+                  <span className="text-5xl font-semibold tracking-tight">
+                    {plan.price}
+                  </span>
+                  <span
+                    className={`pb-2 text-sm ${plan.highlight ? "opacity-70" : "text-muted"}`}
+                  >
                     {plan.period}
                   </span>
                 </div>
                 {plan.name === "Anual" ? (
-                  <p className="mt-2 text-xs opacity-70">Preço previsto para cobrança anual futura.</p>
+                  <p className="mt-2 text-xs opacity-70">
+                    Preço previsto para cobrança anual futura.
+                  </p>
                 ) : (
-                  <p className="mt-2 text-xs text-muted">Preço previsto para cobrança mensal futura.</p>
+                  <p className="mt-2 text-xs text-muted">
+                    Preço previsto para cobrança mensal futura.
+                  </p>
                 )}
               </div>
 
@@ -409,7 +447,11 @@ export default function LandingPage() {
                 {plan.benefits.map((benefit) => (
                   <div key={benefit} className="flex gap-3 text-sm leading-6">
                     <Check className="mt-0.5 shrink-0 text-accent" size={17} />
-                    <span className={plan.highlight ? "opacity-85" : "text-muted"}>{benefit}</span>
+                    <span
+                      className={plan.highlight ? "opacity-85" : "text-muted"}
+                    >
+                      {benefit}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -440,7 +482,9 @@ export default function LandingPage() {
               Pronto para transformar a rotina administrativa da igreja?
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted">
-              Comece com o cadastro da igreja, teste todas as funcionalidades gratuitamente e conte para nós o que faria mais sentido na rotina real da sua igreja.
+              Comece com o cadastro da igreja, teste todas as funcionalidades
+              gratuitamente e conte para nós o que faria mais sentido na rotina
+              real da sua igreja.
             </p>
           </div>
           <div className="flex flex-col justify-center gap-3 sm:flex-row lg:flex-col">
@@ -468,14 +512,20 @@ export default function LandingPage() {
           <div>
             <Logo />
             <p className="mt-4 max-w-sm text-sm leading-6 text-muted">
-              Gestão de igrejas simples, organizada e preparada para quem vive a rotina ministerial.
+              Gestão de igrejas simples, organizada e preparada para quem vive a
+              rotina ministerial.
             </p>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Acessos rápidos</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Acessos rápidos
+            </h3>
             <div className="mt-4 grid gap-3 text-sm text-muted">
-              <a className="transition hover:text-foreground" href="#funcionalidades">
+              <a
+                className="transition hover:text-foreground"
+                href="#funcionalidades"
+              >
                 Funcionalidades
               </a>
               <a className="transition hover:text-foreground" href="#planos">
@@ -485,11 +535,13 @@ export default function LandingPage() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Redes sociais</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Redes sociais
+            </h3>
             <div className="mt-4 grid gap-3 text-sm text-muted">
               <a
                 className="transition hover:text-foreground"
-                href="https://instagram.com/eclesioapp"
+                href="https://instagram.com/gerenciaigrejaapp"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -503,16 +555,16 @@ export default function LandingPage() {
             <div className="mt-4 grid gap-3 text-sm text-muted">
               <a
                 className="break-all transition hover:text-foreground"
-                href="mailto:eclesioapp@gmail.com"
+                href="mailto:contato@gerenciaigreja.com.br"
               >
-                eclesioapp@gmail.com
+                contato@gerenciaigreja.com.br
               </a>
             </div>
           </div>
         </div>
 
         <div className="mx-auto mt-8 flex max-w-7xl flex-col justify-between gap-3 border-t border-border pt-6 text-xs text-muted sm:flex-row sm:items-center">
-          <span>Eclesio - Gestão de igrejas</span>
+          <span>Gerencia Igreja - Gestão de igrejas</span>
           <span>Feito para servir melhor, com organização e clareza.</span>
         </div>
       </footer>

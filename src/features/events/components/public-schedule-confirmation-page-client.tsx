@@ -45,7 +45,8 @@ const statusDetails: Record<
   ACCEPTED: {
     label: "Aceita",
     description: "Você confirmou presença nesta escala.",
-    className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    className:
+      "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
     icon: CheckCircle2,
   },
   DECLINED: {
@@ -80,9 +81,9 @@ export function PublicScheduleConfirmationPageClient({
   const [schedule, setSchedule] =
     useState<PublicEventScheduleAssignment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState<
-    "accept" | "decline" | null
-  >(null);
+  const [isSubmitting, setIsSubmitting] = useState<"accept" | "decline" | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -135,7 +136,8 @@ export function PublicScheduleConfirmationPageClient({
     setError(null);
 
     try {
-      const data = await declinePublicEventScheduleAssignment(confirmationToken);
+      const data =
+        await declinePublicEventScheduleAssignment(confirmationToken);
       setSchedule(data);
     } catch (err) {
       setError(getApiErrorMessage(err));
@@ -146,7 +148,9 @@ export function PublicScheduleConfirmationPageClient({
 
   const status = schedule ? statusDetails[schedule.confirmationStatus] : null;
   const StatusIcon = status?.icon;
-  const responseDate = schedule ? formatResponseDate(schedule.respondedAt) : null;
+  const responseDate = schedule
+    ? formatResponseDate(schedule.respondedAt)
+    : null;
   const canRespond = schedule?.confirmationStatus === "PENDING";
 
   return (
@@ -154,7 +158,7 @@ export function PublicScheduleConfirmationPageClient({
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between border-b border-border pb-5">
           <Link href="/login" className="text-sm font-semibold text-foreground">
-            Eclesio
+            Gerencia Igreja
           </Link>
           <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
             Confirmação de escala
@@ -284,7 +288,8 @@ export function PublicScheduleConfirmationPageClient({
                 </div>
               ) : (
                 <div className="border border-border bg-surface-subtle p-4 text-sm leading-6 text-muted">
-                  Sua resposta já foi registrada. Se precisar alterar, fale com o administrador da igreja.
+                  Sua resposta já foi registrada. Se precisar alterar, fale com
+                  o administrador da igreja.
                 </div>
               )}
             </div>

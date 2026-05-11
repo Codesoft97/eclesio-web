@@ -17,8 +17,10 @@
   --ring: #eab308;
   --danger: #dc2626;
   --success: #15803d;
-  --font-eclesio-sans: "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
-  --font-eclesio-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --font-gerencia-igreja-sans:
+    "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-gerencia-igreja-mono:
+    "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 }
 
 .dark {
@@ -53,8 +55,8 @@
   --color-ring: var(--ring);
   --color-danger: var(--danger);
   --color-success: var(--success);
-  --font-sans: var(--font-eclesio-sans);
-  --font-mono: var(--font-eclesio-mono);
+  --font-sans: var(--font-gerencia-igreja-sans);
+  --font-mono: var(--font-gerencia-igreja-mono);
 }
 
 * {
@@ -69,7 +71,11 @@ html {
 body {
   min-height: 100%;
   background:
-    linear-gradient(135deg, color-mix(in oklab, var(--accent) 8%, transparent), transparent 28rem),
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--accent) 8%, transparent),
+      transparent 28rem
+    ),
     var(--background);
   color: var(--foreground);
 }

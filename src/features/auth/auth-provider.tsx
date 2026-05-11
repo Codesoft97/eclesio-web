@@ -15,8 +15,8 @@ interface AuthContextValue {
   clearSession: () => void;
 }
 
-const STORAGE_KEY = "eclesio.session";
-const SESSION_EVENT = "eclesio-session-change";
+const STORAGE_KEY = "gerencia-igreja.session";
+const SESSION_EVENT = "gerencia-igreja-session-change";
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function subscribe(callback: () => void) {

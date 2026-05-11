@@ -8,14 +8,14 @@ export function LogoMark() {
   const { theme } = useTheme();
   const logoSrc =
     theme === "dark"
-      ? "/logo_eclesio_tema_dark.png"
-      : "/logo_eclesio_tema_light.png";
+      ? "/logo_gerencia_igreja_tema_dark.png"
+      : "/logo_gerencia_igreja_tema_light.png";
 
   return (
     <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden">
       <Image
         src={logoSrc}
-        alt="Logo Eclesio"
+        alt="Logo Gerencia Igreja"
         width={512}
         height={512}
         sizes="160px"
@@ -31,7 +31,7 @@ export function Logo() {
     <div className="flex items-center gap-2">
       <LogoMark />
       <div className="leading-tight">
-        <p className="text-sm font-bold text-foreground">Eclesio</p>
+        <p className="text-sm font-bold text-foreground">Gerencia Igreja</p>
         <p className="text-xs text-muted">Gestão de igrejas</p>
       </div>
     </div>

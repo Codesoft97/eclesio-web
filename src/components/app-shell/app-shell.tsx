@@ -7,8 +7,8 @@ import { AppMobileNav } from "@/components/app-shell/app-mobile-nav";
 import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
-const SIDEBAR_STORAGE_KEY = "eclesio.sidebar-collapsed";
-const SIDEBAR_EVENT = "eclesio-sidebar-change";
+const SIDEBAR_STORAGE_KEY = "gerencia-igreja.sidebar-collapsed";
+const SIDEBAR_EVENT = "gerencia-igreja-sidebar-change";
 
 function subscribe(callback: () => void) {
   window.addEventListener("storage", callback);
