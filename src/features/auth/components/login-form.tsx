@@ -7,6 +7,7 @@ import { FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { PasswordField } from "@/components/ui/password-field";
 import { getApiErrorMessage } from "@/lib/api";
 
 import { login } from "../auth-service";
@@ -41,26 +42,36 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 border border-border bg-surface p-5 shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="grid gap-4 border border-border bg-surface p-5 shadow-sm"
+    >
       <Field
         label="Email"
         type="email"
         value={form.email}
-        onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+        onChange={(event) =>
+          setForm((current) => ({ ...current, email: event.target.value }))
+        }
         placeholder="representante@igreja.com"
         autoComplete="email"
         required
       />
-      <Field
+      <PasswordField
         label="Senha"
-        type="password"
         value={form.password}
-        onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+        onChange={(event) =>
+          setForm((current) => ({ ...current, password: event.target.value }))
+        }
         placeholder="Sua senha"
         autoComplete="current-password"
         required
       />
-      {error ? <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">{error}</p> : null}
+      {error ? (
+        <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+          {error}
+        </p>
+      ) : null}
       <Button type="submit" disabled={isPending}>
         <LogIn size={17} />
         {isPending ? "Entrando..." : "Entrar"}

@@ -7,11 +7,9 @@ import { FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { PasswordField } from "@/components/ui/password-field";
 import { getApiErrorMessage } from "@/lib/api";
-import {
-  formatBrazilianPhone,
-  getPhoneDigits,
-} from "@/lib/formatters/phone";
+import { formatBrazilianPhone, getPhoneDigits } from "@/lib/formatters/phone";
 
 import { register } from "../auth-service";
 import { useAuth } from "../auth-provider";
@@ -107,18 +105,16 @@ export function RegisterForm() {
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field
+        <PasswordField
           label="Senha"
-          type="password"
           value={form.password}
           onChange={(event) => updateField("password", event.target.value)}
           placeholder="Minimo 8 caracteres"
           autoComplete="new-password"
           required
         />
-        <Field
+        <PasswordField
           label="Confirmar senha"
-          type="password"
           value={form.passwordConfirmation}
           onChange={(event) =>
             updateField("passwordConfirmation", event.target.value)

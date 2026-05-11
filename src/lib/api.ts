@@ -6,6 +6,50 @@ const apiBaseUrl =
     ? "/api"
     : configuredApiUrl || "http://localhost:5000/api";
 
+const FALLBACK_API_ERROR_MESSAGE =
+  "Não foi possível concluir a solicitação. Tente novamente em instantes.";
+
+const PASSWORD_RULE_MESSAGE =
+  "A senha deve ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número.";
+
+const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
+  ["password must match", PASSWORD_RULE_MESSAGE],
+  [
+    "password must be longer than or equal to 8 characters",
+    PASSWORD_RULE_MESSAGE,
+  ],
+  [
+    "password must be shorter than or equal to 72 characters",
+    "A senha deve ter no máximo 72 caracteres.",
+  ],
+  [
+    "passwordconfirmation must be longer than or equal to 8 characters",
+    "A confirmação de senha deve ter pelo menos 8 caracteres.",
+  ],
+  [
+    "passwordconfirmation must be shorter than or equal to 72 characters",
+    "A confirmação de senha deve ter no máximo 72 caracteres.",
+  ],
+  ["email must be an email", "Informe um email válido."],
+  [
+    "email must be shorter than or equal to 254 characters",
+    "O email informado é muito longo.",
+  ],
+  ["whatsapp must match", "Informe um WhatsApp válido com DDD."],
+  [
+    "whatsapp must be longer than or equal to 10 characters",
+    "Informe um WhatsApp válido com DDD.",
+  ],
+  [
+    "whatsapp must be shorter than or equal to 15 characters",
+    "Informe um WhatsApp válido com DDD.",
+  ],
+  ["code must match", "O código deve ter 6 dígitos."],
+  ["resettoken must match", "Código de redefinição inválido ou expirado."],
+  ["regular expression", "Revise os dados informados e tente novamente."],
+  ["should not exist", "Revise os dados informados e tente novamente."],
+];
+
 export const api = axios.create({
   baseURL: apiBaseUrl,
   withCredentials: true,
@@ -23,13 +67,27 @@ export function getApiErrorMessage(error: unknown) {
     const message = error.response?.data?.message;
 
     if (Array.isArray(message)) {
-      return message[0] ?? "Não foi possível concluir a solicitação.";
+      return translateApiMessage(message[0]) ?? FALLBACK_API_ERROR_MESSAGE;
     }
 
     if (typeof message === "string") {
-      return message;
+      return translateApiMessage(message) ?? FALLBACK_API_ERROR_MESSAGE;
     }
   }
 
-  return "Não foi possível concluir a solicitação.";
+  return FALLBACK_API_ERROR_MESSAGE;
+}
+
+function translateApiMessage(message: unknown) {
+  if (typeof message !== "string" || message.trim().length === 0) {
+    return null;
+  }
+
+  const normalizedMessage = message.trim();
+  const lowerMessage = normalizedMessage.toLowerCase();
+  const translatedMessage = MESSAGE_TRANSLATIONS.find(([technicalMessage]) =>
+    lowerMessage.includes(technicalMessage),
+  )?.[1];
+
+  return translatedMessage ?? normalizedMessage;
 }

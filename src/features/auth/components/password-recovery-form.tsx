@@ -6,6 +6,7 @@ import { FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { PasswordField } from "@/components/ui/password-field";
 import { getApiErrorMessage } from "@/lib/api";
 
 import {
@@ -155,9 +156,8 @@ export function PasswordRecoveryForm() {
           autoComplete="new-password"
           required
         />
-        <Field
+        <PasswordField
           label="Confirmar nova senha"
-          type="password"
           value={form.passwordConfirmation}
           onChange={(event) =>
             updateField("passwordConfirmation", event.target.value)
