@@ -118,14 +118,14 @@ function ProductScreenshot({
   label: string;
 }) {
   return (
-    <div className="relative overflow-hidden border border-border bg-surface p-3 shadow-sm">
+    <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-3 shadow-md">
       <div className="flex items-center justify-between border-b border-border px-2 pb-3">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
           {label}
         </p>
-        <span className="h-2.5 w-2.5 bg-accent" />
+        <span className="h-2.5 w-2.5 rounded-full bg-accent" />
       </div>
-      <div className="relative mt-3 aspect-[16/10] overflow-hidden border border-border bg-surface-subtle">
+      <div className="relative mt-3 aspect-[16/10] overflow-hidden rounded-lg border border-border bg-surface-subtle">
         <Image
           src={src}
           alt={alt}
@@ -164,7 +164,7 @@ export default function LandingPage() {
             <ThemeToggle />
             <Link
               href="/login"
-              className="hidden h-10 cursor-pointer items-center justify-center border border-border px-4 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent sm:inline-flex"
+              className="hidden h-10 cursor-pointer items-center justify-center rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent sm:inline-flex"
             >
               Entrar
             </Link>
@@ -172,7 +172,7 @@ export default function LandingPage() {
               href="/cadastro"
               eventName="landing_cta_clicked"
               eventProperties={{ location: "header", cta: "comecar" }}
-              className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-4 text-sm font-semibold text-accent-foreground transition hover:bg-yellow-400"
+              className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-4 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400 hover:shadow-md"
             >
               Começar
               <ArrowRight size={16} />
@@ -185,7 +185,7 @@ export default function LandingPage() {
         <div className="absolute left-1/2 top-0 -z-0 h-72 w-72 -translate-x-1/2 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:py-24">
           <div className="flex flex-col justify-center">
-            <div className="mb-6 inline-flex w-fit items-center gap-2 border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-semibold text-foreground">
+            <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-xs font-semibold text-foreground">
               <Church size={15} className="text-accent" />
               Gestão moderna para igrejas em crescimento
             </div>
@@ -205,14 +205,14 @@ export default function LandingPage() {
                 href="/cadastro"
                 eventName="landing_cta_clicked"
                 eventProperties={{ location: "final", cta: "comecar_gratis" }}
-                className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition hover:bg-yellow-400"
+                className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400 hover:shadow-md"
               >
                 Começar grátis
                 <ArrowRight size={17} />
               </AnalyticsLink>
               <Link
                 href="/login"
-                className="inline-flex h-12 cursor-pointer items-center justify-center border border-border bg-surface px-6 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent"
+                className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-6 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
               >
                 Já tenho acesso
               </Link>
@@ -236,7 +236,7 @@ export default function LandingPage() {
           </div>
 
           <div className="relative">
-            <div className="absolute -right-8 -top-8 h-32 w-32 border border-accent/30" />
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border border-accent/30" />
             <ProductScreenshot
               src="/home_screenshot.png"
               alt="Tela inicial do Gerencia Igreja com resumo, agenda e calendário mensal"
@@ -269,9 +269,9 @@ export default function LandingPage() {
             return (
               <article
                 key={feature.title}
-                className="group border border-border bg-surface p-6 shadow-sm transition hover:-translate-y-1 hover:border-accent"
+                className="group rounded-xl border border-border bg-surface p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-md"
               >
-                <div className="mb-5 flex h-11 w-11 items-center justify-center bg-surface-subtle text-foreground transition group-hover:bg-accent group-hover:text-accent-foreground">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-surface-subtle text-foreground transition group-hover:bg-accent group-hover:text-accent-foreground">
                   <Icon size={20} />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">
@@ -302,7 +302,7 @@ export default function LandingPage() {
               {benefits.map((benefit) => (
                 <div
                   key={benefit}
-                  className="flex gap-3 border border-border bg-surface p-4"
+                  className="flex gap-3 rounded-lg border border-border bg-surface p-4"
                 >
                   <Check className="mt-0.5 shrink-0 text-accent" size={18} />
                   <p className="text-sm leading-6 text-muted">{benefit}</p>
@@ -332,7 +332,7 @@ export default function LandingPage() {
               ].map((item) => (
                 <div
                   key={item}
-                  className="flex gap-3 border border-border bg-surface p-4"
+                  className="flex gap-3 rounded-lg border border-border bg-surface p-4"
                 >
                   <Check className="mt-0.5 shrink-0 text-accent" size={18} />
                   <p className="text-sm leading-6 text-muted">{item}</p>
@@ -359,7 +359,7 @@ export default function LandingPage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {workflow.map((step, index) => (
-              <div key={step} className="border border-border bg-surface p-5">
+              <div key={step} className="rounded-lg border border-border bg-surface p-5">
                 <span className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
                   Passo {index + 1}
                 </span>
@@ -384,7 +384,7 @@ export default function LandingPage() {
             gerencie e compartilhe eventos com os membros e muito mais, realize
             seu cadastro e faça o teste gratuito .
           </p>
-          <div className="mt-6 border border-accent/40 bg-accent/10 p-4 text-sm font-semibold text-foreground">
+          <div className="mt-6 rounded-lg border border-accent/40 bg-accent/10 p-4 text-sm font-semibold text-foreground">
             Basta criar a conta e testar gratuitamente sem adicionar cartão de
             crédito.
           </div>
@@ -394,7 +394,7 @@ export default function LandingPage() {
           {plans.map((plan) => (
             <article
               key={plan.name}
-              className={`relative border p-6 shadow-sm ${
+              className={`relative rounded-2xl border p-6 shadow-sm ${
                 plan.highlight
                   ? "border-accent bg-primary text-primary-foreground dark:bg-surface dark:text-foreground"
                   : "border-border bg-surface text-foreground"
@@ -403,7 +403,7 @@ export default function LandingPage() {
               <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
                   <span
-                    className={`inline-flex border px-3 py-1 text-xs font-semibold ${
+                    className={`inline-flex rounded-md border px-3 py-1 text-xs font-semibold ${
                       plan.highlight
                         ? "border-accent bg-accent text-accent-foreground"
                         : "border-border bg-surface-subtle text-foreground"
@@ -460,7 +460,7 @@ export default function LandingPage() {
                 href="/cadastro"
                 eventName="landing_plan_cta_clicked"
                 eventProperties={{ plan: plan.name, price: plan.price }}
-                className={`mt-8 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 border px-5 text-sm font-semibold transition ${
+                className={`mt-8 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border px-5 text-sm font-semibold transition-all duration-200 ${
                   plan.highlight
                     ? "border-accent bg-accent text-accent-foreground hover:bg-yellow-400"
                     : "border-border bg-surface-subtle text-foreground hover:border-accent hover:text-accent"
@@ -475,7 +475,7 @@ export default function LandingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
-        <div className="grid gap-8 border border-border bg-surface p-6 shadow-sm lg:grid-cols-[1fr_0.8fr] lg:p-10">
+        <div className="grid gap-8 rounded-2xl border border-border bg-surface p-6 shadow-sm lg:grid-cols-[1fr_0.8fr] lg:p-10">
           <div>
             <SectionLabel>Próximo passo</SectionLabel>
             <h2 className="mt-3 text-3xl font-semibold text-foreground">
@@ -492,14 +492,14 @@ export default function LandingPage() {
               href="/cadastro"
               eventName="landing_cta_clicked"
               eventProperties={{ location: "final", cta: "comecar_gratis" }}
-              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition hover:bg-yellow-400"
+              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400 hover:shadow-md"
             >
               Começar grátis
               <ArrowRight size={17} />
             </AnalyticsLink>
             <Link
               href="/login"
-              className="inline-flex h-12 cursor-pointer items-center justify-center border border-border px-6 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent"
+              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border border-border px-6 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
             >
               Acessar sistema
             </Link>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { CheckCircle2, KeyRound, Mail, ShieldCheck } from "lucide-react";
 import Link from "next/link";
@@ -113,8 +113,8 @@ export function PasswordRecoveryForm() {
 
   if (step === "success") {
     return (
-      <div className="grid gap-5 border border-border bg-surface p-5 shadow-sm">
-        <div className="flex items-start gap-3 border border-accent/30 bg-accent/10 p-4 text-sm text-foreground">
+      <div className="grid gap-5 rounded-xl border border-border bg-surface p-5 shadow-sm">
+        <div className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/10 p-4 text-sm text-foreground">
           <CheckCircle2 className="mt-0.5 shrink-0 text-accent" size={20} />
           <div>
             <p className="font-semibold">Senha redefinida</p>
@@ -126,7 +126,7 @@ export function PasswordRecoveryForm() {
         </div>
         <Link
           href="/login"
-          className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-4 text-sm font-semibold text-accent-foreground transition hover:bg-yellow-400"
+          className="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-4 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400"
         >
           Entrar com nova senha
         </Link>
@@ -138,10 +138,10 @@ export function PasswordRecoveryForm() {
     return (
       <form
         onSubmit={handleResetPassword}
-        className="grid gap-4 border border-border bg-surface p-5 shadow-sm"
+        className="grid gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm"
         data-ph-mask
       >
-        <div className="border border-border bg-background p-3 text-sm text-muted">
+        <div className="rounded-lg border border-border bg-background p-3 text-sm text-muted">
           Código validado. Escolha uma nova senha forte para proteger o acesso.
           {expiresInSeconds
             ? ` Este acesso expira em ${Math.ceil(expiresInSeconds / 60)} minutos.`
@@ -167,7 +167,7 @@ export function PasswordRecoveryForm() {
           required
         />
         {error ? (
-          <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+          <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
             {error}
           </p>
         ) : null}
@@ -183,11 +183,11 @@ export function PasswordRecoveryForm() {
     return (
       <form
         onSubmit={handleVerifyCode}
-        className="grid gap-4 border border-border bg-surface p-5 shadow-sm"
+        className="grid gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm"
         data-ph-mask
       >
         {message ? (
-          <p className="border border-accent/30 bg-accent/10 p-3 text-sm text-foreground">
+          <p className="rounded-lg border border-accent/30 bg-accent/10 p-3 text-sm text-foreground">
             {message}
           </p>
         ) : null}
@@ -209,7 +209,7 @@ export function PasswordRecoveryForm() {
           Usar outro email
         </button>
         {error ? (
-          <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+          <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
             {error}
           </p>
         ) : null}
@@ -224,7 +224,7 @@ export function PasswordRecoveryForm() {
   return (
     <form
       onSubmit={handleRequestCode}
-      className="grid gap-4 border border-border bg-surface p-5 shadow-sm"
+      className="grid gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm"
       data-ph-mask
     >
       <Field
@@ -241,7 +241,7 @@ export function PasswordRecoveryForm() {
         continuar a redefinição.
       </p>
       {error ? (
-        <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
           {error}
         </p>
       ) : null}

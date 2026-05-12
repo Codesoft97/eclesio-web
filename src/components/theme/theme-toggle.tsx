@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Moon, Sun } from "lucide-react";
 
@@ -12,7 +12,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-border bg-surface text-foreground transition hover:border-accent hover:text-accent"
+      className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface text-foreground shadow-xs transition-all duration-200 hover:border-accent hover:text-accent hover:shadow-sm"
       aria-label="Alternar tema"
       title="Alternar tema"
     >

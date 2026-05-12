@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Eye, EyeOff } from "lucide-react";
 import { InputHTMLAttributes, useState } from "react";
@@ -24,13 +24,13 @@ export function PasswordField({
       <div className="relative">
         <input
           type={isVisible ? "text" : "password"}
-          className={`h-11 w-full border border-border bg-surface px-3 pr-11 text-sm text-foreground transition placeholder:text-muted focus:border-accent focus:outline-none ${className}`}
+          className={`h-11 w-full rounded-lg border border-border bg-surface-subtle px-3.5 pr-11 text-sm text-foreground shadow-xs transition-all duration-200 placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none ${className}`}
           {...props}
         />
         <button
           type="button"
           onClick={() => setIsVisible((current) => !current)}
-          className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-muted transition hover:text-foreground"
+          className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-foreground"
           aria-label={isVisible ? "Ocultar senha" : "Mostrar senha"}
           title={isVisible ? "Ocultar senha" : "Mostrar senha"}
         >

@@ -21,7 +21,7 @@ export interface ConfirmationModalProps {
 
 const variantStyles = {
   primary: {
-    icon: "border-accent/40 bg-accent/10 text-accent",
+    icon: "border-accent/30 bg-accent/10 text-accent",
     eyebrow: "text-muted",
     buttonVariant: "primary" as const,
     defaultConfirmLabel: "Confirmar",
@@ -50,18 +50,18 @@ export function ConfirmationModal({
   const styles = variantStyles[variant];
 
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-end bg-foreground/30 px-3 py-4 backdrop-blur-sm sm:place-items-center">
+    <div className="animate-fade-in fixed inset-0 z-[60] grid place-items-end bg-foreground/30 px-3 py-4 backdrop-blur-sm sm:place-items-center">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirmation-modal-title"
         aria-describedby="confirmation-modal-description"
-        className="w-full max-w-md border border-border bg-surface shadow-2xl"
+        className="animate-scale-in w-full max-w-md rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div className="flex gap-4">
             <span
-              className={`mt-1 flex h-11 w-11 shrink-0 items-center justify-center border ${styles.icon}`}
+              className={`mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${styles.icon}`}
             >
               <AlertTriangle size={20} />
             </span>
@@ -83,7 +83,7 @@ export function ConfirmationModal({
           <button
             type="button"
             onClick={onCancel}
-            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center border border-border text-muted transition hover:border-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-muted transition-all duration-200 hover:border-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
             aria-label={"Fechar confirmação"}
             disabled={isConfirming}
           >
@@ -100,7 +100,7 @@ export function ConfirmationModal({
           </div>
 
           {children ? (
-            <div className="border border-border bg-surface-subtle p-3 text-sm text-muted">
+            <div className="rounded-lg border border-border bg-surface-subtle p-3 text-sm text-muted">
               {children}
             </div>
           ) : null}

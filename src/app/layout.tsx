@@ -4,8 +4,9 @@ import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
 
 export const metadata: Metadata = {
-  title: "Gerencia Igreja",
-  description: "Gestão simples e segura para igrejas.",
+  title: "Gerencia Igreja — Gestão de igrejas",
+  description:
+    "Gerencie membros, obreiros, finanças, eventos e escalas da sua igreja em um só lugar. Simples, seguro e pronto para crescer.",
 };
 
 export default function RootLayout({

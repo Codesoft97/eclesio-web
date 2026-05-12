@@ -32,12 +32,12 @@ export function EventShareModal({
   onOpenWhatsapp,
 }: EventShareModalProps) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-foreground/25 px-3 py-4 backdrop-blur-sm sm:place-items-center">
+    <div className="animate-fade-in fixed inset-0 z-50 grid place-items-end bg-foreground/30 px-3 py-4 backdrop-blur-sm sm:place-items-center">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-share-title"
-        className="max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto border border-border bg-surface shadow-2xl"
+        className="max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
@@ -57,7 +57,7 @@ export function EventShareModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center border border-border text-muted transition hover:border-accent hover:text-foreground"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-muted transition-all duration-200 hover:border-accent hover:text-foreground"
             aria-label="Fechar modal"
           >
             <X size={18} />
@@ -73,7 +73,7 @@ export function EventShareModal({
               </div>
             </div>
           ) : error ? (
-            <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+            <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               {error}
             </p>
           ) : share ? (
@@ -108,7 +108,7 @@ export function EventShareModal({
               </div>
             </>
           ) : (
-            <p className="border border-border bg-surface-subtle p-3 text-sm text-muted">
+            <p className="rounded-lg border border-border bg-surface-subtle p-3 text-sm text-muted">
               Não foi possível carregar o compartilhamento deste evento.
             </p>
           )}

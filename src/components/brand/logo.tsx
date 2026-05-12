@@ -12,14 +12,14 @@ export function LogoMark() {
       : "/logo_gerencia_igreja_tema_light.png";
 
   return (
-    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden">
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl">
       <Image
         src={logoSrc}
         alt="Logo Gerencia Igreja"
         width={512}
         height={512}
         sizes="160px"
-        className="h-16 w-16 object-contain"
+        className="h-14 w-14 object-contain"
         priority
       />
     </div>
@@ -28,7 +28,7 @@ export function LogoMark() {
 
 export function Logo() {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2.5">
       <LogoMark />
       <div className="leading-tight">
         <p className="text-sm font-bold text-foreground">Gerencia Igreja</p>

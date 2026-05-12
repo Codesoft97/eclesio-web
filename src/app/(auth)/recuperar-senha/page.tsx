@@ -4,7 +4,7 @@ import { PasswordRecoveryForm } from "@/features/auth/components/password-recove
 
 export default function PasswordRecoveryPage() {
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md animate-slide-up">
       <div className="mb-8">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
           Recuperação de acesso
@@ -22,7 +22,7 @@ export default function PasswordRecoveryPage() {
         Lembrou sua senha?{" "}
         <Link
           href="/login"
-          className="font-semibold text-foreground underline decoration-accent underline-offset-4"
+          className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
         >
           Voltar para o login
         </Link>

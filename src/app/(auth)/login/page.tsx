@@ -4,7 +4,7 @@ import { LoginForm } from "@/features/auth/components/login-form";
 
 export default function LoginPage() {
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md animate-slide-up">
       <div className="mb-8">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
           Acesso
@@ -13,7 +13,7 @@ export default function LoginPage() {
           Entrar no Gerencia Igreja
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Use o email do representante para acessar a ?rea administrativa.
+          Use o email do representante para acessar a área administrativa.
         </p>
       </div>
       <LoginForm />
@@ -22,7 +22,7 @@ export default function LoginPage() {
           Esqueceu sua senha?{" "}
           <Link
             href="/recuperar-senha"
-            className="font-semibold text-foreground underline decoration-accent underline-offset-4"
+            className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
           >
             Recuperar acesso
           </Link>
@@ -31,7 +31,7 @@ export default function LoginPage() {
           Ainda não cadastrou sua igreja?{" "}
           <Link
             href="/cadastro"
-            className="font-semibold text-foreground underline decoration-accent underline-offset-4"
+            className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
           >
             Criar cadastro
           </Link>

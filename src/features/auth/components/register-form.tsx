@@ -63,7 +63,7 @@ export function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid gap-4 border border-border bg-surface p-5 shadow-sm"
+      className="grid gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
@@ -125,7 +125,7 @@ export function RegisterForm() {
         />
       </div>
       {error ? (
-        <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
           {error}
         </p>
       ) : null}

@@ -16,6 +16,8 @@ import {
   UserCheck,
   XCircle,
 } from "lucide-react";
+
+import { RechartsBar, RechartsDonut, RechartsStacked } from "./report-charts";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -304,7 +306,7 @@ function MetricCard({
   }[tone];
 
   return (
-    <article className="border border-border bg-surface p-5 shadow-sm">
+    <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-muted">{label}</p>
@@ -321,91 +323,8 @@ function MetricCard({
   );
 }
 
-function EmptyChart({ message }: { message: string }) {
-  return (
-    <div className="grid min-h-56 place-items-center border border-dashed border-border bg-surface-subtle p-6 text-center text-sm leading-6 text-muted">
-      {message}
-    </div>
-  );
-}
 
-function HorizontalBarChart({
-  data,
-  emptyMessage,
-  barClassName = "bg-accent",
-}: {
-  data: ChartItem[];
-  emptyMessage: string;
-  barClassName?: string;
-}) {
-  const maxValue = Math.max(...data.map((item) => item.value), 0);
 
-  if (data.length === 0 || maxValue <= 0) {
-    return <EmptyChart message={emptyMessage} />;
-  }
-
-  return (
-    <div className="grid gap-4">
-      {data.map((item) => {
-        const width = `${Math.max((item.value / maxValue) * 100, 4)}%`;
-
-        return (
-          <div key={item.label} className="grid gap-2">
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <span className="font-medium text-foreground">{item.label}</span>
-              <span className="font-mono text-xs text-muted">
-                {item.displayValue ?? formatNumber(item.value)}
-              </span>
-            </div>
-            <div className="h-3 border border-border bg-surface-subtle">
-              <div className={`h-full ${barClassName}`} style={{ width }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function VerticalBarChart({
-  data,
-  emptyMessage,
-}: {
-  data: ChartItem[];
-  emptyMessage: string;
-}) {
-  const maxValue = Math.max(...data.map((item) => item.value), 0);
-
-  if (data.length === 0 || maxValue <= 0) {
-    return <EmptyChart message={emptyMessage} />;
-  }
-
-  return (
-    <div className="grid min-h-64 grid-cols-6 items-end gap-2 border border-border bg-surface-subtle p-4 sm:gap-3">
-      {data.map((item) => {
-        const height = `${Math.max((item.value / maxValue) * 100, 8)}%`;
-
-        return (
-          <div key={item.label} className="grid h-52 content-end gap-2 text-center">
-            <span className="font-mono text-[10px] text-muted">
-              {item.value}
-            </span>
-            <div className="flex h-40 items-end justify-center">
-              <div
-                className="w-full max-w-9 bg-accent transition-all"
-                style={{ height }}
-                title={item.displayValue}
-              />
-            </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-              {item.label}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 function StatusCards({
   data,
@@ -418,7 +337,7 @@ function StatusCards({
         const Icon = item.icon;
 
         return (
-          <article key={item.status} className="border border-border bg-surface-subtle p-4">
+          <article key={item.status} className="rounded-lg border border-border bg-surface-subtle p-4">
             <div className="mb-4 flex items-center justify-between gap-3">
               <p className="text-sm font-medium text-muted">{item.label}</p>
               <span className={`flex h-9 w-9 items-center justify-center ${item.className}`}>
@@ -447,7 +366,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border border-border bg-surface p-5 shadow-sm">
+    <section className="rounded-xl border border-border bg-surface p-5 shadow-sm">
       <div className="mb-5 border-b border-border pb-4">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
           {eyebrow}
@@ -614,7 +533,7 @@ export function ReportsPageClient() {
           </Button>
           <input
             type="month"
-            className="h-11 min-w-40 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground focus:border-accent focus:outline-none"
+            className="h-11 min-w-40 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
             value={visibleMonth}
             onChange={(event) => setVisibleMonth(event.target.value)}
             aria-label="Selecionar mês"
@@ -695,10 +614,10 @@ export function ReportsPageClient() {
               title="Receitas por categoria"
               description="Mostra quais fontes de receita mais contribuíram no mês."
             >
-              <HorizontalBarChart
+              <RechartsDonut
                 data={revenueByCategory}
                 emptyMessage="Nenhuma receita cadastrada neste mês."
-                barClassName="bg-success"
+                formatter={formatCurrency}
               />
             </ChartCard>
 
@@ -707,10 +626,10 @@ export function ReportsPageClient() {
               title="Despesas por categoria"
               description="Ajuda a identificar onde os recursos estão sendo consumidos."
             >
-              <HorizontalBarChart
+              <RechartsDonut
                 data={expenseByCategory}
                 emptyMessage="Nenhuma despesa cadastrada neste mês."
-                barClassName="bg-danger"
+                formatter={formatCurrency}
               />
             </ChartCard>
           </section>
@@ -721,9 +640,10 @@ export function ReportsPageClient() {
               title={`Eventos por semana em ${formatMonthTitle(visibleMonth)}`}
               description="Distribuição dos compromissos ao longo do mês selecionado."
             >
-              <VerticalBarChart
+              <RechartsBar
                 data={eventsByWeek}
                 emptyMessage="Nenhum evento cadastrado neste mês."
+                color="accent"
               />
             </ChartCard>
 
@@ -733,23 +653,14 @@ export function ReportsPageClient() {
               description="Leitura rápida entre eventos recorrentes e avulsos."
             >
               <div className="grid gap-4">
-                <HorizontalBarChart
+                <RechartsDonut
                   data={[
-                    {
-                      label: "Recorrentes",
-                      value: recurringEventsCount,
-                      displayValue: `${recurringEventsCount} evento(s)`,
-                    },
-                    {
-                      label: "Avulsos",
-                      value: Math.max(events.length - recurringEventsCount, 0),
-                      displayValue: `${Math.max(events.length - recurringEventsCount, 0)} evento(s)`,
-                    },
+                    { label: "Recorrentes", value: recurringEventsCount },
+                    { label: "Avulsos", value: Math.max(events.length - recurringEventsCount, 0) },
                   ]}
                   emptyMessage="Nenhum evento cadastrado neste mês."
-                  barClassName="bg-primary"
                 />
-                <div className="border border-border bg-surface-subtle p-4 text-sm text-muted">
+                <div className="rounded-lg border border-border bg-surface-subtle p-4 text-sm text-muted">
                   <div className="mb-3 flex items-center gap-2 text-foreground">
                     <Repeat2 size={16} className="text-accent" />
                     <strong>Recorrência</strong>
@@ -768,10 +679,11 @@ export function ReportsPageClient() {
               title="Eventos por dia da semana"
               description="Mostra em quais dias a agenda da igreja está mais concentrada."
             >
-              <HorizontalBarChart
+              <RechartsBar
                 data={eventsByWeekday.filter((item) => item.value > 0)}
                 emptyMessage="Nenhum evento cadastrado neste mês."
-                barClassName="bg-accent"
+                color="accent"
+                layout="vertical"
               />
             </ChartCard>
 
@@ -780,10 +692,9 @@ export function ReportsPageClient() {
               title="Cobertura de escalas"
               description="Compara eventos com escala montada e eventos ainda sem escala."
             >
-              <HorizontalBarChart
+              <RechartsDonut
                 data={scheduleCoverage}
                 emptyMessage="Nenhum evento cadastrado neste mês."
-                barClassName="bg-primary"
               />
             </ChartCard>
           </section>
@@ -796,7 +707,7 @@ export function ReportsPageClient() {
             >
               <div className="grid gap-4">
                 <StatusCards data={assignmentsByStatus} />
-                <div className="border border-border bg-surface-subtle p-4 text-sm text-muted">
+                <div className="rounded-lg border border-border bg-surface-subtle p-4 text-sm text-muted">
                   Taxa de aceite: <strong className="text-foreground">{formatPercent(confirmationRate)}</strong>
                 </div>
               </div>
@@ -807,15 +718,16 @@ export function ReportsPageClient() {
               title="Obreiros escalados por ministério"
               description="Mostra quais ministérios concentram mais escalas no mês."
             >
-              <HorizontalBarChart
+              <RechartsBar
                 data={assignmentsByMinistry}
                 emptyMessage="Nenhuma escala cadastrada para eventos deste mês."
-                barClassName="bg-accent"
+                color="accent"
+                layout="vertical"
               />
             </ChartCard>
           </section>
 
-          <section className="border border-border bg-surface p-5 shadow-sm">
+          <section className="rounded-xl border border-border bg-surface p-5 shadow-sm">
             <div className="mb-5 border-b border-border pb-4">
               <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
                 Resumo operacional
@@ -826,8 +738,8 @@ export function ReportsPageClient() {
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="border border-border bg-surface-subtle p-4">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center bg-accent text-accent-foreground">
+              <div className="rounded-lg border border-border bg-surface-subtle p-4">
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
                   <CalendarDays size={18} />
                 </div>
                 <p className="text-sm text-muted">Eventos cadastrados</p>
@@ -835,8 +747,8 @@ export function ReportsPageClient() {
                   {formatNumber(events.length)}
                 </p>
               </div>
-              <div className="border border-border bg-surface-subtle p-4">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center bg-surface text-foreground">
+              <div className="rounded-lg border border-border bg-surface-subtle p-4">
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-foreground">
                   <UserCheck size={18} />
                 </div>
                 <p className="text-sm text-muted">Obreiros em escalas</p>
@@ -844,8 +756,8 @@ export function ReportsPageClient() {
                   {formatNumber(assignments.length)}
                 </p>
               </div>
-              <div className="border border-border bg-surface-subtle p-4">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center bg-surface text-foreground">
+              <div className="rounded-lg border border-border bg-surface-subtle p-4">
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-foreground">
                   <BarChart3 size={18} />
                 </div>
                 <p className="text-sm text-muted">Categorias movimentadas</p>

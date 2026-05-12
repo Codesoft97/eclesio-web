@@ -202,7 +202,7 @@ export function EventScheduleSummary({
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 border border-border bg-surface p-3 text-sm text-muted">
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-surface p-3 text-sm text-muted">
         <Loader2 className="animate-spin text-accent" size={16} />
         Carregando escala...
       </div>
@@ -211,7 +211,7 @@ export function EventScheduleSummary({
 
   if (!schedule || schedule.assignments.length === 0) {
     return (
-      <div className="border border-dashed border-border bg-surface p-3 text-sm text-muted">
+      <div className="rounded-lg border border-dashed border-border bg-surface p-3 text-sm text-muted">
         {emptyMessage}
       </div>
     );
@@ -224,7 +224,7 @@ export function EventScheduleSummary({
       {groups.map((ministry) => (
         <div
           key={ministry.ministryId}
-          className="border border-border bg-surface p-3"
+          className="rounded-lg border border-border bg-surface p-3"
         >
           <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
             <UserCheck size={15} className="text-accent" />
@@ -248,7 +248,7 @@ export function EventScheduleSummary({
                     return (
                       <div
                         key={assignment.id}
-                        className="grid gap-2 border border-border bg-surface-subtle px-2 py-2 text-sm text-foreground"
+                        className="grid gap-2 rounded-lg border border-border bg-surface-subtle px-2 py-2 text-sm text-foreground"
                       >
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                           <div className="min-w-0">
@@ -263,7 +263,7 @@ export function EventScheduleSummary({
                           </div>
 
                           <span
-                            className={`inline-flex w-fit items-center gap-1 border px-2 py-1 text-xs font-semibold ${status.className}`}
+                            className={`inline-flex w-fit items-center gap-1 rounded-md border px-2 py-1 text-xs font-semibold ${status.className}`}
                           >
                             <StatusIcon size={13} />
                             {status.label}
@@ -283,7 +283,7 @@ export function EventScheduleSummary({
                                 <button
                                   type="button"
                                   onClick={() => void handleCopyLink(assignment)}
-                                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-border bg-surface px-3 text-xs font-semibold text-foreground transition hover:border-accent hover:text-accent"
+                                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-xs font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
                                 >
                                   {isCopied ? <Check size={14} /> : <Copy size={14} />}
                                   {isCopied ? "Link copiado" : "Copiar link"}
@@ -291,7 +291,7 @@ export function EventScheduleSummary({
                                 <button
                                   type="button"
                                   onClick={() => handleOpenWhatsapp(assignment)}
-                                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-accent bg-accent px-3 text-xs font-semibold text-accent-foreground transition hover:bg-yellow-400"
+                                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-3 text-xs font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400"
                                 >
                                   <Send size={14} />
                                   WhatsApp
@@ -303,7 +303,7 @@ export function EventScheduleSummary({
                                 type="button"
                                 onClick={() => onDeleteAssignment(assignment)}
                                 disabled={deletingAssignmentId === assignment.id}
-                                className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 border border-danger/40 bg-danger/10 px-3 text-xs font-semibold text-danger transition hover:border-danger disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-danger/40 bg-danger/10 px-3 text-xs font-semibold text-danger transition-all duration-200 hover:border-danger disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {deletingAssignmentId === assignment.id ? (
                                   <Loader2 className="animate-spin" size={14} />

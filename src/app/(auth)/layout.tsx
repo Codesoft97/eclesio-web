@@ -5,9 +5,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto grid min-h-screen w-full max-w-6xl grid-cols-1 lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="hidden border-r border-border px-10 py-8 lg:flex lg:flex-col lg:justify-between">
+        <section className="relative hidden overflow-hidden border-r border-border px-10 py-8 lg:flex lg:flex-col lg:justify-between">
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute bottom-20 right-10 h-40 w-40 rounded-full bg-accent/5 blur-2xl" />
+
           <Logo />
-          <div className="max-w-sm">
+          <div className="relative max-w-sm">
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted">
               Gestão Simplificada
             </p>
@@ -19,15 +22,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </p>
           </div>
           <div className="grid grid-cols-3 gap-3 text-xs text-muted">
-            <div className="border border-border bg-surface p-3">
+            <div className="rounded-lg border border-border bg-surface/60 p-3 backdrop-blur-sm">
               Financeiro
             </div>
 
-            <div className="border border-border bg-surface p-3">
+            <div className="rounded-lg border border-border bg-surface/60 p-3 backdrop-blur-sm">
               Obreiros
             </div>
 
-            <div className="border border-border bg-surface p-3">
+            <div className="rounded-lg border border-border bg-surface/60 p-3 backdrop-blur-sm">
               Eventos
             </div>
           </div>

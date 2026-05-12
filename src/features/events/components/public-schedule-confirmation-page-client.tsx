@@ -180,7 +180,7 @@ export function PublicScheduleConfirmationPageClient({
             {error}
           </div>
         ) : schedule && status && StatusIcon ? (
-          <article className="border border-border bg-surface shadow-sm">
+          <article className="rounded-xl border border-border bg-surface shadow-sm">
             <div className="border-b border-border p-6">
               <div className="mb-5 flex h-14 w-14 items-center justify-center bg-accent text-accent-foreground">
                 <UserCheck size={24} />
@@ -216,13 +216,13 @@ export function PublicScheduleConfirmationPageClient({
               </div>
 
               {error ? (
-                <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+                <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
                   {error}
                 </p>
               ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="border border-border bg-surface-subtle p-4">
+                <div className="rounded-lg border border-border bg-surface-subtle p-4">
                   <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
                     Ministério
                   </p>
@@ -230,7 +230,7 @@ export function PublicScheduleConfirmationPageClient({
                     {schedule.ministry.name}
                   </p>
                 </div>
-                <div className="border border-border bg-surface-subtle p-4">
+                <div className="rounded-lg border border-border bg-surface-subtle p-4">
                   <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
                     Função
                   </p>
@@ -240,7 +240,7 @@ export function PublicScheduleConfirmationPageClient({
                 </div>
               </div>
 
-              <div className="border border-border bg-surface-subtle p-4">
+              <div className="rounded-lg border border-border bg-surface-subtle p-4">
                 <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
                   Obreiro
                 </p>
@@ -287,7 +287,7 @@ export function PublicScheduleConfirmationPageClient({
                   </Button>
                 </div>
               ) : (
-                <div className="border border-border bg-surface-subtle p-4 text-sm leading-6 text-muted">
+                <div className="rounded-lg border border-border bg-surface-subtle p-4 text-sm leading-6 text-muted">
                   Sua resposta já foi registrada. Se precisar alterar, fale com
                   o administrador da igreja.
                 </div>

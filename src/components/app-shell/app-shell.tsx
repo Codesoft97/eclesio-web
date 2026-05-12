@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useSyncExternalStore } from "react";
 
@@ -49,10 +49,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background text-foreground" data-ph-mask>
       <AppMobileHeader />
       <div
-        className="grid min-h-screen transition-[grid-template-columns] duration-300 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
+        className="grid min-h-screen transition-[grid-template-columns] duration-300 ease-in-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
         style={
           {
-            "--sidebar-width": isSidebarCollapsed ? "5.5rem" : "18rem",
+            "--sidebar-width": isSidebarCollapsed ? "5.5rem" : "17rem",
           } as React.CSSProperties
         }
       >
@@ -66,7 +66,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mb-6 hidden justify-end lg:flex">
             <ThemeToggle />
           </div>
-          {children}
+          <div className="animate-fade-in">
+            {children}
+          </div>
         </main>
       </div>
       <AppMobileNav />

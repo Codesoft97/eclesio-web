@@ -114,7 +114,7 @@ export function PublicEventPageClient({
             {error ?? "Evento não encontrado."}
           </div>
         ) : (
-          <article className="border border-border bg-surface shadow-sm">
+          <article className="rounded-xl border border-border bg-surface shadow-sm">
             <div className="border-b border-border p-6">
               <div className="mb-5 flex h-14 w-14 items-center justify-center bg-accent text-accent-foreground">
                 <CalendarDays size={24} />

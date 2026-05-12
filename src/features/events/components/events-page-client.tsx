@@ -72,43 +72,43 @@ type CopiedTarget = "message" | "url" | null;
 
 type ShareState =
   | {
-      isOpen: false;
-      event: null;
-      share: null;
-      isLoading: false;
-      error: null;
-      copied: null;
-    }
+    isOpen: false;
+    event: null;
+    share: null;
+    isLoading: false;
+    error: null;
+    copied: null;
+  }
   | {
-      isOpen: true;
-      event: ChurchEvent;
-      share: EventShareResponse | null;
-      isLoading: boolean;
-      error: string | null;
-      copied: CopiedTarget;
-    };
+    isOpen: true;
+    event: ChurchEvent;
+    share: EventShareResponse | null;
+    isLoading: boolean;
+    error: string | null;
+    copied: CopiedTarget;
+  };
 
 type SchedulePreviewMap = Record<string, EventSchedule>;
 
 type ScheduleState =
   | {
-      isOpen: false;
-      event: null;
-      schedule: null;
-      isLoading: false;
-      isSubmitting: false;
-      error: null;
-      successMessage: null;
-    }
+    isOpen: false;
+    event: null;
+    schedule: null;
+    isLoading: false;
+    isSubmitting: false;
+    error: null;
+    successMessage: null;
+  }
   | {
-      isOpen: true;
-      event: ChurchEvent;
-      schedule: EventSchedule | null;
-      isLoading: boolean;
-      isSubmitting: boolean;
-      error: string | null;
-      successMessage: string | null;
-    };
+    isOpen: true;
+    event: ChurchEvent;
+    schedule: EventSchedule | null;
+    isLoading: boolean;
+    isSubmitting: boolean;
+    error: string | null;
+    successMessage: string | null;
+  };
 
 type ConfirmationState = Omit<
   ConfirmationModalProps,
@@ -657,11 +657,11 @@ export function EventsPageClient() {
       setScheduleState((current) =>
         current.isOpen && current.event.id === eventId
           ? {
-              ...current,
-              isSubmitting: false,
-              error: getApiErrorMessage(err),
-              successMessage: null,
-            }
+            ...current,
+            isSubmitting: false,
+            error: getApiErrorMessage(err),
+            successMessage: null,
+          }
           : current,
       );
     }
@@ -701,17 +701,17 @@ export function EventsPageClient() {
       setScheduleState((current) =>
         current.isOpen && current.event.id === eventId
           ? {
-              ...current,
-              successMessage: "Obreiro removido da escala.",
-              schedule: current.schedule
-                ? {
-                    ...current.schedule,
-                    assignments: current.schedule.assignments.filter(
-                      (assignment) => assignment.id !== assignmentId,
-                    ),
-                  }
-                : current.schedule,
-            }
+            ...current,
+            successMessage: "Obreiro removido da escala.",
+            schedule: current.schedule
+              ? {
+                ...current.schedule,
+                assignments: current.schedule.assignments.filter(
+                  (assignment) => assignment.id !== assignmentId,
+                ),
+              }
+              : current.schedule,
+          }
           : current,
       );
       setSchedulePreviews((current) => {
@@ -812,13 +812,13 @@ export function EventsPageClient() {
         </div>
 
         <div className="grid gap-3 sm:flex sm:items-center">
-          <div className="flex items-center justify-between border border-border bg-surface px-4 py-3 text-sm shadow-sm sm:block">
+          <div className="flex items-center justify-between border border-border rounded-xl bg-surface px-4 py-3 text-sm shadow-sm sm:block">
             <span className="text-muted">Eventos no mês</span>
             <strong className="ml-3 text-foreground">
               {visibleMonthEvents.length}
             </strong>
           </div>
-          <div className="flex items-center justify-between border border-border bg-surface px-4 py-3 text-sm shadow-sm sm:block">
+          <div className="flex items-center justify-between border border-border rounded-xl bg-surface px-4 py-3 text-sm shadow-sm sm:block">
             <span className="text-muted">Recorrentes</span>
             <strong className="ml-3 text-foreground">
               {recurringEventsCount}
@@ -846,10 +846,10 @@ export function EventsPageClient() {
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[1fr_24rem]">
-        <section className="border border-border bg-surface shadow-sm">
+        <section className="rounded-xl border border-border bg-surface shadow-sm">
           <div className="grid gap-4 border-b border-border p-3 sm:p-4 lg:flex lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-surface-subtle text-foreground">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
                 <CalendarDays size={18} />
               </span>
               <div>
@@ -945,22 +945,19 @@ export function EventsPageClient() {
                         type="button"
                         onClick={() => selectDate(day)}
                         aria-label={`${day.getDate()} - ${dayEvents.length} evento(s)`}
-                        className={`min-h-16 cursor-pointer border-b border-r border-border p-1.5 text-center transition hover:bg-surface-subtle ${
-                          isSelected
-                            ? "bg-accent/10 ring-2 ring-inset ring-accent"
-                            : "bg-surface"
-                        } ${
-                          isCurrentMonth
+                        className={`min-h-16 cursor-pointer border-b border-r border-border p-1.5 text-center transition hover:bg-surface-subtle ${isSelected
+                          ? "bg-accent/10 ring-2 ring-inset ring-accent"
+                          : "bg-surface"
+                          } ${isCurrentMonth
                             ? "text-foreground"
                             : "text-muted opacity-50"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`mx-auto flex h-7 w-7 items-center justify-center text-xs font-semibold ${
-                            isToday
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-surface-subtle text-foreground"
-                          }`}
+                          className={`mx-auto flex h-7 w-7 items-center justify-center text-xs font-semibold ${isToday
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-surface-subtle text-foreground"
+                            }`}
                         >
                           {day.getDate()}
                         </span>
@@ -970,9 +967,8 @@ export function EventsPageClient() {
                               {visibleDots.map((event) => (
                                 <span
                                   key={event.id}
-                                  className={`h-1.5 w-1.5 rounded-full ${
-                                    event.isRecurring ? "bg-primary" : "bg-accent"
-                                  }`}
+                                  className={`h-1.5 w-1.5 rounded-full ${event.isRecurring ? "bg-primary" : "bg-accent"
+                                    }`}
                                 />
                               ))}
                             </div>
@@ -1012,23 +1008,20 @@ export function EventsPageClient() {
                           key={getDateKey(day)}
                           type="button"
                           onClick={() => selectDate(day)}
-                          className={`min-h-32 cursor-pointer border-b border-r border-border p-2 text-left transition hover:bg-surface-subtle ${
-                            isSelected
-                              ? "bg-accent/10 ring-2 ring-inset ring-accent"
-                              : "bg-surface"
-                          } ${
-                            isCurrentMonth
+                          className={`min-h-32 cursor-pointer border-b border-r border-border p-2 text-left transition hover:bg-surface-subtle ${isSelected
+                            ? "bg-accent/10 ring-2 ring-inset ring-accent"
+                            : "bg-surface"
+                            } ${isCurrentMonth
                               ? "text-foreground"
                               : "text-muted opacity-60"
-                          }`}
+                            }`}
                         >
                           <div className="mb-2 flex items-center justify-between gap-2">
                             <span
-                              className={`flex h-7 w-7 items-center justify-center text-sm font-semibold ${
-                                isToday
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-surface-subtle text-foreground"
-                              }`}
+                              className={`flex h-7 w-7 items-center justify-center text-sm font-semibold ${isToday
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-surface-subtle text-foreground"
+                                }`}
                             >
                               {day.getDate()}
                             </span>
@@ -1043,11 +1036,10 @@ export function EventsPageClient() {
                             {dayEvents.slice(0, 3).map((event) => (
                               <span
                                 key={event.id}
-                                className={`truncate border-l-2 bg-surface-subtle px-2 py-1 text-[11px] font-medium text-foreground ${
-                                  event.isRecurring
-                                    ? "border-primary"
-                                    : "border-accent"
-                                }`}
+                                className={`truncate border-l-2 bg-surface-subtle px-2 py-1 text-[11px] font-medium text-foreground ${event.isRecurring
+                                  ? "border-primary"
+                                  : "border-accent"
+                                  }`}
                               >
                                 {formatEventTime(event.startsAt)} {event.title}
                               </span>
@@ -1068,7 +1060,7 @@ export function EventsPageClient() {
           )}
         </section>
 
-        <aside className="border border-border bg-surface shadow-sm xl:sticky xl:top-5 xl:self-start">
+        <aside className="rounded-xl border border-border bg-surface shadow-sm xl:sticky xl:top-5 xl:self-start">
           <div className="border-b border-border p-4">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
               Dia selecionado
@@ -1093,7 +1085,7 @@ export function EventsPageClient() {
 
           <div className="grid gap-3 p-3 sm:p-4">
             {selectedEvents.length === 0 ? (
-              <div className="border border-dashed border-border bg-surface-subtle p-5 text-center">
+              <div className="rounded-lg border border-dashed border-border bg-surface-subtle p-5 text-center">
                 <CalendarClock className="mx-auto mb-3 text-muted" size={24} />
                 <h3 className="text-sm font-semibold text-foreground">
                   Nenhum evento neste dia
@@ -1109,7 +1101,7 @@ export function EventsPageClient() {
                 return (
                   <article
                     key={event.id}
-                    className="border border-border bg-surface-subtle p-4"
+                    className="rounded-lg border border-border bg-surface-subtle p-4"
                   >
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <div>
@@ -1217,11 +1209,10 @@ export function EventsPageClient() {
 
       {scheduleState.isOpen ? (
         <EventScheduleModal
-          key={`${scheduleState.event.id}-${
-            scheduleState.schedule?.assignments
-              .map((assignment) => assignment.id)
-              .join(":") ?? "loading"
-          }`}
+          key={`${scheduleState.event.id}-${scheduleState.schedule?.assignments
+            .map((assignment) => assignment.id)
+            .join(":") ?? "loading"
+            }`}
           event={scheduleState.event}
           schedule={scheduleState.schedule}
           ministries={ministries}

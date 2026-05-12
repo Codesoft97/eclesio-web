@@ -474,10 +474,10 @@ export function FinancePageClient() {
       ) : null}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <article className="border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
+        <article className="rounded-xl border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium opacity-75">Saldo atual</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-accent text-accent-foreground">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
               <Wallet size={17} />
             </span>
           </div>
@@ -486,10 +486,10 @@ export function FinancePageClient() {
           </p>
         </article>
 
-        <article className="border border-border bg-surface p-5 shadow-sm">
+        <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium text-muted">Receitas efetivadas</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-success">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-subtle text-success">
               <TrendingUp size={17} />
             </span>
           </div>
@@ -498,10 +498,10 @@ export function FinancePageClient() {
           </p>
         </article>
 
-        <article className="border border-border bg-surface p-5 shadow-sm">
+        <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium text-muted">Despesas efetivadas</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-danger">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-subtle text-danger">
               <TrendingDown size={17} />
             </span>
           </div>
@@ -510,10 +510,10 @@ export function FinancePageClient() {
           </p>
         </article>
 
-        <article className="border border-border bg-surface p-5 shadow-sm">
+        <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium text-muted">Pendentes</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-accent">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-subtle text-accent">
               <Clock3 size={17} />
             </span>
           </div>
@@ -524,10 +524,10 @@ export function FinancePageClient() {
         </article>
       </section>
 
-      <section className="mt-6 border border-border bg-surface shadow-sm">
+      <section className="mt-6 rounded-xl border border-border bg-surface shadow-sm">
         <div className="grid gap-4 border-b border-border p-4 lg:flex lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-surface-subtle text-foreground">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
               <CircleDollarSign size={18} />
             </span>
             <div>
@@ -569,7 +569,7 @@ export function FinancePageClient() {
             </Button>
             <input
               type="month"
-              className="h-10 min-w-36 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground focus:border-accent focus:outline-none"
+              className="h-10 min-w-36 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
               value={visibleMonth}
               onChange={(event) => setVisibleMonth(event.target.value)}
               aria-label="Selecionar mês"
@@ -601,7 +601,7 @@ export function FinancePageClient() {
         ) : transactions.length === 0 ? (
           <div className="grid min-h-72 place-items-center p-8 text-center">
             <div className="max-w-sm">
-              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center bg-surface-subtle text-foreground">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
                 <CircleDollarSign size={24} />
               </span>
               <h3 className="text-lg font-semibold text-foreground">
@@ -622,7 +622,7 @@ export function FinancePageClient() {
               {transactions.map((transaction) => (
                 <article
                   key={transaction.id}
-                  className="border border-border bg-surface-subtle p-4"
+                  className="rounded-lg border border-border bg-surface-subtle p-4"
                 >
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div>
@@ -642,13 +642,13 @@ export function FinancePageClient() {
                   </div>
 
                   <div className="mb-4 flex flex-wrap gap-2 text-xs font-semibold">
-                    <span className="border border-border bg-surface px-2 py-1 text-foreground">
+                    <span className="rounded-md border border-border bg-surface px-2 py-1 text-foreground">
                       {getTypeLabel(transaction.type)}
                     </span>
                     <span
                       className={`border px-2 py-1 ${
                         transaction.isEffective
-                          ? "border-success/30 bg-success/10 text-success"
+                          ? "rounded-md border-success/30 bg-success/10 text-success"
                           : "border-accent/40 bg-accent/10 text-foreground"
                       }`}
                     >
@@ -743,7 +743,7 @@ export function FinancePageClient() {
                         <span
                           className={`inline-flex border px-2 py-1 text-xs font-semibold ${
                             transaction.isEffective
-                              ? "border-success/30 bg-success/10 text-success"
+                              ? "rounded-md border-success/30 bg-success/10 text-success"
                               : "border-accent/40 bg-accent/10 text-foreground"
                           }`}
                         >

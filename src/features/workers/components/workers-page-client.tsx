@@ -435,7 +435,7 @@ export function WorkersPageClient() {
       </div>
 
       {error ? (
-        <div className="mb-4 grid gap-3 border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex sm:items-center sm:justify-between">
+        <div className="mb-4 grid gap-3 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex sm:items-center sm:justify-between">
           <span>{error}</span>
           <Button type="button" variant="ghost" onClick={refreshWorkers}>
             <RefreshCw size={16} />
@@ -445,20 +445,20 @@ export function WorkersPageClient() {
       ) : null}
 
       <section className="grid gap-4 md:grid-cols-3">
-        <article className="border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
+        <article className="rounded-xl border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium opacity-75">Obreiros cadastrados</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-accent text-accent-foreground">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
               <UsersRound size={17} />
             </span>
           </div>
           <p className="text-3xl font-semibold">{workers.length}</p>
         </article>
 
-        <article className="border border-border bg-surface p-5 shadow-sm">
+        <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium text-muted">Ministérios</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-foreground">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
               <Landmark size={17} />
             </span>
           </div>
@@ -467,10 +467,10 @@ export function WorkersPageClient() {
           </p>
         </article>
 
-        <article className="border border-border bg-surface p-5 shadow-sm">
+        <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-medium text-muted">Funções</p>
-            <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-accent">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-subtle text-accent">
               <ShieldCheck size={17} />
             </span>
           </div>
@@ -481,10 +481,10 @@ export function WorkersPageClient() {
       </section>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_24rem]">
-        <section className="border border-border bg-surface shadow-sm">
+        <section className="rounded-xl border border-border bg-surface shadow-sm">
           <div className="grid gap-4 border-b border-border p-4 sm:flex sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-surface-subtle text-foreground">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
                 <UserCog size={18} />
               </span>
               <div>
@@ -521,7 +521,7 @@ export function WorkersPageClient() {
           ) : workers.length === 0 ? (
             <div className="grid min-h-72 place-items-center p-8 text-center">
               <div className="max-w-sm">
-                <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center bg-surface-subtle text-foreground">
+                <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-subtle text-foreground">
                   <UserCog size={24} />
                 </span>
                 <h3 className="text-lg font-semibold text-foreground">
@@ -542,7 +542,7 @@ export function WorkersPageClient() {
                 {workers.map((worker) => (
                   <article
                     key={worker.id}
-                    className="border border-border bg-surface-subtle p-4"
+                    className="rounded-lg border border-border bg-surface-subtle p-4"
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div>
@@ -553,7 +553,7 @@ export function WorkersPageClient() {
                           {formatBrazilianPhone(worker.whatsapp)}
                         </p>
                       </div>
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-primary text-xs font-semibold text-primary-foreground">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                         {worker.name.slice(0, 1).toUpperCase()}
                       </span>
                     </div>
@@ -616,7 +616,7 @@ export function WorkersPageClient() {
                       >
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-primary text-xs font-semibold text-primary-foreground">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               {worker.name.slice(0, 1).toUpperCase()}
                             </span>
                             <div>
@@ -673,7 +673,7 @@ export function WorkersPageClient() {
           )}
         </section>
 
-        <aside className="border border-border bg-surface shadow-sm xl:sticky xl:top-5 xl:self-start">
+        <aside className="rounded-xl border border-border bg-surface shadow-sm xl:sticky xl:top-5 xl:self-start">
           <div className="grid gap-3 border-b border-border p-4 sm:flex sm:items-center sm:justify-between xl:grid xl:items-start">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
@@ -696,7 +696,7 @@ export function WorkersPageClient() {
             {ministries.map((ministry) => (
               <article
                 key={ministry.id}
-                className="border border-border bg-surface-subtle p-4"
+                className="rounded-lg border border-border bg-surface-subtle p-4"
               >
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div>
@@ -708,7 +708,7 @@ export function WorkersPageClient() {
                   <div className="flex shrink-0 gap-1">
                     <button
                       type="button"
-                      className="flex h-8 w-8 cursor-pointer items-center justify-center border border-border bg-surface text-muted transition hover:border-accent hover:text-foreground"
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface text-muted transition-all duration-200 hover:border-accent hover:text-foreground"
                       onClick={() => openEditMinistryModal(ministry)}
                       aria-label={`Editar ministério ${ministry.name}`}
                     >
@@ -716,7 +716,7 @@ export function WorkersPageClient() {
                     </button>
                     <button
                       type="button"
-                      className="flex h-8 w-8 cursor-pointer items-center justify-center border border-danger/40 bg-surface text-danger transition hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-danger/40 bg-surface text-danger transition-all duration-200 hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                       onClick={() => handleDeleteMinistry(ministry)}
                       disabled={deletingMinistryId === ministry.id}
                       aria-label={`Excluir ministério ${ministry.name}`}
@@ -734,7 +734,7 @@ export function WorkersPageClient() {
                   {ministry.roles.map((role) => (
                     <span
                       key={role.id}
-                      className="inline-flex items-center gap-2 border border-border bg-surface px-2 py-1 text-xs font-medium text-foreground"
+                      className="inline-flex items-center gap-2 rounded-md border border-border bg-surface px-2 py-1 text-xs font-medium text-foreground"
                     >
                       {role.name}
                       <button

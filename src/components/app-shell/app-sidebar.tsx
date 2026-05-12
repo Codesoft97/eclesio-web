@@ -35,6 +35,15 @@ interface AppSidebarProps {
   onToggleCollapse: () => void;
 }
 
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+}
+
 export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -57,7 +66,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
 
   return (
     <aside
-      className={`flex min-h-screen w-full flex-col border-r border-border bg-surface py-5 transition-all duration-300 ${
+      className={`flex min-h-screen w-full flex-col border-r border-border bg-surface/80 py-5 backdrop-blur-xl transition-all duration-300 ${
         isCollapsed ? "px-3" : "px-4"
       }`}
     >
@@ -80,22 +89,27 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="flex h-10 w-10 cursor-pointer items-center justify-center border border-border text-muted transition hover:border-accent hover:text-foreground"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-border text-muted transition-all duration-200 hover:border-accent hover:text-foreground"
           aria-label={isCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
           aria-expanded={!isCollapsed}
           title={isCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
         >
-          {isCollapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+          {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
         </button>
       </div>
 
       {isCollapsed ? null : (
-        <div className="mt-4 border border-border bg-surface-subtle p-3 text-xs text-muted">
-          <div className="mb-2 flex items-center gap-2 text-foreground">
-            <Church size={14} />
-            <span className="font-semibold">Conta ativa</span>
+        <div className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-surface-subtle p-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
+            {getInitials(session?.user.name ?? "U")}
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 text-xs text-foreground">
+              <Church size={12} />
+              <span className="font-semibold">Conta ativa</span>
+            </div>
+            <p className="truncate text-xs text-muted">{session?.user.email ?? "Aguardando sessão"}</p>
           </div>
-          <p className="truncate">{session?.user.email ?? "Aguardando sessão"}</p>
         </div>
       )}
 
@@ -110,12 +124,12 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
               href={item.href}
               aria-label={item.label}
               title={isCollapsed ? item.label : undefined}
-              className={`flex h-11 items-center border text-sm font-medium transition ${
+              className={`flex h-11 items-center rounded-lg border text-sm font-medium transition-all duration-200 ${
                 isCollapsed ? "justify-center px-0" : "gap-3 px-3"
               } ${
                 isActive
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-transparent text-muted hover:border-border hover:bg-surface-subtle hover:text-foreground"
+                  ? "border-accent/30 bg-accent text-accent-foreground shadow-sm"
+                  : "border-transparent text-muted hover:bg-surface-subtle hover:text-foreground"
               }`}
             >
               <Icon size={17} />

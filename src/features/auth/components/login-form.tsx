@@ -44,7 +44,7 @@ export function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid gap-4 border border-border bg-surface p-5 shadow-sm"
+      className="grid gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm"
     >
       <Field
         label="Email"
@@ -68,7 +68,7 @@ export function LoginForm() {
         required
       />
       {error ? (
-        <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
           {error}
         </p>
       ) : null}

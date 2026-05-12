@@ -205,7 +205,7 @@ export function MembersPageClient() {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="border border-border bg-surface px-4 py-3 text-sm shadow-sm">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3 text-sm shadow-sm">
             <span className="text-muted">Total cadastrado</span>
             <strong className="ml-3 text-foreground">{members.length}</strong>
           </div>
@@ -217,7 +217,7 @@ export function MembersPageClient() {
       </div>
 
       {error ? (
-        <div className="mb-4 flex flex-col gap-3 border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex-row sm:items-center sm:justify-between">
           <span>{error}</span>
           <Button type="button" variant="ghost" onClick={refreshMembers}>
             <RefreshCw size={16} />
@@ -226,10 +226,10 @@ export function MembersPageClient() {
         </div>
       ) : null}
 
-      <section className="border border-border bg-surface shadow-sm">
+      <section className="rounded-xl border border-border bg-surface shadow-sm">
         <div className="flex items-center justify-between gap-4 border-b border-border p-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center bg-surface-subtle text-foreground">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
               <Users size={18} />
             </span>
             <div>
@@ -253,7 +253,7 @@ export function MembersPageClient() {
         ) : members.length === 0 ? (
           <div className="grid min-h-64 place-items-center p-8 text-center">
             <div className="max-w-sm">
-              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center bg-surface-subtle text-foreground">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-subtle text-foreground">
                 <UserRound size={24} />
               </span>
               <h3 className="text-lg font-semibold text-foreground">Nenhum membro cadastrado</h3>
@@ -282,7 +282,7 @@ export function MembersPageClient() {
                   <tr key={member.id} className="border-b border-border last:border-b-0">
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-primary text-xs font-semibold text-primary-foreground">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                           {member.name.slice(0, 1).toUpperCase()}
                         </span>
                         <div>

@@ -286,11 +286,11 @@ export default function DashboardPage() {
           return (
             <article
               key={card.label}
-              className="border border-border bg-surface p-5 shadow-sm"
+              className="rounded-xl border border-border bg-surface p-5 shadow-sm transition-shadow duration-300 hover:shadow-md"
             >
               <div className="mb-6 flex items-center justify-between">
                 <p className="text-sm font-medium text-muted">{card.label}</p>
-                <span className="flex h-9 w-9 items-center justify-center bg-surface-subtle text-foreground">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
                   <Icon size={17} />
                 </span>
               </div>
@@ -303,7 +303,7 @@ export default function DashboardPage() {
       </section>
 
       {error ? (
-        <div className="mt-6 grid gap-3 border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex sm:items-center sm:justify-between">
+        <div className="mt-6 grid gap-3 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex sm:items-center sm:justify-between">
           <span>{error}</span>
           <Button type="button" variant="ghost" onClick={refreshDashboard}>
             <RefreshCw size={16} />
@@ -313,7 +313,7 @@ export default function DashboardPage() {
       ) : null}
 
       <section className="mt-6 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <article className="border border-border bg-surface p-5 shadow-sm">
+        <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="mb-5 grid gap-3 border-b border-border pb-4 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
@@ -325,7 +325,7 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/app/eventos"
-              className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 border border-border px-4 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent"
+              className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
             >
               Ver calendário
             </Link>
@@ -339,7 +339,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : visibleUpcomingEvents.length === 0 ? (
-            <div className="border border-dashed border-border bg-surface-subtle p-6 text-center">
+            <div className="rounded-lg border border-dashed border-border bg-surface-subtle p-6 text-center">
               <CalendarDays className="mx-auto mb-3 text-muted" size={26} />
               <h3 className="text-base font-semibold text-foreground">
                 Nenhum evento próximo
@@ -353,7 +353,7 @@ export default function DashboardPage() {
               {visibleUpcomingEvents.map((event) => (
                 <article
                   key={event.id}
-                  className="border border-border bg-surface-subtle p-4"
+                  className="rounded-lg border border-border bg-surface-subtle p-4 transition-shadow duration-300 hover:shadow-sm"
                 >
                   <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                     <div>
@@ -364,7 +364,7 @@ export default function DashboardPage() {
                         {event.title}
                       </h3>
                     </div>
-                    <span className="w-fit border border-accent/40 bg-accent/10 px-2 py-1 text-xs font-semibold text-foreground">
+                    <span className="w-fit rounded-md border border-accent/40 bg-accent/10 px-2 py-1 text-xs font-semibold text-foreground">
                       {event.isRecurring ? "Recorrente" : "Avulso"}
                     </span>
                   </div>
@@ -382,14 +382,14 @@ export default function DashboardPage() {
           )}
         </article>
 
-        <article className="border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
+        <article className="rounded-xl border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
           <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-70">
             Rotina da semana
           </p>
           <h2 className="mt-3 text-xl font-semibold">Eventos do mês</h2>
-          <div className="mt-5 h-1 w-20 bg-accent" />
+          <div className="mt-5 h-1 w-20 rounded-full bg-accent" />
 
-          <div className="mt-7 border border-white/10 bg-white/[0.04] p-4 dark:border-border dark:bg-surface-subtle">
+          <div className="mt-7 rounded-lg border border-white/10 bg-white/[0.04] p-4 dark:border-border dark:bg-surface-subtle">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] opacity-60">
@@ -399,7 +399,7 @@ export default function DashboardPage() {
                   {formatMonthTitle(calendarMonth)}
                 </h3>
               </div>
-              <span className="border border-accent/40 bg-accent/10 px-2 py-1 text-xs font-semibold text-accent">
+              <span className="rounded-md border border-accent/40 bg-accent/10 px-2 py-1 text-xs font-semibold text-accent">
                 {calendarMonthEventsCount} evento(s)
               </span>
             </div>
@@ -427,7 +427,7 @@ export default function DashboardPage() {
                         ? `${eventsCount} evento(s) em ${day.toLocaleDateString("pt-BR")}`
                         : `Sem eventos em ${day.toLocaleDateString("pt-BR")}`
                     }
-                    className={`relative flex min-h-10 cursor-pointer flex-col items-center justify-center border text-xs font-semibold transition hover:border-accent hover:text-accent ${
+                    className={`relative flex min-h-10 cursor-pointer flex-col items-center justify-center rounded-md border text-xs font-semibold transition-all duration-200 hover:border-accent hover:text-accent ${
                       hasEvents
                         ? "border-accent bg-accent text-accent-foreground hover:text-accent-foreground"
                         : "border-white/10 bg-white/[0.03] text-primary-foreground/75 dark:border-border dark:text-foreground/70"
@@ -437,7 +437,7 @@ export default function DashboardPage() {
                   >
                     <span>{day.getDate()}</span>
                     {hasEvents ? (
-                      <span className="mt-0.5 h-1.5 w-1.5 bg-current" />
+                      <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-current" />
                     ) : null}
                   </Link>
                 );
@@ -445,7 +445,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="mt-4 flex items-center gap-3 text-xs opacity-70">
-              <span className="h-2 w-2 bg-accent" />
+              <span className="h-2 w-2 rounded-full bg-accent" />
               Dias destacados indicam eventos cadastrados no mês.
             </div>
           </div>

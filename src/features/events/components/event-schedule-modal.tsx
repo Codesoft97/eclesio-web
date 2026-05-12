@@ -285,12 +285,12 @@ export function EventScheduleModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-foreground/25 px-3 py-4 backdrop-blur-sm sm:place-items-center">
+    <div className="animate-fade-in fixed inset-0 z-50 grid place-items-end bg-foreground/30 px-3 py-4 backdrop-blur-sm sm:place-items-center">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-schedule-title"
-        className="max-h-[calc(100vh-2rem)] w-full max-w-5xl overflow-y-auto border border-border bg-surface shadow-2xl"
+        className="max-h-[calc(100vh-2rem)] w-full max-w-5xl overflow-y-auto rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
@@ -311,7 +311,7 @@ export function EventScheduleModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center border border-border text-muted transition hover:border-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-muted transition-all duration-200 hover:border-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
             aria-label="Fechar modal"
             disabled={isSubmitting}
           >
@@ -329,7 +329,7 @@ export function EventScheduleModal({
         ) : (
           <form onSubmit={handleSubmit} className="grid gap-4 p-5">
             {!hasWorkerBase ? (
-              <div className="border border-dashed border-border bg-surface-subtle p-5 text-sm leading-6 text-muted">
+              <div className="rounded-lg border border-dashed border-border bg-surface-subtle p-5 text-sm leading-6 text-muted">
                 Cadastre ministérios, funções e obreiros antes de montar uma
                 escala. Depois volte aqui para vincular cada função ao obreiro
                 responsável.
@@ -338,7 +338,7 @@ export function EventScheduleModal({
 
             <div className="grid gap-3">
               {assignments.length === 0 ? (
-                <div className="border border-dashed border-border bg-surface-subtle p-6 text-center">
+                <div className="rounded-lg border border-dashed border-border bg-surface-subtle p-6 text-center">
                   <UserCheck className="mx-auto mb-3 text-muted" size={26} />
                   <h3 className="text-base font-semibold text-foreground">
                     Nenhum novo obreiro para adicionar
@@ -361,12 +361,12 @@ export function EventScheduleModal({
                   return (
                     <div
                       key={assignment.localId}
-                      className="grid gap-3 border border-border bg-surface-subtle p-4 xl:grid-cols-[1fr_1fr_1.4fr_auto] xl:items-end"
+                      className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-4 xl:grid-cols-[1fr_1fr_1.4fr_auto] xl:items-end"
                     >
                       <label className="grid gap-2 text-sm font-medium text-foreground">
                         <span>Ministério #{index + 1}</span>
                         <select
-                          className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
+                          className="h-11 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
                           value={assignment.ministryId}
                           onChange={(eventChange) =>
                             updateAssignment(
@@ -390,7 +390,7 @@ export function EventScheduleModal({
                       <label className="grid gap-2 text-sm font-medium text-foreground">
                         <span>Função</span>
                         <select
-                          className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
+                          className="h-11 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
                           value={assignment.roleId}
                           onChange={(eventChange) =>
                             updateAssignment(
@@ -414,7 +414,7 @@ export function EventScheduleModal({
                       <label className="grid gap-2 text-sm font-medium text-foreground">
                         <span>Obreiro</span>
                         <select
-                          className="h-11 cursor-pointer border border-border bg-surface px-3 text-sm text-foreground transition focus:border-accent focus:outline-none"
+                          className="h-11 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
                           value={assignment.workerId}
                           onChange={(eventChange) =>
                             updateAssignment(
@@ -459,13 +459,13 @@ export function EventScheduleModal({
             </div>
 
             {localError || error ? (
-              <p className="border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+              <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
                 {localError ?? error}
               </p>
             ) : null}
 
             {successMessage && !localError && !error ? (
-              <div className="flex items-center gap-2 border border-success/30 bg-success/10 p-3 text-sm font-medium text-success">
+              <div className="flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 p-3 text-sm font-medium text-success">
                 <CheckCircle2 size={17} />
                 <span>{successMessage}</span>
               </div>
