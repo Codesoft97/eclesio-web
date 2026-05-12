@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BellRing,
   Check,
   CheckCircle2,
   CircleDashed,
@@ -218,9 +219,24 @@ export function EventScheduleSummary({
   }
 
   const groups = groupAssignments(schedule.assignments);
+  const pendingCount = schedule.assignments.filter(
+    (assignment) => assignment.confirmationStatus === "PENDING",
+  ).length;
 
   return (
     <div className="grid gap-2">
+      {showConfirmationActions && pendingCount > 0 ? (
+        <div className="flex items-start gap-2 rounded-lg border border-info/30 bg-info/10 p-3 text-sm text-muted">
+          <BellRing className="mt-0.5 shrink-0 text-info" size={16} />
+          <span>
+            {pendingCount === 1
+              ? "1 pendente receberá"
+              : `${pendingCount} pendentes receberão`}{" "}
+            lembrete automático às 08:00 um dia antes do evento.
+          </span>
+        </div>
+      ) : null}
+
       {groups.map((ministry) => (
         <div
           key={ministry.ministryId}

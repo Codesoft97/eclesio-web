@@ -1,7 +1,16 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { CheckCircle2, Loader2, Plus, UserCheck, X } from "lucide-react";
+import {
+  BellRing,
+  CheckCircle2,
+  Clock3,
+  Loader2,
+  Plus,
+  Send,
+  UserCheck,
+  X,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
@@ -328,6 +337,27 @@ export function EventScheduleModal({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="grid gap-4 p-5">
+            <div className="rounded-lg border border-info/30 bg-info/10 p-4">
+              <div className="flex items-start gap-3">
+                <BellRing
+                  className="mt-0.5 shrink-0 text-info"
+                  size={18}
+                />
+                <div className="grid gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      Avisos automáticos
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-muted">
+                      Ao salvar, o convite de confirmação é enviado automaticamente para
+                      o WhatsApp do obreiro. Quem continuar pendente recebe um lembrete às
+                      08:00 um dia antes do evento.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {!hasWorkerBase ? (
               <div className="rounded-lg border border-dashed border-border bg-surface-subtle p-5 text-sm leading-6 text-muted">
                 Cadastre ministérios, funções e obreiros antes de montar uma

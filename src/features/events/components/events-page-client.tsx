@@ -633,8 +633,8 @@ export function EventsPageClient() {
     const eventId = scheduleState.event.id;
     const successMessage =
       payload.assignments.length > 1
-        ? "Obreiros adicionados à escala."
-        : "Obreiro adicionado à escala.";
+        ? "Obreiros adicionados à escala. Convites automáticos registrados."
+        : "Obreiro adicionado à escala. Convite automático registrado.";
 
     setScheduleState((current) =>
       current.isOpen ? { ...current, isSubmitting: true, error: null, successMessage: null } : current,
