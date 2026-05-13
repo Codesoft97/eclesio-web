@@ -1,11 +1,14 @@
 import {
   ArrowRight,
   BadgeCheck,
+  BellRing,
   CalendarDays,
   Check,
   Church,
+  Clock3,
   HandCoins,
   LayoutDashboard,
+  Send,
   UserCheck,
   Users,
 } from "lucide-react";
@@ -53,7 +56,6 @@ const features = [
 const benefits = [
   "Menos planilhas soltas e grupos confusos no WhatsApp.",
   "Mais clareza para saber quem está escalado e quem confirmou presença.",
-  "Rotina financeira mais organizada para decisões com responsabilidade.",
   "Uma base pronta para evoluir com relatórios, automações e comunicação.",
 ];
 
@@ -196,8 +198,7 @@ export default function LandingPage() {
             <p className="mt-6 max-w-2xl text-base leading-8 text-muted sm:text-lg">
               O Gerencia Igreja ajuda sua igreja a cuidar de membros, eventos,
               escalas de obreiros e financeiro com uma rotina simples e pronta
-              para crescer junto com o ministério. Você pode testar
-              gratuitamente, sem cartão de crédito e sem assinar nada.
+              para crescer junto com o ministério.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -256,10 +257,6 @@ export default function LandingPage() {
             Tudo que a administração precisa, sem tirar o foco do cuidado
             pastoral.
           </h2>
-          <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-            Comece pelo essencial e evolua com uma base organizada: pessoas,
-            agenda, escalas, financeiro e visão de rotina.
-          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -287,27 +284,90 @@ export default function LandingPage() {
       </section>
 
       <section className="border-y border-border bg-surface/60">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
-          <ProductScreenshot
-            src="/eventos_screenshot.png"
-            alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
-            label="Eventos e escalas"
-          />
-          <div className="flex flex-col justify-center">
-            <SectionLabel>Operação mais leve</SectionLabel>
-            <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
-              Menos improviso. Mais previsibilidade para servir bem.
-            </h2>
-            <div className="mt-8 grid gap-4">
-              {benefits.map((benefit) => (
-                <div
-                  key={benefit}
-                  className="flex gap-3 rounded-lg border border-border bg-surface p-4"
-                >
-                  <Check className="mt-0.5 shrink-0 text-accent" size={18} />
-                  <p className="text-sm leading-6 text-muted">{benefit}</p>
-                </div>
-              ))}
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="grid gap-8 lg:grid-cols-2">
+            <ProductScreenshot
+              src="/eventos_screenshot.png"
+              alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
+              label="Eventos e escalas"
+            />
+            <div className="flex flex-col justify-center">
+              <SectionLabel>Operação mais leve</SectionLabel>
+              <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
+                Menos improviso. Mais previsibilidade para servir bem.
+              </h2>
+              <div className="mt-8 grid gap-4">
+                {benefits.map((benefit) => (
+                  <div
+                    key={benefit}
+                    className="flex gap-3 rounded-lg border border-border bg-surface p-4"
+                  >
+                    <Check className="mt-0.5 shrink-0 text-accent" size={18} />
+                    <p className="text-sm leading-6 text-muted">{benefit}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-8 border-t border-border pt-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div>
+              <SectionLabel>WhatsApp automático</SectionLabel>
+              <h3 className="mt-3 text-2xl font-semibold text-foreground sm:text-3xl">
+                A escala chega direto no WhatsApp do obreiro.
+              </h3>
+
+              <div className="mt-6 grid gap-4">
+                {[
+                  {
+                    title: "Convite ao escalar",
+                    description:
+                      "O obreiro recebe a mensagem assim que é vinculado ao evento.",
+                    icon: Send,
+                  },
+                  {
+                    title: "Lembrete um dia antes",
+                    description:
+                      "Quem ainda não respondeu recebe uma nova mensagem na véspera.",
+                    icon: Clock3,
+                  },
+                  {
+                    title: "Sem cobrança manual",
+                    description:
+                      "Aceites e recusas continuam centralizados no acompanhamento da escala.",
+                    icon: BellRing,
+                  },
+                ].map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div key={item.title} className="flex gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                        <Icon size={17} />
+                      </span>
+                      <div>
+                        <h4 className="text-sm font-semibold text-foreground">
+                          {item.title}
+                        </h4>
+                        <p className="mt-1 text-sm leading-6 text-muted">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-surface p-3 shadow-md">
+              <Image
+                src="/convite_escala_whatsapp.jpeg"
+                alt="Mensagem automática de convite de escala enviada pelo WhatsApp ao obreiro"
+                width={1080}
+                height={1606}
+                sizes="(min-width: 1024px) 380px, 90vw"
+                className="h-auto w-full rounded-xl border border-border"
+              />
             </div>
           </div>
         </div>
@@ -320,10 +380,6 @@ export default function LandingPage() {
             <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
               Uma visão clara de receitas, despesas e saldo da igreja.
             </h2>
-            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-              Acompanhe categorias, lançamentos pendentes, transações efetivadas
-              e o saldo financeiro sem depender de planilhas espalhadas.
-            </p>
             <div className="mt-6 grid gap-3">
               {[
                 "Receitas e despesas organizadas por categoria",
@@ -379,11 +435,6 @@ export default function LandingPage() {
           <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
             Escolha o plano ideal para organizar sua igreja agora.
           </h2>
-          <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-            Gerencie as finanças da sua Igreja sem surpresas no fim do mês,
-            gerencie e compartilhe eventos com os membros e muito mais, realize
-            seu cadastro e faça o teste gratuito .
-          </p>
           <div className="mt-6 rounded-lg border border-accent/40 bg-accent/10 p-4 text-sm font-semibold text-foreground">
             Basta criar a conta e testar gratuitamente sem adicionar cartão de
             crédito.
