@@ -541,7 +541,7 @@ export default function LandingPage() {
             <div className="mt-4 grid gap-3 text-sm text-muted">
               <a
                 className="transition hover:text-foreground"
-                href="https://instagram.com/gerenciaigrejaapp"
+                href="https://instagram.com/gerenciaigreja"
                 target="_blank"
                 rel="noreferrer"
               >
