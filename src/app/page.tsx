@@ -7,7 +7,9 @@ import {
   Church,
   Clock3,
   HandCoins,
+  HeartHandshake,
   LayoutDashboard,
+  Megaphone,
   Send,
   UserCheck,
   Users,
@@ -40,10 +42,28 @@ const features = [
     icon: UserCheck,
   },
   {
+    title: "Portal dos membros",
+    description:
+      "Dê aos membros um acesso próprio para acompanhar eventos, comunicados, doações e escalas quando forem obreiros.",
+    icon: Church,
+  },
+  {
     title: "Financeiro da igreja",
     description:
       "Controle receitas, despesas, categorias, saldo e pendências com rastreabilidade desde o lançamento.",
     icon: HandCoins,
+  },
+  {
+    title: "Doações via Pix",
+    description:
+      "Crie objetivos de doação com chave Pix, QR Code e Pix copia e cola para os membros contribuírem com clareza.",
+    icon: HeartHandshake,
+  },
+  {
+    title: "Comunicados",
+    description:
+      "Publique avisos para manter os membros informados sobre recados importantes da igreja em um só lugar.",
+    icon: Megaphone,
   },
   {
     title: "Painel de visão geral",
