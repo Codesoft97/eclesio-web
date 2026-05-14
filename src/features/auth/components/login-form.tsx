@@ -12,6 +12,7 @@ import { getApiErrorMessage } from "@/lib/api";
 
 import { login } from "../auth-service";
 import { useAuth } from "../auth-provider";
+import { getHomePathForRole } from "../role-redirect";
 
 export function LoginForm() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export function LoginForm() {
             user_role: session.user.role,
           });
         }
-        router.push("/app");
+        router.push(getHomePathForRole(session.user.role));
       } catch (err) {
         setError(getApiErrorMessage(err));
       }

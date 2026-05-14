@@ -40,9 +40,12 @@ Para ativar o PostHog no lancamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT
 ## Rotas iniciais
 
 - `/login`: acesso do representante
+- `/membros/convite/:token`: ativacao do acesso de membro por convite
 - `/cadastro`: cadastro da igreja e usuario administrador
 - `/app`: dashboard inicial com sidebar
 - `/app/membros`: modulo de membros
 - `/app/financeiro`: modulo financeiro
 - `/app/eventos`: modulo de eventos e escalas
+- `/app/comunicados`: comunicados publicados no portal dos membros
 - `/app/relatorios`: placeholder de relatorios
+- `/portal`: portal do membro com perfil, comunicados, eventos e escalas

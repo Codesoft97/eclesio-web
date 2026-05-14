@@ -15,7 +15,7 @@ interface AuthContextValue {
   clearSession: () => void;
 }
 
-const STORAGE_KEY = "gerencia-igreja.session";
+export const AUTH_STORAGE_KEY = "gerencia-igreja.session";
 const SESSION_EVENT = "gerencia-igreja-session-change";
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -30,7 +30,7 @@ function subscribe(callback: () => void) {
 }
 
 function getSnapshot() {
-  return window.localStorage.getItem(STORAGE_KEY);
+  return window.localStorage.getItem(AUTH_STORAGE_KEY);
 }
 
 function getServerSnapshot() {
@@ -65,11 +65,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       session,
       setSession(nextSession) {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
+        window.localStorage.setItem(
+          AUTH_STORAGE_KEY,
+          JSON.stringify(nextSession),
+        );
         emitSessionChange();
       },
       clearSession() {
-        window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(AUTH_STORAGE_KEY);
         emitSessionChange();
       },
     }),

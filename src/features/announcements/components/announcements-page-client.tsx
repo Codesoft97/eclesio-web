@@ -2,19 +2,16 @@
 
 import {
   Edit3,
+  Eye,
+  EyeOff,
   Loader2,
-  Mail,
+  Megaphone,
   Plus,
   RefreshCw,
-  Send,
-  ShieldCheck,
-  ShieldOff,
   Trash2,
-  UserRound,
-  Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,50 +20,54 @@ import {
 } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
-import { formatBrazilianPhone } from "@/lib/formatters/phone";
 
-import { MemberAccessInvitationModal } from "./member-access-invitation-modal";
-import { MemberFormModal } from "./member-form-modal";
 import {
-  createMemberAccessInvitation,
-  createMember,
-  deleteMember,
-  listMembers,
-  updateMember,
-} from "../member-service";
-import type {
-  Member,
-  MemberAccessInvitation,
-  MemberPayload,
-} from "../member-types";
+  createAnnouncement,
+  deleteAnnouncement,
+  listAnnouncements,
+  updateAnnouncement,
+} from "../announcement-service";
+import type { Announcement, AnnouncementPayload } from "../announcement-types";
+import { AnnouncementFormModal } from "./announcement-form-modal";
 
 type ModalState =
-  | { isOpen: false; mode: "create"; member: null }
-  | { isOpen: true; mode: "create"; member: null }
-  | { isOpen: true; mode: "edit"; member: Member };
+  | { isOpen: false; mode: "create"; announcement: null }
+  | { isOpen: true; mode: "create"; announcement: null }
+  | { isOpen: true; mode: "edit"; announcement: Announcement };
 
 type ConfirmationState = Omit<
   ConfirmationModalProps,
   "isConfirming" | "onCancel"
 > | null;
 
-function formatDate(value: string) {
+const closedModalState: ModalState = {
+  isOpen: false,
+  mode: "create",
+  announcement: null,
+};
+
+function formatDate(value: string | null) {
+  if (!value) {
+    return "Nao publicado";
+  }
+
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(value));
 }
 
-const closedModalState: ModalState = {
-  isOpen: false,
-  mode: "create",
-  member: null,
-};
+function getPreview(content: string) {
+  const normalized = content.trim().replace(/\s+/g, " ");
+  return normalized.length > 160
+    ? `${normalized.slice(0, 157).trim()}...`
+    : normalized;
+}
 
-export function MembersPageClient() {
+export function AnnouncementsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
-  const [members, setMembers] = useState<Member[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -74,23 +75,21 @@ export function MembersPageClient() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [invitingId, setInvitingId] = useState<string | null>(null);
-  const [invitation, setInvitation] =
-    useState<MemberAccessInvitation | null>(null);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
 
   useEffect(() => {
     let ignore = false;
 
-    async function loadMembers() {
+    async function loadAnnouncements() {
       setIsLoading(true);
       setError(null);
 
       try {
-        const data = await listMembers();
+        const data = await listAnnouncements();
 
         if (!ignore) {
-          setMembers(data);
+          setAnnouncements(data);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -109,25 +108,30 @@ export function MembersPageClient() {
       }
     }
 
-    void loadMembers();
+    void loadAnnouncements();
 
     return () => {
       ignore = true;
     };
   }, [clearSession, reloadKey, router]);
 
-  function refreshMembers() {
+  const publishedCount = useMemo(
+    () => announcements.filter((announcement) => announcement.isPublished).length,
+    [announcements],
+  );
+
+  function refreshAnnouncements() {
     setReloadKey((current) => current + 1);
   }
 
   function openCreateModal() {
     setSubmitError(null);
-    setModalState({ isOpen: true, mode: "create", member: null });
+    setModalState({ isOpen: true, mode: "create", announcement: null });
   }
 
-  function openEditModal(member: Member) {
+  function openEditModal(announcement: Announcement) {
     setSubmitError(null);
-    setModalState({ isOpen: true, mode: "edit", member });
+    setModalState({ isOpen: true, mode: "edit", announcement });
   }
 
   function closeModal() {
@@ -149,19 +153,19 @@ export function MembersPageClient() {
     return true;
   }
 
-  async function handleSubmit(payload: MemberPayload) {
+  async function handleSubmit(payload: AnnouncementPayload) {
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      if (modalState.mode === "edit" && modalState.member) {
-        await updateMember(modalState.member.id, payload);
+      if (modalState.mode === "edit" && modalState.announcement) {
+        await updateAnnouncement(modalState.announcement.id, payload);
       } else {
-        await createMember(payload);
+        await createAnnouncement(payload);
       }
 
       setModalState(closedModalState);
-      refreshMembers();
+      refreshAnnouncements();
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -173,13 +177,19 @@ export function MembersPageClient() {
     }
   }
 
-  async function handleCreateInvitation(member: Member) {
-    setInvitingId(member.id);
+  async function handleTogglePublished(announcement: Announcement) {
+    setPublishingId(announcement.id);
     setError(null);
 
     try {
-      const data = await createMemberAccessInvitation(member.id);
-      setInvitation(data);
+      const updated = await updateAnnouncement(announcement.id, {
+        title: announcement.title,
+        content: announcement.content,
+        isPublished: !announcement.isPublished,
+      });
+      setAnnouncements((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -187,29 +197,31 @@ export function MembersPageClient() {
 
       setError(getApiErrorMessage(err));
     } finally {
-      setInvitingId(null);
+      setPublishingId(null);
     }
   }
 
-  function handleDelete(member: Member) {
+  function handleDelete(announcement: Announcement) {
     setConfirmation({
-      eyebrow: "Exclusão de membro",
-      title: "Excluir membro?",
-      description: `Deseja excluir o membro ${member.name}? Esta ação não poderá ser desfeita.`,
-      confirmLabel: "Excluir membro",
+      eyebrow: "Comunicados",
+      title: "Excluir comunicado?",
+      description: `Deseja excluir o comunicado "${announcement.title}"? Esta acao nao podera ser desfeita.`,
+      confirmLabel: "Excluir comunicado",
       confirmingLabel: "Excluindo...",
       variant: "danger",
-      onConfirm: () => void confirmDelete(member),
+      onConfirm: () => void confirmDelete(announcement),
     });
   }
 
-  async function confirmDelete(member: Member) {
-    setDeletingId(member.id);
+  async function confirmDelete(announcement: Announcement) {
+    setDeletingId(announcement.id);
     setError(null);
 
     try {
-      await deleteMember(member.id);
-      setMembers((current) => current.filter((item) => item.id !== member.id));
+      await deleteAnnouncement(announcement.id);
+      setAnnouncements((current) =>
+        current.filter((item) => item.id !== announcement.id),
+      );
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -227,23 +239,25 @@ export function MembersPageClient() {
       <div className="mb-8 flex flex-col justify-between gap-4 border-b border-border pb-6 xl:flex-row xl:items-end">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-            Pessoas
+            Portal dos membros
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-foreground">Membros</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-foreground">
+            Comunicados
+          </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Cadastre membros, mantenha os contatos atualizados e envie convites
-            de acesso ao portal quando estiver pronto.
+            Publique avisos que os membros podem acompanhar no portal, sem
+            permissao para alterar dados administrativos.
           </p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="rounded-lg border border-border bg-surface px-4 py-3 text-sm shadow-sm">
-            <span className="text-muted">Total cadastrado</span>
-            <strong className="ml-3 text-foreground">{members.length}</strong>
+            <span className="text-muted">Publicados</span>
+            <strong className="ml-3 text-foreground">{publishedCount}</strong>
           </div>
           <Button type="button" onClick={openCreateModal}>
             <Plus size={17} />
-            Novo membro
+            Novo comunicado
           </Button>
         </div>
       </div>
@@ -251,7 +265,7 @@ export function MembersPageClient() {
       {error ? (
         <div className="mb-4 flex flex-col gap-3 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger sm:flex-row sm:items-center sm:justify-between">
           <span>{error}</span>
-          <Button type="button" variant="ghost" onClick={refreshMembers}>
+          <Button type="button" variant="ghost" onClick={refreshAnnouncements}>
             <RefreshCw size={16} />
             Tentar novamente
           </Button>
@@ -262,15 +276,28 @@ export function MembersPageClient() {
         <div className="flex items-center justify-between gap-4 border-b border-border p-4">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
-              <Users size={18} />
+              <Megaphone size={18} />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-foreground">Lista de membros</h2>
-              <p className="text-xs text-muted">Dados sincronizados com o backend</p>
+              <h2 className="text-sm font-semibold text-foreground">
+                Lista de comunicados
+              </h2>
+              <p className="text-xs text-muted">
+                Somente publicados aparecem para os membros
+              </p>
             </div>
           </div>
-          <Button type="button" variant="ghost" onClick={refreshMembers} disabled={isLoading}>
-            {isLoading ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={refreshAnnouncements}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin" size={16} />
+            ) : (
+              <RefreshCw size={16} />
+            )}
             Atualizar
           </Button>
         </div>
@@ -278,109 +305,108 @@ export function MembersPageClient() {
         {isLoading ? (
           <div className="grid min-h-64 place-items-center p-8 text-center text-sm text-muted">
             <div>
-              <Loader2 className="mx-auto mb-3 animate-spin text-accent" size={24} />
-              Carregando membros...
+              <Loader2
+                className="mx-auto mb-3 animate-spin text-accent"
+                size={24}
+              />
+              Carregando comunicados...
             </div>
           </div>
-        ) : members.length === 0 ? (
+        ) : announcements.length === 0 ? (
           <div className="grid min-h-64 place-items-center p-8 text-center">
             <div className="max-w-sm">
               <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-subtle text-foreground">
-                <UserRound size={24} />
+                <Megaphone size={24} />
               </span>
-              <h3 className="text-lg font-semibold text-foreground">Nenhum membro cadastrado</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Nenhum comunicado criado
+              </h3>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Comece adicionando o primeiro membro. Depois vamos evoluir esta área com filtros, famílias e histórico.
+                Crie o primeiro aviso para deixar o portal dos membros mais
+                util no dia a dia.
               </p>
               <Button type="button" className="mt-5" onClick={openCreateModal}>
                 <Plus size={17} />
-                Cadastrar primeiro membro
+                Criar comunicado
               </Button>
             </div>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[960px] border-collapse text-left text-sm">
               <thead className="border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">Nome</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">WhatsApp</th>
+                  <th className="px-4 py-3 font-semibold">Comunicado</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Cadastro</th>
+                  <th className="px-4 py-3 font-semibold">Publicado em</th>
                   <th className="px-4 py-3 text-right font-semibold">Acoes</th>
                 </tr>
               </thead>
               <tbody>
-                {members.map((member) => (
-                  <tr key={member.id} className="border-b border-border last:border-b-0">
+                {announcements.map((announcement) => (
+                  <tr
+                    key={announcement.id}
+                    className="border-b border-border last:border-b-0"
+                  >
                     <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                          {member.name.slice(0, 1).toUpperCase()}
-                        </span>
-                        <div>
-                          <p className="font-medium text-foreground">{member.name}</p>
-                          <p className="font-mono text-xs text-muted">{member.id.slice(0, 8)}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-foreground">
-                      {member.email ? (
-                        <div className="flex items-center gap-2">
-                          <Mail size={15} className="text-muted" />
-                          <span>{member.email}</span>
-                        </div>
-                      ) : (
-                        <span className="text-muted">Nao informado</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-4 text-foreground">
-                      {formatBrazilianPhone(member.whatsapp)}
+                      <p className="font-medium text-foreground">
+                        {announcement.title}
+                      </p>
+                      <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
+                        {getPreview(announcement.content)}
+                      </p>
                     </td>
                     <td className="px-4 py-4">
                       <span
                         className={`inline-flex w-fit items-center gap-1 rounded-md border px-2 py-1 text-xs font-semibold ${
-                          member.isActive
+                          announcement.isPublished
                             ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                            : "border-danger/30 bg-danger/10 text-danger"
+                            : "border-border bg-surface-subtle text-muted"
                         }`}
                       >
-                        {member.isActive ? (
-                          <ShieldCheck size={13} />
+                        {announcement.isPublished ? (
+                          <Eye size={13} />
                         ) : (
-                          <ShieldOff size={13} />
+                          <EyeOff size={13} />
                         )}
-                        {member.isActive ? "Ativo" : "Inativo"}
+                        {announcement.isPublished ? "Publicado" : "Rascunho"}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-muted">{formatDate(member.createdAt)}</td>
+                    <td className="px-4 py-4 text-muted">
+                      {formatDate(announcement.publishedAt)}
+                    </td>
                     <td className="px-4 py-4">
                       <div className="flex justify-end gap-2">
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => void handleCreateInvitation(member)}
-                          disabled={!member.isActive || invitingId === member.id}
+                          onClick={() => void handleTogglePublished(announcement)}
+                          disabled={publishingId === announcement.id}
                         >
-                          {invitingId === member.id ? (
+                          {publishingId === announcement.id ? (
                             <Loader2 className="animate-spin" size={16} />
+                          ) : announcement.isPublished ? (
+                            <EyeOff size={16} />
                           ) : (
-                            <Send size={16} />
+                            <Eye size={16} />
                           )}
-                          Convidar
+                          {announcement.isPublished ? "Recolher" : "Publicar"}
                         </Button>
-                        <Button type="button" variant="ghost" onClick={() => openEditModal(member)}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => openEditModal(announcement)}
+                        >
                           <Edit3 size={16} />
                           Editar
                         </Button>
                         <Button
                           type="button"
                           variant="danger"
-                          onClick={() => handleDelete(member)}
-                          disabled={deletingId === member.id}
+                          onClick={() => handleDelete(announcement)}
+                          disabled={deletingId === announcement.id}
                         >
-                          {deletingId === member.id ? (
+                          {deletingId === announcement.id ? (
                             <Loader2 className="animate-spin" size={16} />
                           ) : (
                             <Trash2 size={16} />
@@ -398,21 +424,16 @@ export function MembersPageClient() {
       </section>
 
       {modalState.isOpen ? (
-        <MemberFormModal
-          key={modalState.mode === "edit" ? modalState.member.id : "create"}
+        <AnnouncementFormModal
+          key={
+            modalState.mode === "edit" ? modalState.announcement.id : "create"
+          }
           mode={modalState.mode}
-          member={modalState.member}
+          announcement={modalState.announcement}
           isSubmitting={isSubmitting}
           error={submitError}
           onClose={closeModal}
           onSubmit={(payload) => void handleSubmit(payload)}
-        />
-      ) : null}
-
-      {invitation ? (
-        <MemberAccessInvitationModal
-          invitation={invitation}
-          onClose={() => setInvitation(null)}
         />
       ) : null}
 

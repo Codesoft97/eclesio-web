@@ -1,4 +1,4 @@
-export type UserRole = "CHURCH_ADMIN";
+export type UserRole = "CHURCH_ADMIN" | "MEMBER";
 
 export interface AuthenticatedChurch {
   id: string;
@@ -13,6 +13,7 @@ export interface AuthenticatedUser {
   email: string;
   whatsapp: string;
   role: UserRole;
+  memberId: string | null;
 }
 
 export interface AuthSession {

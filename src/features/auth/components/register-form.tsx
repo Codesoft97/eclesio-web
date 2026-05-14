@@ -13,6 +13,7 @@ import { formatBrazilianPhone, getPhoneDigits } from "@/lib/formatters/phone";
 
 import { register } from "../auth-service";
 import { useAuth } from "../auth-provider";
+import { getHomePathForRole } from "../role-redirect";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -53,7 +54,7 @@ export function RegisterForm() {
             user_role: session.user.role,
           });
         }
-        router.push("/app");
+        router.push(getHomePathForRole(session.user.role));
       } catch (err) {
         setError(getApiErrorMessage(err));
       }

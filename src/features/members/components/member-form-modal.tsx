@@ -33,11 +33,16 @@ export function MemberFormModal({
 }: MemberFormModalProps) {
   const [form, setForm] = useState(() => ({
     name: member?.name ?? "",
+    email: member?.email ?? "",
     whatsapp: member ? formatBrazilianPhone(member.whatsapp) : "",
+    isActive: member?.isActive ?? true,
   }));
   const [localError, setLocalError] = useState<string | null>(null);
 
-  function updateField(field: keyof typeof form, value: string) {
+  function updateField<FieldName extends keyof typeof form>(
+    field: FieldName,
+    value: (typeof form)[FieldName],
+  ) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
@@ -51,7 +56,9 @@ export function MemberFormModal({
 
     const payload = {
       name: form.name.trim().replace(/\s+/g, " "),
+      email: form.email.trim().toLowerCase() || undefined,
       whatsapp: getPhoneDigits(form.whatsapp),
+      isActive: mode === "edit" ? form.isActive : undefined,
     };
 
     if (payload.name.length < 2) {
@@ -61,6 +68,11 @@ export function MemberFormModal({
 
     if (payload.whatsapp.length < 10) {
       setLocalError("Informe um WhatsApp valido.");
+      return;
+    }
+
+    if (payload.email && !payload.email.includes("@")) {
+      setLocalError("Informe um email valido ou deixe em branco.");
       return;
     }
 
@@ -118,6 +130,14 @@ export function MemberFormModal({
             required
           />
           <Field
+            label="Email"
+            type="email"
+            value={form.email}
+            onChange={(event) => updateField("email", event.target.value)}
+            placeholder="membro@igreja.com"
+            autoComplete="email"
+          />
+          <Field
             label="WhatsApp"
             value={form.whatsapp}
             onChange={(event) => updateWhatsapp(event.target.value)}
@@ -127,6 +147,23 @@ export function MemberFormModal({
             maxLength={15}
             required
           />
+
+          {mode === "edit" ? (
+            <label className="flex items-start gap-3 rounded-lg border border-border bg-surface-subtle p-3 text-sm text-foreground">
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(event) => updateField("isActive", event.target.checked)}
+                className="mt-1 h-4 w-4 accent-accent"
+              />
+              <span>
+                <span className="block font-semibold">Membro ativo</span>
+                <span className="text-xs leading-5 text-muted">
+                  Membros inativos perdem acesso ao portal imediatamente.
+                </span>
+              </span>
+            </label>
+          ) : null}
 
           {localError || error ? (
             <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
@@ -153,4 +190,3 @@ export function MemberFormModal({
     </div>
   );
 }
-

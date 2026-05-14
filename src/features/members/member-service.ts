@@ -1,6 +1,10 @@
 ﻿import { api } from "@/lib/api";
 
-import type { Member, MemberPayload } from "./member-types";
+import type {
+  Member,
+  MemberAccessInvitation,
+  MemberPayload,
+} from "./member-types";
 
 export async function listMembers() {
   const { data } = await api.get<Member[]>("/members");
@@ -19,4 +23,11 @@ export async function updateMember(memberId: string, payload: MemberPayload) {
 
 export async function deleteMember(memberId: string) {
   await api.delete(`/members/${memberId}`);
+}
+
+export async function createMemberAccessInvitation(memberId: string) {
+  const { data } = await api.post<MemberAccessInvitation>(
+    `/members/${memberId}/access-invitations`,
+  );
+  return data;
 }

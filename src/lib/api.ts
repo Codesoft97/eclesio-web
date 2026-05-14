@@ -46,6 +46,20 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
   ],
   ["code must match", "O código deve ter 6 dígitos."],
   ["resettoken must match", "Código de redefinição inválido ou expirado."],
+  ["convite invalido ou expirado", "Convite invalido ou expirado."],
+  [
+    "membro ja possui acesso ao portal",
+    "Este membro ja possui acesso ao portal.",
+  ],
+  [
+    "e-mail ou whatsapp ja cadastrado para esta igreja",
+    "E-mail ou WhatsApp ja cadastrado para esta igreja.",
+  ],
+  ["e-mail ja cadastrado", "E-mail ja cadastrado."],
+  [
+    "a confirmacao de senha nao confere",
+    "A confirmacao de senha nao confere.",
+  ],
   ["regular expression", "Revise os dados informados e tente novamente."],
   ["should not exist", "Revise os dados informados e tente novamente."],
 ];
@@ -60,6 +74,10 @@ export const api = axios.create({
 
 export function isUnauthorizedApiError(error: unknown) {
   return axios.isAxiosError(error) && error.response?.status === 401;
+}
+
+export function isForbiddenApiError(error: unknown) {
+  return axios.isAxiosError(error) && error.response?.status === 403;
 }
 
 export function getApiErrorMessage(error: unknown) {

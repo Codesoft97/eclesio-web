@@ -7,6 +7,7 @@ import {
   HandCoins,
   Home,
   LogOut,
+  Megaphone,
   PanelLeftClose,
   PanelLeftOpen,
   UserCog,
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
   { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
+  { href: "/app/comunicados", label: "Comunicados", icon: Megaphone },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 

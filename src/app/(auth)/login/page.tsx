@@ -13,7 +13,7 @@ export default function LoginPage() {
           Entrar no Gerencia Igreja
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          Use o email do representante para acessar a área administrativa.
+          Use seu email para acessar a area administrativa ou o portal de membro.
         </p>
       </div>
       <LoginForm />
