@@ -45,6 +45,7 @@ Para ativar o PostHog no lancamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT
 - `/app`: dashboard inicial com sidebar
 - `/app/membros`: modulo de membros
 - `/app/financeiro`: modulo financeiro
+- `/app/doacoes`: objetivos de doacao via Pix para o portal dos membros
 - `/app/eventos`: modulo de eventos e escalas
 - `/app/comunicados`: comunicados publicados no portal dos membros
 - `/app/relatorios`: placeholder de relatorios

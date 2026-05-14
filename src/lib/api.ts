@@ -57,6 +57,10 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
   ],
   ["e-mail ja cadastrado", "E-mail ja cadastrado."],
   [
+    "objetivo de doacao nao encontrado",
+    "Objetivo de doacao nao encontrado.",
+  ],
+  [
     "a confirmacao de senha nao confere",
     "A confirmacao de senha nao confere.",
   ],

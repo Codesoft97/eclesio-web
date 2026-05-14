@@ -4,6 +4,7 @@ import {
   CalendarDays,
   CheckCircle2,
   CircleDashed,
+  HeartHandshake,
   Loader2,
   Megaphone,
   RefreshCw,
@@ -17,6 +18,9 @@ import { FormEvent, useEffect, useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { useAuth } from "@/features/auth/auth-provider";
+import { DonationPixPanel } from "@/features/donations/components/donation-pix-panel";
+import { listMemberPortalDonations } from "@/features/donations/donation-service";
+import type { DonationCampaign } from "@/features/donations/donation-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import {
   formatBrazilianPhone,
@@ -116,6 +120,7 @@ export function MemberPortalPageClient() {
   const [announcements, setAnnouncements] = useState<
     MemberPortalAnnouncement[]
   >([]);
+  const [donations, setDonations] = useState<DonationCampaign[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -140,22 +145,29 @@ export function MemberPortalPageClient() {
       const to = addDays(now, 90);
 
       try {
-        const [profileData, eventsData, schedulesData, announcementsData] =
-          await Promise.all([
-            getMemberPortalProfile(),
-            listMemberPortalEvents({
-              from: now.toISOString(),
-              to: to.toISOString(),
-            }),
-            listMyScheduleAssignments(),
-            listMemberPortalAnnouncements(),
-          ]);
+        const [
+          profileData,
+          eventsData,
+          schedulesData,
+          announcementsData,
+          donationsData,
+        ] = await Promise.all([
+          getMemberPortalProfile(),
+          listMemberPortalEvents({
+            from: now.toISOString(),
+            to: to.toISOString(),
+          }),
+          listMyScheduleAssignments(),
+          listMemberPortalAnnouncements(),
+          listMemberPortalDonations(),
+        ]);
 
         if (!ignore) {
           setProfile(profileData);
           setEvents(eventsData);
           setSchedules(schedulesData);
           setAnnouncements(announcementsData);
+          setDonations(donationsData);
           setProfileForm({
             name: profileData.member.name,
             email: profileData.member.email ?? session?.user.email ?? "",
@@ -431,6 +443,54 @@ export function MemberPortalPageClient() {
                   {isSavingProfile ? "Salvando..." : "Salvar dados"}
                 </Button>
               </form>
+            </article>
+
+            <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
+              <div className="mb-5 flex items-start justify-between gap-4 border-b border-border pb-4">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-subtle text-foreground">
+                    <HeartHandshake size={18} />
+                  </span>
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">
+                      Doacoes
+                    </h2>
+                    <p className="text-sm leading-6 text-muted">
+                      Escolha um objetivo e use o Pix para contribuir.
+                    </p>
+                  </div>
+                </div>
+                <span className="rounded-md border border-border bg-surface-subtle px-2 py-1 text-xs font-semibold text-muted">
+                  {donations.length}
+                </span>
+              </div>
+
+              {donations.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-border bg-surface-subtle p-5 text-center text-sm text-muted">
+                  Nenhuma opcao de doacao ativa no momento.
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {donations.map((donation) => (
+                    <article
+                      key={donation.id}
+                      className="rounded-lg border border-border bg-surface-subtle p-4"
+                    >
+                      <div className="mb-4">
+                        <h3 className="font-semibold text-foreground">
+                          {donation.title}
+                        </h3>
+                        {donation.description ? (
+                          <p className="mt-2 text-sm leading-6 text-muted">
+                            {donation.description}
+                          </p>
+                        ) : null}
+                      </div>
+                      <DonationPixPanel campaign={donation} compact />
+                    </article>
+                  ))}
+                </div>
+              )}
             </article>
 
             <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
