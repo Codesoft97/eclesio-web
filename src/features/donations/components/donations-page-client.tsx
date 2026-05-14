@@ -252,10 +252,10 @@ export function DonationsPageClient() {
             Financeiro
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-foreground">
-            Doacoes
+            Doações
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Crie objetivos de doacao com chave Pix propria. Os objetivos ativos
+            Crie objetivos de doação com chave Pix própria. Os objetivos ativos
             aparecem no portal dos membros com QR Code e Pix copia e cola.
           </p>
         </div>
@@ -319,7 +319,7 @@ export function DonationsPageClient() {
                 className="mx-auto mb-3 animate-spin text-accent"
                 size={24}
               />
-              Carregando doacoes...
+              Carregando doações...
             </div>
           </div>
         ) : campaigns.length === 0 ? (
@@ -332,7 +332,7 @@ export function DonationsPageClient() {
                 Nenhum objetivo criado
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Cadastre a primeira opcao de doacao para disponibilizar Pix aos
+                Cadastre a primeira opção de doação para disponibilizar aos
                 membros.
               </p>
               <Button type="button" className="mt-5" onClick={openCreateModal}>
@@ -350,7 +350,7 @@ export function DonationsPageClient() {
                   <th className="px-4 py-3 font-semibold">Chave Pix</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
                   <th className="px-4 py-3 font-semibold">Criado em</th>
-                  <th className="px-4 py-3 text-right font-semibold">Acoes</th>
+                  <th className="px-4 py-3 text-right font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody>

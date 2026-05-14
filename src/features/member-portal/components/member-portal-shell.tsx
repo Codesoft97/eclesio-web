@@ -1,15 +1,16 @@
 "use client";
 
-import { Loader2, LogOut, UserRound } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useTransition } from "react";
+import { useEffect } from "react";
 
-import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { logout } from "@/features/auth/auth-service";
 import { AUTH_STORAGE_KEY, useAuth } from "@/features/auth/auth-provider";
 import type { UserRole } from "@/features/auth/auth-types";
+
+import { MemberPortalMobileHeader } from "./member-portal-mobile-header";
+import { MemberPortalMobileNav } from "./member-portal-mobile-nav";
+import { MemberPortalSidebar } from "./member-portal-sidebar";
 
 function readStoredRole(): UserRole | null {
   const storedSession = window.localStorage.getItem(AUTH_STORAGE_KEY);
@@ -32,8 +33,7 @@ function readStoredRole(): UserRole | null {
 
 export function MemberPortalShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { session, clearSession } = useAuth();
-  const [isPending, startTransition] = useTransition();
+  const { session } = useAuth();
 
   useEffect(() => {
     if (session) {
@@ -56,17 +56,6 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
     }
   }, [router, session]);
 
-  function handleLogout() {
-    startTransition(async () => {
-      try {
-        await logout();
-      } finally {
-        clearSession();
-        router.push("/login");
-      }
-    });
-  }
-
   if (!session || session.user.role !== "MEMBER") {
     return (
       <div className="grid min-h-screen place-items-center bg-background text-muted">
@@ -80,34 +69,19 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground" data-ph-mask>
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <Logo />
-          <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-2 rounded-lg border border-border bg-surface-subtle px-3 py-2 text-sm text-muted sm:flex">
-              <UserRound size={16} />
-              <span className="max-w-40 truncate">{session.user.name}</span>
-            </div>
-            <ThemeToggle />
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleLogout}
-              disabled={isPending}
-              aria-label="Sair"
-            >
-              <LogOut size={17} />
-              <span className="hidden sm:inline">
-                {isPending ? "Saindo..." : "Sair"}
-              </span>
-            </Button>
-          </div>
+      <MemberPortalMobileHeader />
+      <div className="grid min-h-screen lg:grid-cols-[17rem_minmax(0,1fr)]">
+        <div className="hidden lg:block">
+          <MemberPortalSidebar />
         </div>
-      </header>
-
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {children}
-      </main>
+        <main className="min-w-0 px-4 pb-24 pt-5 sm:px-6 lg:px-8 lg:pb-8">
+          <div className="mb-6 hidden justify-end lg:flex">
+            <ThemeToggle />
+          </div>
+          <div className="animate-fade-in">{children}</div>
+        </main>
+      </div>
+      <MemberPortalMobileNav />
     </div>
   );
 }

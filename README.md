@@ -49,4 +49,9 @@ Para ativar o PostHog no lancamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT
 - `/app/eventos`: modulo de eventos e escalas
 - `/app/comunicados`: comunicados publicados no portal dos membros
 - `/app/relatorios`: placeholder de relatorios
-- `/portal`: portal do membro com perfil, comunicados, eventos e escalas
+- `/portal`: resumo do portal do membro
+- `/portal/perfil`: dados do membro
+- `/portal/comunicados`: comunicados publicados
+- `/portal/doacoes`: objetivos de doacao via Pix
+- `/portal/escalas`: escalas do obreiro/membro
+- `/portal/eventos`: calendario dos proximos eventos
