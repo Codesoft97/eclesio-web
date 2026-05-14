@@ -232,7 +232,7 @@ export function PasswordRecoveryForm() {
         type="email"
         value={form.email}
         onChange={(event) => updateField("email", event.target.value)}
-        placeholder="representante@igreja.com"
+        placeholder="email@exemplo.com"
         autoComplete="email"
         required
       />
