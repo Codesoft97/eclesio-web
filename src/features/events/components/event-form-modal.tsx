@@ -1,10 +1,20 @@
+ 
 "use client";
 
-import { FormEvent, useState } from "react";
-import { CalendarPlus, Repeat2, Save, X } from "lucide-react";
+import { ChangeEvent, FormEvent, useState } from "react";
+import {
+  CalendarPlus,
+  ImagePlus,
+  Repeat2,
+  Save,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { uploadImage } from "@/features/media/media-service";
+import { getApiErrorMessage } from "@/lib/api";
 
 import type { ChurchEvent, EventPayload } from "../event-types";
 
@@ -19,6 +29,9 @@ interface EventFormModalProps {
   onClose: () => void;
   onSubmit: (payload: EventPayload) => void;
 }
+
+const MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -82,15 +95,67 @@ export function EventFormModal({
   onSubmit,
 }: EventFormModalProps) {
   const [form, setForm] = useState(() => getInitialForm(event, initialDate));
+  const [imageAssetId, setImageAssetId] = useState<string | null | undefined>(
+    undefined,
+  );
+  const [previewImageUrl, setPreviewImageUrl] = useState(event?.imageUrl ?? "");
+  const [imageInputKey, setImageInputKey] = useState(0);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
   function updateField(field: keyof typeof form, value: string | boolean) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
+  async function handleImageChange(eventChange: ChangeEvent<HTMLInputElement>) {
+    const file = eventChange.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setLocalError(null);
+
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setLocalError("Use uma imagem em JPG, PNG ou WebP.");
+      eventChange.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setLocalError("A imagem deve ter no maximo 3 MB.");
+      eventChange.target.value = "";
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const uploadedImage = await uploadImage(file);
+      setImageAssetId(uploadedImage.id);
+      setPreviewImageUrl(uploadedImage.imageUrl);
+    } catch (uploadError) {
+      setLocalError(getApiErrorMessage(uploadError));
+      eventChange.target.value = "";
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
+  function removeImage() {
+    setImageAssetId(null);
+    setPreviewImageUrl("");
+    setImageInputKey((current) => current + 1);
+  }
+
   function handleSubmit(eventSubmit: FormEvent<HTMLFormElement>) {
     eventSubmit.preventDefault();
     setLocalError(null);
+
+    if (isUploadingImage) {
+      setLocalError("Aguarde o envio da imagem terminar.");
+      return;
+    }
 
     if (!form.date || !form.time) {
       setLocalError("Informe a data e hora do evento.");
@@ -102,6 +167,10 @@ export function EventFormModal({
       description: form.description.trim(),
       startsAt: toIsoWithTimezone(form.date, form.time),
     };
+
+    if (imageAssetId !== undefined) {
+      payload.imageAssetId = imageAssetId;
+    }
 
     if (mode === "create" && form.isRecurring) {
       payload.isRecurring = true;
@@ -154,7 +223,7 @@ export function EventFormModal({
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-muted transition-all duration-200 hover:border-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
             aria-label="Fechar modal"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isUploadingImage}
           >
             <X size={18} />
           </button>
@@ -183,6 +252,51 @@ export function EventFormModal({
               required
             />
           </label>
+
+          {/* <div className="grid gap-3 border border-border bg-surface-subtle p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Imagem</p>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  JPG, PNG ou WebP de ate 3 MB.
+                </p>
+              </div>
+              <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-foreground transition hover:border-accent">
+                <ImagePlus size={16} />
+                {isUploadingImage ? "Enviando..." : "Enviar imagem"}
+                <input
+                  key={imageInputKey}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  onChange={handleImageChange}
+                  disabled={isSubmitting || isUploadingImage}
+                />
+              </label>
+            </div>
+
+            {previewImageUrl ? (
+              <div className="grid gap-3">
+                <div className="overflow-hidden rounded-lg border border-border bg-surface">
+                  <img
+                    src={previewImageUrl}
+                    alt=""
+                    className="aspect-video w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  disabled={isSubmitting || isUploadingImage}
+                  className="inline-flex h-10 w-fit cursor-pointer items-center justify-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-3 text-sm font-semibold text-danger transition hover:bg-danger/15 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Trash2 size={16} />
+                  Remover imagem
+                </button>
+              </div>
+            ) : null}
+          </div> */}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
@@ -244,13 +358,17 @@ export function EventFormModal({
               type="button"
               variant="ghost"
               onClick={onClose}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploadingImage}
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || isUploadingImage}>
               <Icon size={17} />
-              {isSubmitting ? "Salvando..." : submitLabel}
+              {isUploadingImage
+                ? "Enviando imagem..."
+                : isSubmitting
+                  ? "Salvando..."
+                  : submitLabel}
             </Button>
           </div>
         </form>

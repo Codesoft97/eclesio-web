@@ -30,6 +30,7 @@ export interface MemberPortalEvent {
   id: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   startsAt: string;
   isRecurring: boolean;
   recurrenceGroupId: string | null;
@@ -58,6 +59,7 @@ export interface MemberPortalAnnouncement {
   id: string;
   title: string;
   content: string;
+  imageUrl: string | null;
   publishedAt: string;
   viewsCount: number;
   likesCount: number;

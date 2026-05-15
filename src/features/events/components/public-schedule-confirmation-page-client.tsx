@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -219,6 +220,18 @@ export function PublicScheduleConfirmationPageClient({
                 <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
                   {error}
                 </p>
+              ) : null}
+
+              {schedule.event.imageUrl ? (
+                <div className="overflow-hidden rounded-lg border border-border bg-surface-subtle">
+                  <img
+                    src={schedule.event.imageUrl}
+                    alt=""
+                    className="aspect-video w-full object-cover"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
               ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2">

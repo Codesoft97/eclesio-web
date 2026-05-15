@@ -2,6 +2,7 @@ export interface ChurchEvent {
   id: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   startsAt: string;
   isRecurring: boolean;
   recurrenceGroupId: string | null;
@@ -14,6 +15,7 @@ export interface ChurchEvent {
 export interface EventPayload {
   title: string;
   description: string;
+  imageAssetId?: string | null;
   startsAt: string;
   isRecurring?: boolean;
 }
@@ -74,6 +76,7 @@ export interface PublicChurchEvent {
   shareToken: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   startsAt: string;
   isRecurring: boolean;
   recurrenceGroupId: string | null;
@@ -92,6 +95,7 @@ export interface PublicEventScheduleAssignment {
   event: {
     title: string;
     description: string;
+    imageUrl: string | null;
     startsAt: string;
     isRecurring: boolean;
     recurrenceGroupId: string | null;

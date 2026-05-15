@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { CalendarDays, Loader2, RefreshCw } from "lucide-react";
@@ -183,6 +184,17 @@ export function MemberPortalEventsPageClient() {
                     </span>
                   ) : null}
                 </div>
+                {event.imageUrl ? (
+                  <div className="mt-3 overflow-hidden rounded-lg border border-border bg-surface">
+                    <img
+                      src={event.imageUrl}
+                      alt=""
+                      className="aspect-video w-full object-cover"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                ) : null}
                 {event.description ? (
                   <p className="mt-2 text-sm leading-6 text-muted">
                     {event.description}

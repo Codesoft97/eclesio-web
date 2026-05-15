@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -1121,6 +1122,17 @@ export function EventsPageClient() {
                       </div>
                       <span className="h-2 w-2 shrink-0 bg-accent" />
                     </div>
+                    {event.imageUrl ? (
+                      <div className="mb-4 overflow-hidden rounded-lg border border-border bg-surface">
+                        <img
+                          src={event.imageUrl}
+                          alt=""
+                          className="aspect-video w-full object-cover"
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ) : null}
                     <p className="whitespace-pre-wrap text-sm leading-6 text-muted">
                       {event.description}
                     </p>

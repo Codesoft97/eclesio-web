@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { CalendarDays, Church, Loader2, Share2 } from "lucide-react";
@@ -132,6 +133,18 @@ export function PublicEventPageClient({
             </div>
 
             <div className="grid gap-6 p-6">
+              {event.imageUrl ? (
+                <div className="overflow-hidden rounded-lg border border-border bg-surface-subtle">
+                  <img
+                    src={event.imageUrl}
+                    alt=""
+                    className="aspect-video w-full object-cover"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              ) : null}
+
               <div>
                 <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
                   Descrição

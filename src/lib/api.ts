@@ -72,6 +72,17 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
     "chave pix de assinatura nao configurada",
     "O Pix de assinatura ainda nao foi configurado. Fale com o suporte.",
   ],
+  ["envie uma imagem", "Envie uma imagem para continuar."],
+  [
+    "formato de imagem nao permitido",
+    "Use uma imagem em JPG, PNG ou WebP.",
+  ],
+  ["arquivo de imagem invalido", "Selecione uma imagem valida."],
+  ["a imagem deve ter no maximo 3 mb", "A imagem deve ter no maximo 3 MB."],
+  [
+    "imagem nao encontrada para esta igreja",
+    "Selecione a imagem novamente e tente salvar.",
+  ],
   ["regular expression", "Revise os dados informados e tente novamente."],
   ["should not exist", "Revise os dados informados e tente novamente."],
 ];

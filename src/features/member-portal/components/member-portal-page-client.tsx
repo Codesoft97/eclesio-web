@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -290,6 +291,17 @@ export function MemberPortalPageClient() {
                         <h3 className="mt-2 text-xl font-semibold text-foreground">
                           {nextEvent.title}
                         </h3>
+                        {nextEvent.imageUrl ? (
+                          <div className="mt-3 overflow-hidden rounded-lg border border-border bg-surface">
+                            <img
+                              src={nextEvent.imageUrl}
+                              alt=""
+                              className="aspect-video w-full object-cover"
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                        ) : null}
                         {nextEvent.description ? (
                           <p className="mt-2 text-sm leading-6 text-muted">
                             {nextEvent.description}
@@ -308,6 +320,7 @@ export function MemberPortalPageClient() {
                   <MemberPortalAnnouncementCard
                     announcement={latestAnnouncement}
                     eyebrow="Ultimo comunicado"
+                    sourceName={profile?.church.name ?? "Comunicado da igreja"}
                     actionHref="/portal/comunicados"
                     actionLabel="Ver comunicados"
                     onChange={handleAnnouncementChange}

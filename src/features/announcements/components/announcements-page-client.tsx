@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -353,7 +354,7 @@ export function AnnouncementsPageClient() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1040px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[1120px] border-collapse text-left text-sm">
               <thead className="border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Comunicado</th>
@@ -370,12 +371,25 @@ export function AnnouncementsPageClient() {
                     className="border-b border-border last:border-b-0"
                   >
                     <td className="px-4 py-4">
-                      <p className="font-medium text-foreground">
-                        {announcement.title}
-                      </p>
-                      <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
-                        {getPreview(announcement.content)}
-                      </p>
+                      <div className="flex items-start gap-3">
+                        {announcement.imageUrl ? (
+                          <img
+                            src={announcement.imageUrl}
+                            alt=""
+                            className="h-14 w-20 shrink-0 rounded-md border border-border object-cover"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : null}
+                        <div className="min-w-0">
+                          <p className="font-medium text-foreground">
+                            {announcement.title}
+                          </p>
+                          <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
+                            {getPreview(announcement.content)}
+                          </p>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       <span
