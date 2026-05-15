@@ -19,8 +19,14 @@ import {
   ConfirmationModal,
   type ConfirmationModalProps,
 } from "@/components/ui/confirmation-modal";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import {
+  DEFAULT_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import {
   createDonationCampaign,
@@ -73,6 +79,10 @@ export function DonationsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [campaigns, setCampaigns] = useState<DonationCampaign[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>(() =>
+    getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -92,10 +102,14 @@ export function DonationsPageClient() {
       setError(null);
 
       try {
-        const data = await listDonationCampaigns();
+        const data = await listDonationCampaigns({
+          page: currentPage,
+          limit: DEFAULT_PAGE_SIZE,
+        });
 
         if (!ignore) {
-          setCampaigns(data);
+          setCampaigns(data.items);
+          setPagination(data.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -119,7 +133,7 @@ export function DonationsPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   const activeCount = useMemo(
     () => campaigns.filter((campaign) => campaign.isActive).length,
@@ -171,6 +185,9 @@ export function DonationsPageClient() {
       }
 
       setModalState(closedModalState);
+      if (modalState.mode === "create") {
+        setCurrentPage(1);
+      }
       refreshCampaigns();
     } catch (err) {
       if (await handleUnauthorized(err)) {
@@ -229,9 +246,11 @@ export function DonationsPageClient() {
 
     try {
       await deleteDonationCampaign(campaign.id);
-      setCampaigns((current) =>
-        current.filter((item) => item.id !== campaign.id),
-      );
+      if (campaigns.length === 1 && currentPage > 1) {
+        setCurrentPage((page) => page - 1);
+      } else {
+        refreshCampaigns();
+      }
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -448,6 +467,11 @@ export function DonationsPageClient() {
             </table>
           </div>
         )}
+        <PaginationControls
+          meta={pagination}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </section>
 
       {modalState.isOpen ? (

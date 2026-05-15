@@ -24,8 +24,15 @@ import {
   ConfirmationModal,
   type ConfirmationModalProps,
 } from "@/components/ui/confirmation-modal";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import {
+  DEFAULT_PAGE_SIZE,
+  fetchAllPaginatedItems,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import { FinanceBalanceModal } from "./finance-balance-modal";
 import { FinanceTransactionFormModal } from "./finance-transaction-form-modal";
@@ -176,6 +183,12 @@ export function FinancePageClient() {
   const [categories, setCategories] =
     useState<FinancialCategories>(defaultCategories);
   const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
+  const [summaryTransactions, setSummaryTransactions] = useState<
+    FinancialTransaction[]
+  >([]);
+  const [transactionsPagination, setTransactionsPagination] =
+    useState<PaginationMeta>(() => getEmptyPaginationMeta(DEFAULT_PAGE_SIZE));
+  const [currentPage, setCurrentPage] = useState(1);
   const [visibleMonth, setVisibleMonth] = useState(getCurrentMonthValue);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -198,17 +211,34 @@ export function FinancePageClient() {
       setError(null);
 
       try {
-        const [categoriesData, accountData, transactionsData] =
+        const [
+          categoriesData,
+          accountData,
+          transactionsData,
+          summaryTransactionsData,
+        ] =
           await Promise.all([
             getFinanceCategories(),
             getFinanceAccount(),
-            listFinancialTransactions(visibleMonth),
+            listFinancialTransactions({
+              month: visibleMonth,
+              page: currentPage,
+              limit: DEFAULT_PAGE_SIZE,
+            }),
+            fetchAllPaginatedItems((pagination) =>
+              listFinancialTransactions({
+                month: visibleMonth,
+                ...pagination,
+              }),
+            ),
           ]);
 
         if (!ignore) {
           setCategories(categoriesData);
           setAccount(accountData);
-          setTransactions(transactionsData);
+          setTransactions(transactionsData.items);
+          setSummaryTransactions(summaryTransactionsData);
+          setTransactionsPagination(transactionsData.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -232,24 +262,24 @@ export function FinancePageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router, visibleMonth]);
+  }, [clearSession, currentPage, reloadKey, router, visibleMonth]);
 
   const categoryMap = buildCategoryMap(categories);
   const effectiveRevenue = sumTransactions(
-    transactions,
+    summaryTransactions,
     (transaction) =>
       transaction.isEffective && transaction.type === "REVENUE",
   );
   const effectiveExpense = sumTransactions(
-    transactions,
+    summaryTransactions,
     (transaction) =>
       transaction.isEffective && transaction.type === "EXPENSE",
   );
   const pendingAmount = sumTransactions(
-    transactions,
+    summaryTransactions,
     (transaction) => !transaction.isEffective,
   );
-  const pendingCount = transactions.filter(
+  const pendingCount = summaryTransactions.filter(
     (transaction) => !transaction.isEffective,
   ).length;
 
@@ -259,14 +289,17 @@ export function FinancePageClient() {
 
   function goToPreviousMonth() {
     setVisibleMonth((current) => addMonths(current, -1));
+    setCurrentPage(1);
   }
 
   function goToNextMonth() {
     setVisibleMonth((current) => addMonths(current, 1));
+    setCurrentPage(1);
   }
 
   function goToCurrentMonth() {
     setVisibleMonth(getCurrentMonthValue());
+    setCurrentPage(1);
   }
 
   function openBalanceModal() {
@@ -362,6 +395,9 @@ export function FinancePageClient() {
       }
 
       setModalState(createClosedModalState(visibleMonth));
+      if (modalState.mode === "create") {
+        setCurrentPage(1);
+      }
       refreshFinance();
     } catch (err) {
       if (await handleUnauthorized(err)) {
@@ -423,7 +459,11 @@ export function FinancePageClient() {
 
     try {
       await deleteFinancialTransaction(transaction.id);
-      refreshFinance();
+      if (transactions.length === 1 && currentPage > 1) {
+        setCurrentPage((page) => page - 1);
+      } else {
+        refreshFinance();
+      }
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -571,7 +611,10 @@ export function FinancePageClient() {
               type="month"
               className="h-10 min-w-36 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
               value={visibleMonth}
-              onChange={(event) => setVisibleMonth(event.target.value)}
+              onChange={(event) => {
+                setVisibleMonth(event.target.value);
+                setCurrentPage(1);
+              }}
               aria-label="Selecionar mês"
             />
             <Button
@@ -797,6 +840,11 @@ export function FinancePageClient() {
             </div>
           </>
         )}
+        <PaginationControls
+          meta={transactionsPagination}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </section>
 
       {isBalanceModalOpen ? (

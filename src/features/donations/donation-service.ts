@@ -1,12 +1,17 @@
 import { api } from "@/lib/api";
 
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+
 import type {
   DonationCampaign,
   DonationCampaignPayload,
 } from "./donation-types";
 
-export async function listDonationCampaigns() {
-  const { data } = await api.get<DonationCampaign[]>("/donation-campaigns");
+export async function listDonationCampaigns(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<DonationCampaign>>(
+    "/donation-campaigns",
+    { params },
+  );
   return data;
 }
 
@@ -35,9 +40,10 @@ export async function deleteDonationCampaign(campaignId: string) {
   await api.delete(`/donation-campaigns/${campaignId}`);
 }
 
-export async function listMemberPortalDonations() {
-  const { data } = await api.get<DonationCampaign[]>(
+export async function listMemberPortalDonations(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<DonationCampaign>>(
     "/member-portal/donations",
+    { params },
   );
   return data;
 }

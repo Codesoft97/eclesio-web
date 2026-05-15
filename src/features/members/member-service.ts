@@ -1,13 +1,17 @@
 ﻿import { api } from "@/lib/api";
 
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+
 import type {
   Member,
   MemberAccessInvitation,
   MemberPayload,
 } from "./member-types";
 
-export async function listMembers() {
-  const { data } = await api.get<Member[]>("/members");
+export async function listMembers(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<Member>>("/members", {
+    params,
+  });
   return data;
 }
 

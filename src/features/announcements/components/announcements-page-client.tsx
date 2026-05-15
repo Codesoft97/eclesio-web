@@ -18,8 +18,14 @@ import {
   ConfirmationModal,
   type ConfirmationModalProps,
 } from "@/components/ui/confirmation-modal";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import {
+  DEFAULT_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import {
   createAnnouncement,
@@ -68,6 +74,10 @@ export function AnnouncementsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>(() =>
+    getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -86,10 +96,14 @@ export function AnnouncementsPageClient() {
       setError(null);
 
       try {
-        const data = await listAnnouncements();
+        const data = await listAnnouncements({
+          page: currentPage,
+          limit: DEFAULT_PAGE_SIZE,
+        });
 
         if (!ignore) {
-          setAnnouncements(data);
+          setAnnouncements(data.items);
+          setPagination(data.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -113,7 +127,7 @@ export function AnnouncementsPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   const publishedCount = useMemo(
     () => announcements.filter((announcement) => announcement.isPublished).length,
@@ -165,6 +179,9 @@ export function AnnouncementsPageClient() {
       }
 
       setModalState(closedModalState);
+      if (modalState.mode === "create") {
+        setCurrentPage(1);
+      }
       refreshAnnouncements();
     } catch (err) {
       if (await handleUnauthorized(err)) {
@@ -219,9 +236,11 @@ export function AnnouncementsPageClient() {
 
     try {
       await deleteAnnouncement(announcement.id);
-      setAnnouncements((current) =>
-        current.filter((item) => item.id !== announcement.id),
-      );
+      if (announcements.length === 1 && currentPage > 1) {
+        setCurrentPage((page) => page - 1);
+      } else {
+        refreshAnnouncements();
+      }
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -421,6 +440,11 @@ export function AnnouncementsPageClient() {
             </table>
           </div>
         )}
+        <PaginationControls
+          meta={pagination}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </section>
 
       {modalState.isOpen ? (

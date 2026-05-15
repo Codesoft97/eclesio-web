@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import {
+  DEFAULT_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import {
   addDays,
@@ -28,6 +34,10 @@ export function MemberPortalEventsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [events, setEvents] = useState<MemberPortalEvent[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>(() =>
+    getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -40,10 +50,15 @@ export function MemberPortalEventsPageClient() {
       setError(null);
 
       try {
-        const data = await listMemberPortalEvents(getPortalRange());
+        const data = await listMemberPortalEvents({
+          ...getPortalRange(),
+          page: currentPage,
+          limit: DEFAULT_PAGE_SIZE,
+        });
 
         if (!ignore) {
-          setEvents(data);
+          setEvents(data.items);
+          setPagination(data.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -67,7 +82,7 @@ export function MemberPortalEventsPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   const sortedEvents = useMemo(() => sortEvents(events), [events]);
 
@@ -130,7 +145,7 @@ export function MemberPortalEventsPageClient() {
             </div>
           </div>
           <span className="rounded-md border border-border bg-surface-subtle px-2 py-1 text-xs font-semibold text-muted">
-            {sortedEvents.length}
+            {pagination.totalItems}
           </span>
         </div>
 
@@ -177,6 +192,11 @@ export function MemberPortalEventsPageClient() {
             ))}
           </div>
         )}
+        <PaginationControls
+          meta={pagination}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </section>
     </div>
   );

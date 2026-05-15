@@ -44,6 +44,7 @@ import type {
   FinancialTransactionType,
 } from "@/features/finance/finance-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import { fetchAllPaginatedItems } from "@/lib/pagination";
 
 type ScheduleMap = Record<string, EventSchedule>;
 
@@ -403,8 +404,13 @@ export function ReportsPageClient() {
         const [categoriesData, transactionsData, eventsData] =
           await Promise.all([
             getFinanceCategories(),
-            listFinancialTransactions(visibleMonth),
-            listEvents(),
+            fetchAllPaginatedItems((pagination) =>
+              listFinancialTransactions({
+                month: visibleMonth,
+                ...pagination,
+              }),
+            ),
+            fetchAllPaginatedItems(listEvents),
           ]);
         const monthEvents = eventsData.filter((event) =>
           isSameMonth(event.startsAt, visibleMonth),

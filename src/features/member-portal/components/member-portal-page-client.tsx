@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import { MAX_PAGE_SIZE } from "@/lib/pagination";
 
 import {
   addDays,
@@ -61,14 +62,14 @@ export function MemberPortalPageClient() {
       try {
         const [profileData, eventsData, announcementsData] = await Promise.all([
           getMemberPortalProfile(),
-          listMemberPortalEvents(getPortalRange()),
-          listMemberPortalAnnouncements(),
+          listMemberPortalEvents({ ...getPortalRange(), limit: MAX_PAGE_SIZE }),
+          listMemberPortalAnnouncements({ limit: 1 }),
         ]);
 
         if (!ignore) {
           setProfile(profileData);
-          setEvents(eventsData);
-          setAnnouncements(announcementsData);
+          setEvents(eventsData.items);
+          setAnnouncements(announcementsData.items);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {

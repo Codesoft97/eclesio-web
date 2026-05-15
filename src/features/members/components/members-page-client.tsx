@@ -21,9 +21,15 @@ import {
   ConfirmationModal,
   type ConfirmationModalProps,
 } from "@/components/ui/confirmation-modal";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
+import {
+  DEFAULT_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import { MemberAccessInvitationModal } from "./member-access-invitation-modal";
 import { MemberFormModal } from "./member-form-modal";
@@ -67,6 +73,10 @@ export function MembersPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>(() =>
+    getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -87,10 +97,14 @@ export function MembersPageClient() {
       setError(null);
 
       try {
-        const data = await listMembers();
+        const data = await listMembers({
+          page: currentPage,
+          limit: DEFAULT_PAGE_SIZE,
+        });
 
         if (!ignore) {
-          setMembers(data);
+          setMembers(data.items);
+          setPagination(data.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -114,7 +128,7 @@ export function MembersPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   function refreshMembers() {
     setReloadKey((current) => current + 1);
@@ -161,6 +175,9 @@ export function MembersPageClient() {
       }
 
       setModalState(closedModalState);
+      if (modalState.mode === "create") {
+        setCurrentPage(1);
+      }
       refreshMembers();
     } catch (err) {
       if (await handleUnauthorized(err)) {
@@ -209,7 +226,11 @@ export function MembersPageClient() {
 
     try {
       await deleteMember(member.id);
-      setMembers((current) => current.filter((item) => item.id !== member.id));
+      if (members.length === 1 && currentPage > 1) {
+        setCurrentPage((page) => page - 1);
+      } else {
+        refreshMembers();
+      }
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -239,7 +260,9 @@ export function MembersPageClient() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="rounded-lg border border-border bg-surface px-4 py-3 text-sm shadow-sm">
             <span className="text-muted">Total cadastrado</span>
-            <strong className="ml-3 text-foreground">{members.length}</strong>
+            <strong className="ml-3 text-foreground">
+              {pagination.totalItems}
+            </strong>
           </div>
           <Button type="button" onClick={openCreateModal}>
             <Plus size={17} />
@@ -395,6 +418,11 @@ export function MembersPageClient() {
             </table>
           </div>
         )}
+        <PaginationControls
+          meta={pagination}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </section>
 
       {modalState.isOpen ? (

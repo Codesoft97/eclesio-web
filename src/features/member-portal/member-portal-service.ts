@@ -1,5 +1,7 @@
 import { api } from "@/lib/api";
 
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+
 import type {
   MemberPortalAnnouncement,
   MemberPortalEvent,
@@ -26,16 +28,20 @@ export async function updateMemberPortalProfile(
 export async function listMemberPortalEvents(params?: {
   from?: string;
   to?: string;
-}) {
-  const { data } = await api.get<MemberPortalEvent[]>("/member-portal/events", {
-    params,
-  });
+} & PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<MemberPortalEvent>>(
+    "/member-portal/events",
+    { params },
+  );
   return data;
 }
 
-export async function listMyScheduleAssignments() {
-  const { data } = await api.get<MemberPortalScheduleAssignment[]>(
+export async function listMyScheduleAssignments(params?: PaginationParams) {
+  const { data } = await api.get<
+    PaginatedResponse<MemberPortalScheduleAssignment>
+  >(
     "/member-portal/my-schedules",
+    { params },
   );
   return data;
 }
@@ -54,9 +60,10 @@ export async function declineMyScheduleAssignment(assignmentId: string) {
   return data;
 }
 
-export async function listMemberPortalAnnouncements() {
-  const { data } = await api.get<MemberPortalAnnouncement[]>(
+export async function listMemberPortalAnnouncements(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<MemberPortalAnnouncement>>(
     "/member-portal/announcements",
+    { params },
   );
   return data;
 }

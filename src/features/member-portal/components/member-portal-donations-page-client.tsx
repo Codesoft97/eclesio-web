@@ -5,16 +5,26 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { DonationPixPanel } from "@/features/donations/components/donation-pix-panel";
 import { listMemberPortalDonations } from "@/features/donations/donation-service";
 import type { DonationCampaign } from "@/features/donations/donation-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import {
+  DEFAULT_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 export function MemberPortalDonationsPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
   const [donations, setDonations] = useState<DonationCampaign[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>(() =>
+    getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -27,10 +37,14 @@ export function MemberPortalDonationsPageClient() {
       setError(null);
 
       try {
-        const data = await listMemberPortalDonations();
+        const data = await listMemberPortalDonations({
+          page: currentPage,
+          limit: DEFAULT_PAGE_SIZE,
+        });
 
         if (!ignore) {
-          setDonations(data);
+          setDonations(data.items);
+          setPagination(data.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -54,7 +68,7 @@ export function MemberPortalDonationsPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   function refreshDonations() {
     setReloadKey((current) => current + 1);
@@ -149,6 +163,11 @@ export function MemberPortalDonationsPageClient() {
               <DonationPixPanel campaign={donation} />
             </article>
           ))}
+          <PaginationControls
+            meta={pagination}
+            isLoading={isLoading}
+            onPageChange={setCurrentPage}
+          />
         </section>
       )}
     </div>

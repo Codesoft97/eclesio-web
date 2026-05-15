@@ -20,9 +20,16 @@ import {
   ConfirmationModal,
   type ConfirmationModalProps,
 } from "@/components/ui/confirmation-modal";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
+import {
+  DEFAULT_PAGE_SIZE,
+  MAX_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import { MinistryFormModal } from "./ministry-form-modal";
 import { RoleFormModal } from "./role-form-modal";
@@ -107,6 +114,10 @@ export function WorkersPageClient() {
   const { clearSession } = useAuth();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [ministries, setMinistries] = useState<WorkerMinistry[]>([]);
+  const [workersPagination, setWorkersPagination] = useState<PaginationMeta>(
+    () => getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -133,13 +144,14 @@ export function WorkersPageClient() {
 
       try {
         const [ministriesData, workersData] = await Promise.all([
-          listWorkerMinistries(),
-          listWorkers(),
+          listWorkerMinistries({ limit: MAX_PAGE_SIZE }),
+          listWorkers({ page: currentPage, limit: DEFAULT_PAGE_SIZE }),
         ]);
 
         if (!ignore) {
-          setMinistries(ministriesData);
-          setWorkers(workersData);
+          setMinistries(ministriesData.items);
+          setWorkers(workersData.items);
+          setWorkersPagination(workersData.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -163,7 +175,7 @@ export function WorkersPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   function refreshWorkers() {
     setReloadKey((current) => current + 1);
@@ -244,6 +256,9 @@ export function WorkersPageClient() {
       }
 
       setWorkerModal(closedWorkerModal);
+      if (workerModal.mode === "create") {
+        setCurrentPage(1);
+      }
       refreshWorkers();
     } catch (err) {
       if (await handleUnauthorized(err)) {
@@ -332,7 +347,11 @@ export function WorkersPageClient() {
 
     try {
       await deleteWorker(worker.id);
-      refreshWorkers();
+      if (workers.length === 1 && currentPage > 1) {
+        setCurrentPage((page) => page - 1);
+      } else {
+        refreshWorkers();
+      }
     } catch (err) {
       if (await handleUnauthorized(err)) {
         return;
@@ -452,7 +471,9 @@ export function WorkersPageClient() {
               <UsersRound size={17} />
             </span>
           </div>
-          <p className="text-3xl font-semibold">{workers.length}</p>
+          <p className="text-3xl font-semibold">
+            {workersPagination.totalItems}
+          </p>
         </article>
 
         <article className="rounded-xl border border-border bg-surface p-5 shadow-sm">
@@ -671,6 +692,11 @@ export function WorkersPageClient() {
               </div>
             </>
           )}
+          <PaginationControls
+            meta={workersPagination}
+            isLoading={isLoading}
+            onPageChange={setCurrentPage}
+          />
         </section>
 
         <aside className="rounded-xl border border-border bg-surface shadow-sm xl:sticky xl:top-5 xl:self-start">

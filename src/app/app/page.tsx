@@ -25,6 +25,7 @@ import {
 import { listMembers } from "@/features/members/member-service";
 import { listWorkers } from "@/features/workers/worker-service";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import { fetchAllPaginatedItems, MAX_PAGE_SIZE } from "@/lib/pagination";
 
 type ScheduleMap = Record<string, EventSchedule>;
 
@@ -148,11 +149,11 @@ export default function DashboardPage() {
           accountData,
           transactionsData,
         ] = await Promise.all([
-          listEvents(),
-          listMembers(),
-          listWorkers(),
+          fetchAllPaginatedItems(listEvents),
+          listMembers({ limit: MAX_PAGE_SIZE }),
+          listWorkers({ limit: MAX_PAGE_SIZE }),
           getFinanceAccount(),
-          listFinancialTransactions(),
+          listFinancialTransactions({ limit: MAX_PAGE_SIZE }),
         ]);
         const upcomingEvents = getUpcomingEvents(eventsData).slice(0, 5);
         const scheduleEntries = await Promise.all(
@@ -166,10 +167,10 @@ export default function DashboardPage() {
           setEvents(eventsData);
           setSchedules(Object.fromEntries(scheduleEntries));
           setSummary({
-            membersCount: membersData.length,
-            workersCount: workersData.length,
+            membersCount: membersData.meta.totalItems,
+            workersCount: workersData.meta.totalItems,
             financialBalance: accountData.balance,
-            pendingTransactionsCount: transactionsData.filter(
+            pendingTransactionsCount: transactionsData.items.filter(
               (transaction) => !transaction.isEffective,
             ).length,
           });

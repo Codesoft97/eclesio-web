@@ -1,5 +1,7 @@
 import { api } from "@/lib/api";
 
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+
 import type {
   ChurchEvent,
   EventPayload,
@@ -10,8 +12,10 @@ import type {
   PublicEventScheduleAssignment,
 } from "./event-types";
 
-export async function listEvents() {
-  const { data } = await api.get<ChurchEvent[]>("/events");
+export async function listEvents(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<ChurchEvent>>("/events", {
+    params,
+  });
   return data;
 }
 

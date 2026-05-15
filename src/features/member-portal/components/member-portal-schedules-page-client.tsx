@@ -11,8 +11,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import {
+  DEFAULT_PAGE_SIZE,
+  getEmptyPaginationMeta,
+  type PaginationMeta,
+} from "@/lib/pagination";
 
 import { formatEventDate } from "../member-portal-formatters";
 import {
@@ -65,6 +71,10 @@ export function MemberPortalSchedulesPageClient() {
   const [schedules, setSchedules] = useState<MemberPortalScheduleAssignment[]>(
     [],
   );
+  const [pagination, setPagination] = useState<PaginationMeta>(() =>
+    getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
+  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -78,10 +88,14 @@ export function MemberPortalSchedulesPageClient() {
       setError(null);
 
       try {
-        const data = await listMyScheduleAssignments();
+        const data = await listMyScheduleAssignments({
+          page: currentPage,
+          limit: DEFAULT_PAGE_SIZE,
+        });
 
         if (!ignore) {
-          setSchedules(data);
+          setSchedules(data.items);
+          setPagination(data.meta);
         }
       } catch (err) {
         if (isUnauthorizedApiError(err)) {
@@ -105,7 +119,7 @@ export function MemberPortalSchedulesPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router]);
 
   const sortedSchedules = useMemo(() => sortByEventDate(schedules), [schedules]);
   const pendingSchedulesCount = useMemo(
@@ -301,6 +315,11 @@ export function MemberPortalSchedulesPageClient() {
             })}
           </div>
         )}
+        <PaginationControls
+          meta={pagination}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </section>
     </div>
   );

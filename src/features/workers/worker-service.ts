@@ -1,5 +1,7 @@
 import { api } from "@/lib/api";
 
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+
 import type {
   CreateWorkerMinistryPayload,
   CreateWorkerPayload,
@@ -12,8 +14,11 @@ import type {
   WorkerRole,
 } from "./worker-types";
 
-export async function listWorkerMinistries() {
-  const { data } = await api.get<WorkerMinistry[]>("/worker-ministries");
+export async function listWorkerMinistries(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<WorkerMinistry>>(
+    "/worker-ministries",
+    { params },
+  );
   return data;
 }
 
@@ -62,8 +67,10 @@ export async function deleteWorkerRole(roleId: string) {
   await api.delete(`/worker-roles/${roleId}`);
 }
 
-export async function listWorkers() {
-  const { data } = await api.get<Worker[]>("/workers");
+export async function listWorkers(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<Worker>>("/workers", {
+    params,
+  });
   return data;
 }
 

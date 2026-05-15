@@ -29,6 +29,7 @@ import {
 } from "@/features/workers/worker-service";
 import type { Worker, WorkerMinistry } from "@/features/workers/worker-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
+import { fetchAllPaginatedItems } from "@/lib/pagination";
 
 import { EventFormModal } from "./event-form-modal";
 import { EventScheduleModal } from "./event-schedule-modal";
@@ -282,9 +283,9 @@ export function EventsPageClient() {
 
       try {
         const [eventsData, ministriesData, workersData] = await Promise.all([
-          listEvents(),
-          listWorkerMinistries(),
-          listWorkers(),
+          fetchAllPaginatedItems(listEvents),
+          fetchAllPaginatedItems(listWorkerMinistries),
+          fetchAllPaginatedItems(listWorkers),
         ]);
 
         if (!ignore) {

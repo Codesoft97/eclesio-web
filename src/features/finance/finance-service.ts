@@ -1,5 +1,7 @@
 import { api } from "@/lib/api";
 
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+
 import type {
   CreateFinancialTransactionPayload,
   FinancialAccount,
@@ -29,12 +31,16 @@ export async function setFinanceAccountBalance(
   return data;
 }
 
-export async function listFinancialTransactions(month?: string) {
-  const { data } = await api.get<FinancialTransaction[]>(
+export interface ListFinancialTransactionsParams extends PaginationParams {
+  month?: string;
+}
+
+export async function listFinancialTransactions(
+  params?: ListFinancialTransactionsParams,
+) {
+  const { data } = await api.get<PaginatedResponse<FinancialTransaction>>(
     "/finance/transactions",
-    {
-      params: month ? { month } : undefined,
-    },
+    { params },
   );
   return data;
 }

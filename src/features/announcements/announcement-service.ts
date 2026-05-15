@@ -1,9 +1,13 @@
 import { api } from "@/lib/api";
+import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
 
 import type { Announcement, AnnouncementPayload } from "./announcement-types";
 
-export async function listAnnouncements() {
-  const { data } = await api.get<Announcement[]>("/announcements");
+export async function listAnnouncements(params?: PaginationParams) {
+  const { data } = await api.get<PaginatedResponse<Announcement>>(
+    "/announcements",
+    { params },
+  );
   return data;
 }
 
