@@ -4,6 +4,8 @@ export interface Announcement {
   content: string;
   isPublished: boolean;
   publishedAt: string | null;
+  viewsCount: number;
+  likesCount: number;
   createdAt: string;
   updatedAt: string;
 }

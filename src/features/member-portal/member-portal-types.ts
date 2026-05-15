@@ -59,6 +59,9 @@ export interface MemberPortalAnnouncement {
   title: string;
   content: string;
   publishedAt: string;
+  viewsCount: number;
+  likesCount: number;
+  likedByMe: boolean;
 }
 
 export interface UpdateMemberPortalProfilePayload {

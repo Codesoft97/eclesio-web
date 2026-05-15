@@ -67,3 +67,26 @@ export async function listMemberPortalAnnouncements(params?: PaginationParams) {
   );
   return data;
 }
+
+export async function registerMemberPortalAnnouncementView(
+  announcementId: string,
+) {
+  const { data } = await api.post<MemberPortalAnnouncement>(
+    `/member-portal/announcements/${announcementId}/view`,
+  );
+  return data;
+}
+
+export async function likeMemberPortalAnnouncement(announcementId: string) {
+  const { data } = await api.post<MemberPortalAnnouncement>(
+    `/member-portal/announcements/${announcementId}/like`,
+  );
+  return data;
+}
+
+export async function unlikeMemberPortalAnnouncement(announcementId: string) {
+  const { data } = await api.delete<MemberPortalAnnouncement>(
+    `/member-portal/announcements/${announcementId}/like`,
+  );
+  return data;
+}

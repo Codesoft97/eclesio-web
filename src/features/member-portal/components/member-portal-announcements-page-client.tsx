@@ -2,7 +2,7 @@
 
 import { Loader2, Megaphone, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -14,9 +14,9 @@ import {
   type PaginationMeta,
 } from "@/lib/pagination";
 
-import { formatFullDate } from "../member-portal-formatters";
 import { listMemberPortalAnnouncements } from "../member-portal-service";
 import type { MemberPortalAnnouncement } from "../member-portal-types";
+import { MemberPortalAnnouncementCard } from "./member-portal-announcement-card";
 
 export function MemberPortalAnnouncementsPageClient() {
   const router = useRouter();
@@ -76,6 +76,19 @@ export function MemberPortalAnnouncementsPageClient() {
   function refreshAnnouncements() {
     setReloadKey((current) => current + 1);
   }
+
+  const handleAnnouncementChange = useCallback(
+    (updatedAnnouncement: MemberPortalAnnouncement) => {
+      setAnnouncements((current) =>
+        current.map((announcement) =>
+          announcement.id === updatedAnnouncement.id
+            ? updatedAnnouncement
+            : announcement,
+        ),
+      );
+    },
+    [],
+  );
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -153,22 +166,11 @@ export function MemberPortalAnnouncementsPageClient() {
         ) : (
           <div className="grid gap-3">
             {announcements.map((announcement) => (
-              <article
+              <MemberPortalAnnouncementCard
                 key={announcement.id}
-                className="rounded-lg border border-border bg-surface-subtle p-4"
-              >
-                <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
-                  <h3 className="font-semibold text-foreground">
-                    {announcement.title}
-                  </h3>
-                  <span className="text-xs text-muted">
-                    {formatFullDate(announcement.publishedAt)}
-                  </span>
-                </div>
-                <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted">
-                  {announcement.content}
-                </p>
-              </article>
+                announcement={announcement}
+                onChange={handleAnnouncementChange}
+              />
             ))}
           </div>
         )}

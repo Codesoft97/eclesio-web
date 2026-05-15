@@ -4,6 +4,7 @@ import {
   Edit3,
   Eye,
   EyeOff,
+  Heart,
   Loader2,
   Megaphone,
   Plus,
@@ -352,11 +353,12 @@ export function AnnouncementsPageClient() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[960px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[1040px] border-collapse text-left text-sm">
               <thead className="border-b border-border bg-surface-subtle text-xs uppercase tracking-[0.14em] text-muted">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Comunicado</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="px-4 py-3 font-semibold">Engajamento</th>
                   <th className="px-4 py-3 font-semibold">Publicado em</th>
                   <th className="px-4 py-3 text-right font-semibold">Acoes</th>
                 </tr>
@@ -390,6 +392,18 @@ export function AnnouncementsPageClient() {
                         )}
                         {announcement.isPublished ? "Publicado" : "Rascunho"}
                       </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-wrap gap-2 text-xs font-semibold text-muted">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-subtle px-2 py-1">
+                          <Eye size={13} />
+                          {announcement.viewsCount}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-subtle px-2 py-1">
+                          <Heart size={13} />
+                          {announcement.likesCount}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-4 text-muted">
                       {formatDate(announcement.publishedAt)}
