@@ -64,6 +64,14 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
     "a confirmacao de senha nao confere",
     "A confirmacao de senha nao confere.",
   ],
+  [
+    "assinatura necessaria para acessar esta funcionalidade",
+    "Regularize a assinatura para continuar usando esta funcionalidade.",
+  ],
+  [
+    "chave pix de assinatura nao configurada",
+    "O Pix de assinatura ainda nao foi configurado. Fale com o suporte.",
+  ],
   ["regular expression", "Revise os dados informados e tente novamente."],
   ["should not exist", "Revise os dados informados e tente novamente."],
 ];
@@ -82,6 +90,14 @@ export function isUnauthorizedApiError(error: unknown) {
 
 export function isForbiddenApiError(error: unknown) {
   return axios.isAxiosError(error) && error.response?.status === 403;
+}
+
+export function isSubscriptionRequiredApiError(error: unknown) {
+  return (
+    axios.isAxiosError(error) &&
+    (error.response?.status === 402 ||
+      error.response?.data?.code === "SUBSCRIPTION_REQUIRED")
+  );
 }
 
 export function getApiErrorMessage(error: unknown) {

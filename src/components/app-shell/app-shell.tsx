@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 
 import { AppMobileHeader } from "@/components/app-shell/app-mobile-header";
@@ -17,6 +17,7 @@ import {
 
 const SIDEBAR_STORAGE_KEY = "gerencia-igreja.sidebar-collapsed";
 const SIDEBAR_EVENT = "gerencia-igreja-sidebar-change";
+const SUBSCRIPTION_PATH = "/app/assinatura";
 
 function subscribe(callback: () => void) {
   window.addEventListener("storage", callback);
@@ -62,6 +63,7 @@ function readStoredRole(): UserRole | null {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { session } = useAuth();
   const sidebarSnapshot = useSyncExternalStore(
     subscribe,
@@ -78,6 +80,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (session) {
       if (session.user.role === "MEMBER") {
         router.replace("/portal");
+        return;
+      }
+
+      if (
+        !needsLegalAcceptance(session) &&
+        session.subscription?.requiresPayment &&
+        pathname !== SUBSCRIPTION_PATH
+      ) {
+        router.replace(SUBSCRIPTION_PATH);
       }
 
       return;
@@ -93,7 +104,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (!storedRole) {
       router.replace("/login");
     }
-  }, [router, session]);
+  }, [pathname, router, session]);
 
   if (!session || session.user.role !== "CHURCH_ADMIN") {
     return (
@@ -108,6 +119,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (needsLegalAcceptance(session)) {
     return <LegalAcceptancePage />;
+  }
+
+  if (
+    session.subscription?.requiresPayment &&
+    pathname !== SUBSCRIPTION_PATH
+  ) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-muted">
+        <div className="flex items-center gap-2 text-sm">
+          <Loader2 className="animate-spin text-accent" size={18} />
+          Redirecionando para assinatura...
+        </div>
+      </div>
+    );
   }
 
   return (

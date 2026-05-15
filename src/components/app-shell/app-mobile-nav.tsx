@@ -3,6 +3,7 @@
 import {
   BarChart3,
   CalendarDays,
+  CreditCard,
   HandCoins,
   HeartHandshake,
   Home,
@@ -18,10 +19,11 @@ const navItems = [
   { href: "/app/membros", label: "Membros", icon: Users },
   { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
   { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
-  { href: "/app/doacoes", label: "Doacoes", icon: HeartHandshake },
+  { href: "/app/doacoes", label: "Doações", icon: HeartHandshake },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
   { href: "/app/comunicados", label: "Comunicados", icon: Megaphone },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/app/assinatura", label: "Assinatura", icon: CreditCard },
 ];
 
 export function AppMobileNav() {

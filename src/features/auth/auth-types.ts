@@ -25,10 +25,23 @@ export interface LegalAcceptanceStatus {
   requiresAcceptance: boolean;
 }
 
+export type SubscriptionStatus = "FREE_TRIAL" | "FREE" | "PAID";
+
+export type SubscriptionBillingInterval = "MONTHLY" | "YEARLY";
+
+export interface SubscriptionAccessStatus {
+  status: SubscriptionStatus;
+  billingInterval: SubscriptionBillingInterval | null;
+  trialEndsAt: string | null;
+  currentPeriodEndsAt: string | null;
+  requiresPayment: boolean;
+}
+
 export interface AuthSession {
   church: AuthenticatedChurch;
   user: AuthenticatedUser;
   legalAcceptance?: LegalAcceptanceStatus;
+  subscription?: SubscriptionAccessStatus;
 }
 
 export interface LoginPayload {
