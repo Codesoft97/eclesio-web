@@ -10,6 +10,10 @@ import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { AUTH_STORAGE_KEY, useAuth } from "@/features/auth/auth-provider";
 import type { UserRole } from "@/features/auth/auth-types";
+import {
+  LegalAcceptancePage,
+  needsLegalAcceptance,
+} from "@/features/legal/components/legal-acceptance-page";
 
 const SIDEBAR_STORAGE_KEY = "gerencia-igreja.sidebar-collapsed";
 const SIDEBAR_EVENT = "gerencia-igreja-sidebar-change";
@@ -100,6 +104,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
+  }
+
+  if (needsLegalAcceptance(session)) {
+    return <LegalAcceptancePage />;
   }
 
   return (

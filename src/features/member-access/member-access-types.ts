@@ -11,6 +11,8 @@ export interface AcceptMemberAccessInvitationPayload {
   email: string;
   password: string;
   passwordConfirmation: string;
+  acceptedTerms: boolean;
+  acceptedPrivacyPolicy: boolean;
 }
 
 export interface MemberAccessActivationResponse {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Church } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { FormEvent, useState, useTransition } from "react";
@@ -27,6 +28,8 @@ export function RegisterForm() {
     whatsapp: "",
     password: "",
     passwordConfirmation: "",
+    acceptedTerms: false,
+    acceptedPrivacyPolicy: false,
   });
 
   function updateField(field: keyof typeof form, value: string) {
@@ -35,6 +38,13 @@ export function RegisterForm() {
 
   function updateWhatsapp(value: string) {
     updateField("whatsapp", formatBrazilianPhone(value));
+  }
+
+  function updateCheckbox(
+    field: "acceptedTerms" | "acceptedPrivacyPolicy",
+    checked: boolean,
+  ) {
+    setForm((current) => ({ ...current, [field]: checked }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -124,6 +134,52 @@ export function RegisterForm() {
           autoComplete="new-password"
           required
         />
+      </div>
+      <div className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-4 text-sm text-muted">
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={form.acceptedTerms}
+            onChange={(event) =>
+              updateCheckbox("acceptedTerms", event.target.checked)
+            }
+            className="mt-1 h-4 w-4 shrink-0 accent-yellow-500"
+            required
+          />
+          <span>
+            Li e aceito os{" "}
+            <Link
+              href="/termos-de-uso"
+              target="_blank"
+              className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+            >
+              Termos de Uso
+            </Link>
+            .
+          </span>
+        </label>
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={form.acceptedPrivacyPolicy}
+            onChange={(event) =>
+              updateCheckbox("acceptedPrivacyPolicy", event.target.checked)
+            }
+            className="mt-1 h-4 w-4 shrink-0 accent-yellow-500"
+            required
+          />
+          <span>
+            Li e aceito a{" "}
+            <Link
+              href="/politica-de-privacidade"
+              target="_blank"
+              className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+            >
+              Política de Privacidade
+            </Link>
+            .
+          </span>
+        </label>
       </div>
       {error ? (
         <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">

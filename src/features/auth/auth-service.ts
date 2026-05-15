@@ -25,6 +25,11 @@ export async function logout() {
   await api.post("/auth/logout");
 }
 
+export async function acceptLegalDocuments() {
+  const { data } = await api.post<AuthSession>("/auth/legal-acceptance");
+  return data;
+}
+
 export async function requestPasswordRecovery(
   payload: RequestPasswordRecoveryPayload,
 ) {

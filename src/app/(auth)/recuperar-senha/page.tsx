@@ -27,6 +27,23 @@ export default function PasswordRecoveryPage() {
           Voltar para o login
         </Link>
       </p>
+      <p className="mt-4 text-xs leading-5 text-muted">
+        Consulte os{" "}
+        <Link
+          href="/termos-de-uso"
+          className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+        >
+          Termos de Uso
+        </Link>{" "}
+        e a{" "}
+        <Link
+          href="/politica-de-privacidade"
+          className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+        >
+          Política de Privacidade
+        </Link>
+        .
+      </p>
     </div>
   );
 }

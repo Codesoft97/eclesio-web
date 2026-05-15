@@ -42,6 +42,8 @@ export function MemberInvitationPageClient({
     email: "",
     password: "",
     passwordConfirmation: "",
+    acceptedTerms: false,
+    acceptedPrivacyPolicy: false,
   });
 
   useEffect(() => {
@@ -80,6 +82,13 @@ export function MemberInvitationPageClient({
     setForm((current) => ({ ...current, [field]: value }));
   }
 
+  function updateCheckbox(
+    field: "acceptedTerms" | "acceptedPrivacyPolicy",
+    checked: boolean,
+  ) {
+    setForm((current) => ({ ...current, [field]: checked }));
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -89,6 +98,8 @@ export function MemberInvitationPageClient({
       email: form.email.trim().toLowerCase(),
       password: form.password,
       passwordConfirmation: form.passwordConfirmation,
+      acceptedTerms: form.acceptedTerms,
+      acceptedPrivacyPolicy: form.acceptedPrivacyPolicy,
     };
 
     if (!payload.email.includes("@")) {
@@ -218,6 +229,56 @@ export function MemberInvitationPageClient({
                     autoComplete="new-password"
                     required
                   />
+
+                  <div className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-4 text-sm text-muted">
+                    <label className="flex cursor-pointer items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={form.acceptedTerms}
+                        onChange={(event) =>
+                          updateCheckbox("acceptedTerms", event.target.checked)
+                        }
+                        className="mt-1 h-4 w-4 shrink-0 accent-yellow-500"
+                        required
+                      />
+                      <span>
+                        Li e aceito os{" "}
+                        <Link
+                          href="/termos-de-uso"
+                          target="_blank"
+                          className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+                        >
+                          Termos de Uso
+                        </Link>
+                        .
+                      </span>
+                    </label>
+                    <label className="flex cursor-pointer items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={form.acceptedPrivacyPolicy}
+                        onChange={(event) =>
+                          updateCheckbox(
+                            "acceptedPrivacyPolicy",
+                            event.target.checked,
+                          )
+                        }
+                        className="mt-1 h-4 w-4 shrink-0 accent-yellow-500"
+                        required
+                      />
+                      <span>
+                        Li e aceito a{" "}
+                        <Link
+                          href="/politica-de-privacidade"
+                          target="_blank"
+                          className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+                        >
+                          Política de Privacidade
+                        </Link>
+                        .
+                      </span>
+                    </label>
+                  </div>
 
                   {error ? (
                     <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">

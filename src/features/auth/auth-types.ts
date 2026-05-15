@@ -16,9 +16,19 @@ export interface AuthenticatedUser {
   memberId: string | null;
 }
 
+export interface LegalAcceptanceStatus {
+  currentTermsVersion: string;
+  currentPrivacyPolicyVersion: string;
+  acceptedTermsVersion: string | null;
+  acceptedPrivacyPolicyVersion: string | null;
+  acceptedAt: string | null;
+  requiresAcceptance: boolean;
+}
+
 export interface AuthSession {
   church: AuthenticatedChurch;
   user: AuthenticatedUser;
+  legalAcceptance?: LegalAcceptanceStatus;
 }
 
 export interface LoginPayload {
@@ -33,6 +43,8 @@ export interface RegisterPayload {
   whatsapp: string;
   password: string;
   passwordConfirmation: string;
+  acceptedTerms: boolean;
+  acceptedPrivacyPolicy: boolean;
 }
 
 export interface MessageResponse {

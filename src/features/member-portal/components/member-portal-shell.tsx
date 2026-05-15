@@ -7,6 +7,10 @@ import { useEffect } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { AUTH_STORAGE_KEY, useAuth } from "@/features/auth/auth-provider";
 import type { UserRole } from "@/features/auth/auth-types";
+import {
+  LegalAcceptancePage,
+  needsLegalAcceptance,
+} from "@/features/legal/components/legal-acceptance-page";
 
 import { MemberPortalMobileHeader } from "./member-portal-mobile-header";
 import { MemberPortalMobileNav } from "./member-portal-mobile-nav";
@@ -65,6 +69,10 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
+  }
+
+  if (needsLegalAcceptance(session)) {
+    return <LegalAcceptancePage />;
   }
 
   return (

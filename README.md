@@ -42,6 +42,8 @@ Para ativar o PostHog no lancamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT
 - `/login`: acesso do representante
 - `/membros/convite/:token`: ativacao do acesso de membro por convite
 - `/cadastro`: cadastro da igreja e usuario administrador
+- `/termos-de-uso`: termos de uso do sistema
+- `/politica-de-privacidade`: politica de privacidade
 - `/app`: dashboard inicial com sidebar
 - `/app/membros`: modulo de membros
 - `/app/financeiro`: modulo financeiro
@@ -55,3 +57,5 @@ Para ativar o PostHog no lancamento, preencha `NEXT_PUBLIC_POSTHOG_KEY` ou `NEXT
 - `/portal/doacoes`: objetivos de doacao via Pix
 - `/portal/escalas`: escalas do obreiro/membro
 - `/portal/eventos`: calendario dos proximos eventos
+
+O cadastro da igreja, a ativacao de acesso de membro e o primeiro acesso de usuarios antigos exigem aceite dos Termos de Uso e da Politica de Privacidade vigentes.

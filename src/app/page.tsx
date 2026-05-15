@@ -602,6 +602,15 @@ export default function LandingPage() {
               <a className="transition hover:text-foreground" href="#planos">
                 Planos
               </a>
+              <Link className="transition hover:text-foreground" href="/termos-de-uso">
+                Termos de uso
+              </Link>
+              <Link
+                className="transition hover:text-foreground"
+                href="/politica-de-privacidade"
+              >
+                Política de privacidade
+              </Link>
             </div>
           </div>
 
