@@ -3,17 +3,45 @@ import { api } from "@/lib/api";
 import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
 
 import type {
+  CreateFinancialCategoryPayload,
   CreateFinancialTransactionPayload,
   FinancialAccount,
   FinancialCategories,
+  FinancialCategory,
   FinancialTransaction,
   SetAccountBalancePayload,
+  UpdateFinancialCategoryPayload,
   UpdateFinancialTransactionPayload,
 } from "./finance-types";
 
 export async function getFinanceCategories() {
   const { data } = await api.get<FinancialCategories>("/finance/categories");
   return data;
+}
+
+export async function createFinanceCategory(
+  payload: CreateFinancialCategoryPayload,
+) {
+  const { data } = await api.post<FinancialCategory>(
+    "/finance/categories",
+    payload,
+  );
+  return data;
+}
+
+export async function updateFinanceCategory(
+  categoryId: string,
+  payload: UpdateFinancialCategoryPayload,
+) {
+  const { data } = await api.patch<FinancialCategory>(
+    `/finance/categories/${categoryId}`,
+    payload,
+  );
+  return data;
+}
+
+export async function deleteFinanceCategory(categoryId: string) {
+  await api.delete(`/finance/categories/${categoryId}`);
 }
 
 export async function getFinanceAccount() {

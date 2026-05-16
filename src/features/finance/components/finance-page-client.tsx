@@ -11,6 +11,7 @@ import {
   Plus,
   RefreshCw,
   SlidersHorizontal,
+  Tags,
   Trash2,
   TrendingDown,
   TrendingUp,
@@ -35,8 +36,10 @@ import {
 } from "@/lib/pagination";
 
 import { FinanceBalanceModal } from "./finance-balance-modal";
+import { FinanceCategoryFormModal } from "./finance-category-form-modal";
 import { FinanceTransactionFormModal } from "./finance-transaction-form-modal";
 import {
+  createFinanceCategory,
   createFinancialTransaction,
   deleteFinancialTransaction,
   getFinanceAccount,
@@ -47,30 +50,20 @@ import {
   updateFinancialTransaction,
 } from "../finance-service";
 import type {
+  CreateFinancialCategoryPayload,
   CreateFinancialTransactionPayload,
   FinancialAccount,
   FinancialCategories,
   FinancialTransaction,
-  FinancialTransactionCategory,
   FinancialTransactionType,
   SetAccountBalancePayload,
+  UpdateFinancialCategoryPayload,
   UpdateFinancialTransactionPayload,
 } from "../finance-types";
 
 const defaultCategories: FinancialCategories = {
-  revenue: [
-    { value: "OFFERINGS", label: "Ofertas" },
-    { value: "TITHES", label: "Dízimos" },
-    { value: "DONATIONS", label: "Doações" },
-  ],
-  expense: [
-    { value: "MAINTENANCE", label: "Manutenção" },
-    { value: "FOOD", label: "Alimentação" },
-    { value: "INSTRUMENTS", label: "Instrumentos" },
-    { value: "TECHNOLOGY", label: "Tecnologia" },
-    { value: "FURNITURE", label: "Móveis" },
-    { value: "STRUCTURE", label: "Estrutura" },
-  ],
+  revenue: [],
+  expense: [],
 };
 
 type ModalState =
@@ -148,13 +141,24 @@ function getTypeTone(type: FinancialTransactionType) {
 
 function buildCategoryMap(categories: FinancialCategories) {
   return [...categories.revenue, ...categories.expense].reduce<
-    Record<FinancialTransactionCategory, string>
+    Record<string, string>
   >(
     (accumulator, category) => ({
       ...accumulator,
       [category.value]: category.label,
     }),
-    {} as Record<FinancialTransactionCategory, string>,
+    {} as Record<string, string>,
+  );
+}
+
+function getTransactionCategoryLabel(
+  transaction: FinancialTransaction,
+  categoryMap: Record<string, string>,
+) {
+  return (
+    transaction.category?.label ??
+    categoryMap[transaction.categoryId] ??
+    "Categoria removida"
   );
 }
 
@@ -201,6 +205,11 @@ export function FinancePageClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [settlingId, setSettlingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isCategorySubmitting, setIsCategorySubmitting] = useState(false);
+  const [categorySubmitError, setCategorySubmitError] = useState<string | null>(
+    null,
+  );
   const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
 
   useEffect(() => {
@@ -265,6 +274,8 @@ export function FinancePageClient() {
   }, [clearSession, currentPage, reloadKey, router, visibleMonth]);
 
   const categoryMap = buildCategoryMap(categories);
+  const allCategories = [...categories.revenue, ...categories.expense];
+  const hasCategories = allCategories.length > 0;
   const effectiveRevenue = sumTransactions(
     summaryTransactions,
     (transaction) =>
@@ -345,6 +356,20 @@ export function FinancePageClient() {
     setModalState(createClosedModalState(visibleMonth));
   }
 
+  function openCreateCategoryModal() {
+    setCategorySubmitError(null);
+    setIsCategoryModalOpen(true);
+  }
+
+  function closeCategoryModal() {
+    if (isCategorySubmitting) {
+      return;
+    }
+
+    setCategorySubmitError(null);
+    setIsCategoryModalOpen(false);
+  }
+
   async function handleUnauthorized(err: unknown) {
     if (!isUnauthorizedApiError(err)) {
       return false;
@@ -407,6 +432,27 @@ export function FinancePageClient() {
       setSubmitError(getApiErrorMessage(err));
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleCategorySubmit(
+    payload: CreateFinancialCategoryPayload | UpdateFinancialCategoryPayload,
+  ) {
+    setIsCategorySubmitting(true);
+    setCategorySubmitError(null);
+
+    try {
+      await createFinanceCategory(payload as CreateFinancialCategoryPayload);
+      setIsCategoryModalOpen(false);
+      refreshFinance();
+    } catch (err) {
+      if (await handleUnauthorized(err)) {
+        return;
+      }
+
+      setCategorySubmitError(getApiErrorMessage(err));
+    } finally {
+      setIsCategorySubmitting(false);
     }
   }
 
@@ -496,7 +542,27 @@ export function FinancePageClient() {
             <SlidersHorizontal size={17} />
             Ajustar saldo
           </Button>
-          <Button type="button" onClick={openCreateModal}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={openCreateCategoryModal}
+          >
+            <Tags size={17} />
+            Nova categoria
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.push("/app/financeiro/categorias")}
+          >
+            <Tags size={17} />
+            Acessar categorias
+          </Button>
+          <Button
+            type="button"
+            onClick={openCreateModal}
+            disabled={isLoading || Boolean(error) || !hasCategories}
+          >
             <Plus size={17} />
             Nova transação
           </Button>
@@ -653,7 +719,12 @@ export function FinancePageClient() {
               <p className="mt-2 text-sm leading-6 text-muted">
                 Cadastre a primeira receita ou despesa para iniciar o historico financeiro.
               </p>
-              <Button type="button" className="mt-5" onClick={openCreateModal}>
+              <Button
+                type="button"
+                className="mt-5"
+                onClick={openCreateModal}
+                disabled={!hasCategories}
+              >
                 <Plus size={17} />
                 Cadastrar transação
               </Button>
@@ -676,7 +747,7 @@ export function FinancePageClient() {
                         {transaction.title}
                       </h3>
                       <p className="mt-1 text-sm text-muted">
-                        {categoryMap[transaction.category] ?? transaction.category}
+                        {getTransactionCategoryLabel(transaction, categoryMap)}
                       </p>
                     </div>
                     <span className={`text-sm font-semibold ${getTypeTone(transaction.type)}`}>
@@ -777,7 +848,7 @@ export function FinancePageClient() {
                         </span>
                       </td>
                       <td className="px-4 py-4 text-foreground">
-                        {categoryMap[transaction.category] ?? transaction.category}
+                        {getTransactionCategoryLabel(transaction, categoryMap)}
                       </td>
                       <td className="px-4 py-4 font-semibold text-foreground">
                         {formatCurrency(transaction.amount)}
@@ -872,6 +943,18 @@ export function FinancePageClient() {
           error={submitError}
           onClose={closeTransactionModal}
           onSubmit={(payload) => void handleTransactionSubmit(payload)}
+        />
+      ) : null}
+
+      {isCategoryModalOpen ? (
+        <FinanceCategoryFormModal
+          key="create-category"
+          mode="create"
+          category={null}
+          isSubmitting={isCategorySubmitting}
+          error={categorySubmitError}
+          onClose={closeCategoryModal}
+          onSubmit={(payload) => void handleCategorySubmit(payload)}
         />
       ) : null}
 

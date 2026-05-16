@@ -122,7 +122,9 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
       <nav className="mt-6 grid gap-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/app" && pathname.startsWith(`${item.href}/`));
 
           return (
             <Link

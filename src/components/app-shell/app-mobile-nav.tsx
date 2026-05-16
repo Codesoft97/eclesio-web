@@ -33,7 +33,9 @@ export function AppMobileNav() {
     <nav className="fixed inset-x-0 bottom-0 z-20 flex overflow-x-auto border-t border-border bg-surface/90 backdrop-blur-xl lg:hidden">
       {navItems.map((item) => {
         const Icon = item.icon;
-        const isActive = pathname === item.href;
+        const isActive =
+          pathname === item.href ||
+          (item.href !== "/app" && pathname.startsWith(`${item.href}/`));
 
         return (
           <Link

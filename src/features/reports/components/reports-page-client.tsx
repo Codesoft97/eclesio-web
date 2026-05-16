@@ -17,7 +17,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { RechartsBar, RechartsDonut, RechartsStacked } from "./report-charts";
+import { RechartsBar, RechartsDonut } from "./report-charts";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -40,7 +40,6 @@ import {
 import type {
   FinancialCategories,
   FinancialTransaction,
-  FinancialTransactionCategory,
   FinancialTransactionType,
 } from "@/features/finance/finance-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
@@ -48,26 +47,9 @@ import { fetchAllPaginatedItems } from "@/lib/pagination";
 
 type ScheduleMap = Record<string, EventSchedule>;
 
-type ChartItem = {
-  label: string;
-  value: number;
-  displayValue?: string;
-};
-
 const defaultCategories: FinancialCategories = {
-  revenue: [
-    { value: "OFFERINGS", label: "Ofertas" },
-    { value: "TITHES", label: "Dízimos" },
-    { value: "DONATIONS", label: "Doações" },
-  ],
-  expense: [
-    { value: "MAINTENANCE", label: "Manutenção" },
-    { value: "FOOD", label: "Alimentação" },
-    { value: "INSTRUMENTS", label: "Instrumentos" },
-    { value: "TECHNOLOGY", label: "Tecnologia" },
-    { value: "FURNITURE", label: "Móveis" },
-    { value: "STRUCTURE", label: "Estrutura" },
-  ],
+  revenue: [],
+  expense: [],
 };
 
 const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -147,13 +129,24 @@ function formatPercent(value: number) {
 
 function buildCategoryMap(categories: FinancialCategories) {
   return [...categories.revenue, ...categories.expense].reduce<
-    Record<FinancialTransactionCategory, string>
+    Record<string, string>
   >(
     (accumulator, category) => ({
       ...accumulator,
       [category.value]: category.label,
     }),
-    {} as Record<FinancialTransactionCategory, string>,
+    {} as Record<string, string>,
+  );
+}
+
+function getTransactionCategoryLabel(
+  transaction: FinancialTransaction,
+  categoryMap: Record<string, string>,
+) {
+  return (
+    transaction.category?.label ??
+    categoryMap[transaction.categoryId] ??
+    "Categoria removida"
   );
 }
 
@@ -183,7 +176,8 @@ function groupTransactionsByCategory({
       const value = sumTransactions(
         transactions,
         (transaction) =>
-          transaction.type === type && transaction.category === category.value,
+          transaction.type === type &&
+          transaction.categoryId === category.value,
       );
 
       return {
@@ -769,7 +763,11 @@ export function ReportsPageClient() {
                 <p className="text-sm text-muted">Categorias movimentadas</p>
                 <p className="mt-2 text-2xl font-semibold text-foreground">
                   {formatNumber(
-                    new Set(transactions.map((transaction) => categoryMap[transaction.category])).size,
+                    new Set(
+                      transactions.map((transaction) =>
+                        getTransactionCategoryLabel(transaction, categoryMap),
+                      ),
+                    ).size,
                   )}
                 </p>
               </div>

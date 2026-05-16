@@ -14,7 +14,6 @@ import type {
   CreateFinancialTransactionPayload,
   FinancialCategories,
   FinancialTransaction,
-  FinancialTransactionCategory,
   FinancialTransactionType,
   UpdateFinancialTransactionPayload,
 } from "../finance-types";
@@ -72,10 +71,10 @@ export function FinanceTransactionFormModal({
     return {
       title: transaction?.title ?? "",
       type: initialType as FinancialTransactionType,
-      category:
-        transaction?.category ??
+      categoryId:
+        transaction?.categoryId ??
         getInitialCategory(initialType, categories) ??
-        "TITHES",
+        "",
       amount: transaction?.amount ? formatCurrencyInput(transaction.amount) : "",
       date: transaction ? getDateInputValue(transaction.date) : initialDate,
       isEffective: transaction?.isEffective ?? false,
@@ -92,14 +91,14 @@ export function FinanceTransactionFormModal({
 
   function updateType(type: FinancialTransactionType) {
     const options = getCategoryOptions(type, categories);
-    const category = options.some((option) => option.value === form.category)
-      ? form.category
+    const categoryId = options.some((option) => option.value === form.categoryId)
+      ? form.categoryId
       : options[0]?.value;
 
     setForm((current) => ({
       ...current,
       type,
-      category: category ?? current.category,
+      categoryId: categoryId ?? current.categoryId,
     }));
   }
 
@@ -109,7 +108,7 @@ export function FinanceTransactionFormModal({
 
     const amount = currencyInputToDecimal(form.amount);
     const categoryOptions = getCategoryOptions(form.type, categories);
-    const selectedCategory = form.category as FinancialTransactionCategory;
+    const selectedCategoryId = form.categoryId;
 
     if (form.title.trim().replace(/\s+/g, " ").length < 2) {
       setLocalError("Informe um título com pelo menos 2 caracteres.");
@@ -126,7 +125,7 @@ export function FinanceTransactionFormModal({
       return;
     }
 
-    if (!categoryOptions.some((option) => option.value === selectedCategory)) {
+    if (!categoryOptions.some((option) => option.value === selectedCategoryId)) {
       setLocalError("Selecione uma categoria compativel com o tipo.");
       return;
     }
@@ -134,7 +133,7 @@ export function FinanceTransactionFormModal({
     const payload = {
       title: form.title.trim().replace(/\s+/g, " "),
       type: form.type,
-      category: selectedCategory,
+      categoryId: selectedCategoryId,
       amount,
       date: form.date,
       ...(mode === "create" ? { isEffective: form.isEffective } : {}),
@@ -215,13 +214,14 @@ export function FinanceTransactionFormModal({
               <span>Categoria</span>
               <select
                 className="h-11 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
-                value={form.category}
+                value={form.categoryId}
                 onChange={(event) =>
                   updateField(
-                    "category",
-                    event.target.value as FinancialTransactionCategory,
+                    "categoryId",
+                    event.target.value,
                   )
                 }
+                disabled={categoryOptions.length === 0}
               >
                 {categoryOptions.map((category) => (
                   <option key={category.value} value={category.value}>
