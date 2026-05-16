@@ -72,12 +72,12 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
 
   return (
     <aside
-      className={`flex min-h-screen w-full flex-col border-r border-border bg-surface/80 py-5 backdrop-blur-xl transition-all duration-300 ${
+      className={`flex h-screen w-full flex-col overflow-hidden border-r border-border bg-surface/80 py-5 backdrop-blur-xl transition-all duration-300 ${
         isCollapsed ? "px-3" : "px-4"
       }`}
     >
       <div
-        className={`flex border-b border-border pb-5 ${
+        className={`flex shrink-0 border-b border-border pb-5 ${
           isCollapsed ? "flex-col items-center gap-3" : "items-start gap-3"
         }`}
       >
@@ -105,7 +105,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
       </div>
 
       {isCollapsed ? null : (
-        <div className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-surface-subtle p-3">
+        <div className="mt-4 flex shrink-0 items-center gap-3 rounded-lg border border-border bg-surface-subtle p-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
             {getInitials(session?.user.name ?? "U")}
           </span>
@@ -119,7 +119,11 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
         </div>
       )}
 
-      <nav className="mt-6 grid gap-1">
+      <nav
+        className={`mt-6 grid min-h-0 flex-1 content-start gap-1 overflow-y-auto ${
+          isCollapsed ? "" : "pr-1"
+        }`}
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -147,7 +151,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
         })}
       </nav>
 
-      <div className="mt-auto pt-6">
+      <div className="shrink-0 pt-6">
         {error && !isCollapsed ? (
           <p className="mb-3 text-xs text-danger">{error}</p>
         ) : null}

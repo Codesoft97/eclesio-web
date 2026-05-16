@@ -39,8 +39,8 @@ export function MemberPortalSidebar() {
   }
 
   return (
-    <aside className="flex min-h-screen w-full flex-col border-r border-border bg-surface/80 px-4 py-5 backdrop-blur-xl">
-      <div className="flex items-start gap-3 border-b border-border pb-5">
+    <aside className="flex h-screen w-full flex-col overflow-hidden border-r border-border bg-surface/80 px-4 py-5 backdrop-blur-xl">
+      <div className="flex shrink-0 items-start gap-3 border-b border-border pb-5">
         <LogoMark />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">
@@ -50,7 +50,7 @@ export function MemberPortalSidebar() {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-surface-subtle p-3">
+      <div className="mt-4 flex shrink-0 items-center gap-3 rounded-lg border border-border bg-surface-subtle p-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
           {getInitials(session?.user.name ?? "M")}
         </span>
@@ -65,10 +65,12 @@ export function MemberPortalSidebar() {
         </div>
       </div>
 
-      <nav className="mt-6 grid gap-1">
+      <nav className="mt-6 grid min-h-0 flex-1 content-start gap-1 overflow-y-auto pr-1">
         {memberPortalNavItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/portal" && pathname.startsWith(`${item.href}/`));
 
           return (
             <Link
@@ -87,7 +89,7 @@ export function MemberPortalSidebar() {
         })}
       </nav>
 
-      <div className="mt-auto pt-6">
+      <div className="shrink-0 pt-6">
         <Button
           type="button"
           variant="ghost"

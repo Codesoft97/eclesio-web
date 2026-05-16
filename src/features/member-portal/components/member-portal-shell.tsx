@@ -135,13 +135,16 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground" data-ph-mask>
+    <div
+      className="min-h-screen bg-background text-foreground lg:h-screen lg:overflow-hidden"
+      data-ph-mask
+    >
       <MemberPortalMobileHeader />
-      <div className="grid min-h-screen lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <div className="grid min-h-screen lg:h-screen lg:min-h-0 lg:grid-cols-[17rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
           <MemberPortalSidebar />
         </div>
-        <main className="min-w-0 px-4 pb-24 pt-5 sm:px-6 lg:px-8 lg:pb-8">
+        <main className="min-w-0 px-4 pb-24 pt-5 sm:px-6 lg:h-screen lg:overflow-y-auto lg:px-8 lg:pb-8">
           <div className="mb-6 hidden justify-end lg:flex">
             <ThemeToggle />
           </div>

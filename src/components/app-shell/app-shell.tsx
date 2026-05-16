@@ -136,10 +136,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground" data-ph-mask>
+    <div
+      className="min-h-screen bg-background text-foreground lg:h-screen lg:overflow-hidden"
+      data-ph-mask
+    >
       <AppMobileHeader />
       <div
-        className="grid min-h-screen transition-[grid-template-columns] duration-300 ease-in-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
+        className="grid min-h-screen transition-[grid-template-columns] duration-300 ease-in-out lg:h-screen lg:min-h-0 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
         style={
           {
             "--sidebar-width": isSidebarCollapsed ? "5.5rem" : "17rem",
@@ -152,7 +155,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             onToggleCollapse={toggleSidebar}
           />
         </div>
-        <main className="min-w-0 px-4 pb-24 pt-5 sm:px-6 lg:px-8 lg:pb-8">
+        <main className="min-w-0 px-4 pb-24 pt-5 sm:px-6 lg:h-screen lg:overflow-y-auto lg:px-8 lg:pb-8">
           <div className="mb-6 hidden justify-end lg:flex">
             <ThemeToggle />
           </div>
