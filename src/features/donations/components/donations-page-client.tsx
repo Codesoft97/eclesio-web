@@ -230,7 +230,7 @@ export function DonationsPageClient() {
 
   function handleDelete(campaign: DonationCampaign) {
     setConfirmation({
-      eyebrow: "Doacoes",
+      eyebrow: "Doações",
       title: "Excluir objetivo?",
       description: `Deseja excluir o objetivo "${campaign.title}"? O Pix deixara de aparecer para os membros.`,
       confirmLabel: "Excluir objetivo",

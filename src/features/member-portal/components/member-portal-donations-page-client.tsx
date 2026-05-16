@@ -120,7 +120,7 @@ export function MemberPortalDonationsPageClient() {
               className="mx-auto mb-3 animate-spin text-accent"
               size={28}
             />
-            Carregando doacoes...
+            Carregando doações...
           </div>
         </div>
       ) : donations.length === 0 ? (
@@ -130,10 +130,10 @@ export function MemberPortalDonationsPageClient() {
               <HeartHandshake size={24} />
             </span>
             <h2 className="text-lg font-semibold text-foreground">
-              Nenhuma opcao ativa
+              Nenhuma opção ativa
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Quando a igreja publicar um objetivo de doacao, ele aparecera
+              Quando a igreja publicar um objetivo de doação, ele aparecerá
               aqui.
             </p>
           </div>

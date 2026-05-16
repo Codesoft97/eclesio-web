@@ -1,4 +1,4 @@
- 
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -13,6 +13,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import {
+  IMAGE_UPLOAD_ACCEPT,
+  MAX_IMAGE_SIZE_BYTES,
+  isAllowedImageFile,
+} from "@/features/media/image-upload-validation";
 import { uploadImage } from "@/features/media/media-service";
 import { getApiErrorMessage } from "@/lib/api";
 
@@ -29,9 +34,6 @@ interface EventFormModalProps {
   onClose: () => void;
   onSubmit: (payload: EventPayload) => void;
 }
-
-const MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -116,8 +118,8 @@ export function EventFormModal({
 
     setLocalError(null);
 
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      setLocalError("Use uma imagem em JPG, PNG ou WebP.");
+    if (!isAllowedImageFile(file)) {
+      setLocalError("Use uma imagem em JPG/JPEG, PNG ou WebP.");
       eventChange.target.value = "";
       return;
     }
@@ -203,9 +205,9 @@ export function EventFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-modal-title"
-        className="max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
               Eventos
@@ -229,7 +231,8 @@ export function EventFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4 p-5">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto p-5">
           <Field
             label="Título"
             value={form.title}
@@ -253,12 +256,12 @@ export function EventFormModal({
             />
           </label>
 
-          {/* <div className="grid gap-3 border border-border bg-surface-subtle p-3">
+          <div className="grid gap-3 border border-border bg-surface-subtle p-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-foreground">Imagem</p>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  JPG, PNG ou WebP de ate 3 MB.
+                  JPG/JPEG, PNG ou WebP de ate 3 MB.
                 </p>
               </div>
               <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-foreground transition hover:border-accent">
@@ -267,7 +270,7 @@ export function EventFormModal({
                 <input
                   key={imageInputKey}
                   type="file"
-                  accept="image/jpeg,image/png,image/webp"
+                  accept={IMAGE_UPLOAD_ACCEPT}
                   className="sr-only"
                   onChange={handleImageChange}
                   disabled={isSubmitting || isUploadingImage}
@@ -296,7 +299,7 @@ export function EventFormModal({
                 </button>
               </div>
             ) : null}
-          </div> */}
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
@@ -353,7 +356,9 @@ export function EventFormModal({
             </p>
           ) : null}
 
-          <div className="grid gap-3 pt-2 sm:grid-cols-[1fr_auto]">
+          </div>
+
+          <div className="grid shrink-0 gap-3 border-t border-border bg-surface p-5 shadow-[0_-8px_20px_rgba(15,23,42,0.06)] sm:grid-cols-[1fr_auto]">
             <Button
               type="button"
               variant="ghost"

@@ -1,4 +1,4 @@
- 
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -6,6 +6,11 @@ import { ImagePlus, Megaphone, Save, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import {
+  IMAGE_UPLOAD_ACCEPT,
+  MAX_IMAGE_SIZE_BYTES,
+  isAllowedImageFile,
+} from "@/features/media/image-upload-validation";
 import { uploadImage } from "@/features/media/media-service";
 import { getApiErrorMessage } from "@/lib/api";
 
@@ -21,9 +26,6 @@ interface AnnouncementFormModalProps {
   onClose: () => void;
   onSubmit: (payload: AnnouncementPayload) => void;
 }
-
-const MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export function AnnouncementFormModal({
   mode,
@@ -64,8 +66,8 @@ export function AnnouncementFormModal({
 
     setLocalError(null);
 
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      setLocalError("Use uma imagem em JPG, PNG ou WebP.");
+    if (!isAllowedImageFile(file)) {
+      setLocalError("Use uma imagem em JPG/JPEG, PNG ou WebP.");
       event.target.value = "";
       return;
     }
@@ -138,9 +140,9 @@ export function AnnouncementFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="announcement-modal-title"
-        className="animate-scale-in w-full max-w-2xl rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
+        className="animate-scale-in flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xl backdrop-blur-xl"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
               Comunicados
@@ -166,98 +168,100 @@ export function AnnouncementFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4 p-5">
-          <Field
-            label="Titulo"
-            value={form.title}
-            onChange={(event) => updateField("title", event.target.value)}
-            placeholder="Culto especial de domingo"
-            maxLength={120}
-            required
-          />
-
-          <label className="grid gap-2 text-sm font-medium text-foreground">
-            <span>Conteudo</span>
-            <textarea
-              value={form.content}
-              onChange={(event) => updateField("content", event.target.value)}
-              placeholder="Escreva o comunicado para os membros..."
-              rows={7}
-              maxLength={5000}
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto p-5">
+            <Field
+              label="Titulo"
+              value={form.title}
+              onChange={(event) => updateField("title", event.target.value)}
+              placeholder="Culto especial de domingo"
+              maxLength={120}
               required
-              className="min-h-40 rounded-lg border border-border bg-surface-subtle px-3.5 py-3 text-sm text-foreground shadow-xs transition-all duration-200 placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
             />
-          </label>
 
-          {/* <div className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-foreground">Imagem</p>
-                <p className="mt-1 text-xs leading-5 text-muted">
-                  JPG, PNG ou WebP de ate 3 MB.
-                </p>
+            <label className="grid gap-2 text-sm font-medium text-foreground">
+              <span>Conteudo</span>
+              <textarea
+                value={form.content}
+                onChange={(event) => updateField("content", event.target.value)}
+                placeholder="Escreva o comunicado para os membros..."
+                rows={7}
+                maxLength={5000}
+                required
+                className="min-h-40 rounded-lg border border-border bg-surface-subtle px-3.5 py-3 text-sm text-foreground shadow-xs transition-all duration-200 placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
+              />
+            </label>
+
+            <div className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Imagem</p>
+                  <p className="mt-1 text-xs leading-5 text-muted">
+                    JPG/JPEG, PNG ou WebP de ate 3 MB.
+                  </p>
+                </div>
+                <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-foreground transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-60">
+                  <ImagePlus size={16} />
+                  {isUploadingImage ? "Enviando..." : "Enviar imagem"}
+                  <input
+                    key={imageInputKey}
+                    type="file"
+                    accept={IMAGE_UPLOAD_ACCEPT}
+                    className="sr-only"
+                    onChange={handleImageChange}
+                    disabled={isSubmitting || isUploadingImage}
+                  />
+                </label>
               </div>
-              <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-foreground transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-60">
-                <ImagePlus size={16} />
-                {isUploadingImage ? "Enviando..." : "Enviar imagem"}
-                <input
-                  key={imageInputKey}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="sr-only"
-                  onChange={handleImageChange}
-                  disabled={isSubmitting || isUploadingImage}
-                />
-              </label>
+
+              {previewImageUrl ? (
+                <div className="grid gap-3">
+                  <div className="overflow-hidden rounded-lg border border-border bg-surface">
+                    <img
+                      src={previewImageUrl}
+                      alt=""
+                      className="aspect-video w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    disabled={isSubmitting || isUploadingImage}
+                    className="inline-flex h-10 w-fit cursor-pointer items-center justify-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-3 text-sm font-semibold text-danger transition hover:bg-danger/15 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <Trash2 size={16} />
+                    Remover imagem
+                  </button>
+                </div>
+              ) : null}
             </div>
 
-            {previewImageUrl ? (
-              <div className="grid gap-3">
-                <div className="overflow-hidden rounded-lg border border-border bg-surface">
-                  <img
-                    src={previewImageUrl}
-                    alt=""
-                    className="aspect-video w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  disabled={isSubmitting || isUploadingImage}
-                  className="inline-flex h-10 w-fit cursor-pointer items-center justify-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-3 text-sm font-semibold text-danger transition hover:bg-danger/15 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <Trash2 size={16} />
-                  Remover imagem
-                </button>
-              </div>
-            ) : null}
-          </div> */}
-
-          <label className="flex items-start gap-3 rounded-lg border border-border bg-surface-subtle p-3 text-sm text-foreground">
-            <input
-              type="checkbox"
-              checked={form.isPublished}
-              onChange={(event) =>
-                updateField("isPublished", event.target.checked)
-              }
-              className="mt-1 h-4 w-4 accent-accent"
-            />
-            <span>
-              <span className="block font-semibold">Publicar agora</span>
-              <span className="text-xs leading-5 text-muted">
-                Comunicados publicados aparecem no portal dos membros.
+            <label className="flex items-start gap-3 rounded-lg border border-border bg-surface-subtle p-3 text-sm text-foreground">
+              <input
+                type="checkbox"
+                checked={form.isPublished}
+                onChange={(event) =>
+                  updateField("isPublished", event.target.checked)
+                }
+                className="mt-1 h-4 w-4 accent-accent"
+              />
+              <span>
+                <span className="block font-semibold">Publicar agora</span>
+                <span className="text-xs leading-5 text-muted">
+                  Comunicados publicados aparecem no portal dos membros.
+                </span>
               </span>
-            </span>
-          </label>
+            </label>
 
-          {localError || error ? (
-            <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
-              {localError ?? error}
-            </p>
-          ) : null}
+            {localError || error ? (
+              <p className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+                {localError ?? error}
+              </p>
+            ) : null}
+          </div>
 
-          <div className="grid gap-3 pt-2 sm:grid-cols-[1fr_auto]">
+          <div className="grid shrink-0 gap-3 border-t border-border bg-surface p-5 shadow-[0_-8px_20px_rgba(15,23,42,0.06)] sm:grid-cols-[1fr_auto]">
             <Button
               type="button"
               variant="ghost"

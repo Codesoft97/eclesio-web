@@ -75,7 +75,7 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
   ["envie uma imagem", "Envie uma imagem para continuar."],
   [
     "formato de imagem nao permitido",
-    "Use uma imagem em JPG, PNG ou WebP.",
+    "Use uma imagem em JPG/JPEG, PNG ou WebP.",
   ],
   ["arquivo de imagem invalido", "Selecione uma imagem valida."],
   ["a imagem deve ter no maximo 3 mb", "A imagem deve ter no maximo 3 MB."],
@@ -90,9 +90,6 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
 export const api = axios.create({
   baseURL: apiBaseUrl,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 export function isUnauthorizedApiError(error: unknown) {

@@ -9,7 +9,7 @@ export interface UploadedImage {
 
 export async function uploadImage(file: File) {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("image", file, file.name);
 
   const response = await api.post<UploadedImage>("/media/images", formData);
 

@@ -88,7 +88,7 @@ export function DonationFormModal({
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-              Doacoes
+              Doações
             </p>
             <h2
               id="donation-modal-title"
@@ -97,7 +97,7 @@ export function DonationFormModal({
               {title}
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted">
-              Cadastre um destino de doacao com chave Pix propria.
+              Cadastre um destino de doação com chave Pix própria.
             </p>
           </div>
           <button

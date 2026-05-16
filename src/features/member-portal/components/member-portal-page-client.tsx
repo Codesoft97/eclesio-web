@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -31,6 +30,7 @@ import type {
   MemberPortalProfile,
 } from "../member-portal-types";
 import { MemberPortalAnnouncementCard } from "./member-portal-announcement-card";
+import { MemberPortalImagePreview } from "./member-portal-image-preview";
 
 const calendarWeekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
@@ -214,7 +214,7 @@ export function MemberPortalPageClient() {
             Ola, {profile?.member.name ?? session?.user.name ?? "membro"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Veja rapidamente o que esta chegando na agenda da igreja e o ultimo
+            Veja rapidamente o que esta chegando na agenda da igreja e o último
             comunicado publicado.
           </p>
         </div>
@@ -260,7 +260,7 @@ export function MemberPortalPageClient() {
               <div className="mb-5 flex flex-col justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
                 <div>
                   <p className="font-mono text-xs uppercase text-muted">
-                    Ultimas atualizacoes
+                    Ultimas atualizações
                   </p>
                   <h2 className="mt-2 text-lg font-semibold text-foreground">
                     Agenda e comunicados
@@ -277,37 +277,36 @@ export function MemberPortalPageClient() {
               <div className="grid gap-4">
                 {nextEvent ? (
                   <article className="rounded-lg border border-border bg-surface-subtle p-4">
-                    <div className="flex items-start gap-3">
+                    <header className="flex items-start gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-foreground">
                         <CalendarDays size={18} />
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="font-mono text-xs uppercase text-muted">
-                          Proximo evento
+                          Próximo evento
                         </p>
                         <p className="mt-1 font-mono text-xs uppercase text-muted">
                           {formatEventDate(nextEvent.startsAt)}
                         </p>
-                        <h3 className="mt-2 text-xl font-semibold text-foreground">
-                          {nextEvent.title}
-                        </h3>
-                        {nextEvent.imageUrl ? (
-                          <div className="mt-3 overflow-hidden rounded-lg border border-border bg-surface">
-                            <img
-                              src={nextEvent.imageUrl}
-                              alt=""
-                              className="aspect-video w-full object-cover"
-                              loading="lazy"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                        ) : null}
-                        {nextEvent.description ? (
-                          <p className="mt-2 text-sm leading-6 text-muted">
-                            {nextEvent.description}
-                          </p>
-                        ) : null}
                       </div>
+                    </header>
+
+                    <div className="mt-4">
+                      <h3 className="text-xl font-semibold text-foreground">
+                        {nextEvent.title}
+                      </h3>
+                      {nextEvent.description ? (
+                        <p className="mt-2 text-sm leading-6 text-muted">
+                          {nextEvent.description}
+                        </p>
+                      ) : null}
+                      {nextEvent.imageUrl ? (
+                        <MemberPortalImagePreview
+                          src={nextEvent.imageUrl}
+                          label={`imagem do evento ${nextEvent.title}`}
+                          className="mt-3"
+                        />
+                      ) : null}
                     </div>
                   </article>
                 ) : (
@@ -336,16 +335,16 @@ export function MemberPortalPageClient() {
 
           <article className="rounded-xl border border-border bg-primary p-5 text-primary-foreground shadow-sm dark:bg-surface dark:text-foreground">
             <p className="font-mono text-xs uppercase opacity-70">
-              Calendario da igreja
+              Calendário da igreja
             </p>
-            <h2 className="mt-3 text-xl font-semibold">Eventos do mes</h2>
+            <h2 className="mt-3 text-xl font-semibold">Eventos do mês</h2>
             <div className="mt-5 h-1 w-20 rounded-full bg-accent" />
 
             <div className="mt-7 rounded-lg border border-white/10 bg-white/[0.04] p-4 dark:border-border dark:bg-surface-subtle">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-mono text-[10px] uppercase opacity-60">
-                    Calendario do mes
+                    Calendário do mês
                   </p>
                   <h3 className="mt-1 text-base font-semibold capitalize">
                     {formatMonthTitle(calendarMonth)}
@@ -400,7 +399,7 @@ export function MemberPortalPageClient() {
 
               <div className="mt-4 flex items-center gap-3 text-xs opacity-70">
                 <span className="h-2 w-2 rounded-full bg-accent" />
-                Dias destacados indicam eventos cadastrados no mes.
+                Dias destacados indicam eventos cadastrados no mês.
               </div>
             </div>
           </article>

@@ -359,9 +359,9 @@ export function AnnouncementsPageClient() {
                 <tr>
                   <th className="px-4 py-3 font-semibold">Comunicado</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Engajamento</th>
+                  <th className="px-4 py-3 font-semibold">Visualizações</th>
                   <th className="px-4 py-3 font-semibold">Publicado em</th>
-                  <th className="px-4 py-3 text-right font-semibold">Acoes</th>
+                  <th className="px-4 py-3 text-right font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -413,10 +413,10 @@ export function AnnouncementsPageClient() {
                           <Eye size={13} />
                           {announcement.viewsCount}
                         </span>
-                        <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-subtle px-2 py-1">
+                        {/* <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-subtle px-2 py-1">
                           <Heart size={13} />
                           {announcement.likesCount}
-                        </span>
+                        </span> */}
                       </div>
                     </td>
                     <td className="px-4 py-4 text-muted">

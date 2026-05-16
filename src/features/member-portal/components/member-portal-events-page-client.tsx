@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { CalendarDays, Loader2, RefreshCw } from "lucide-react";
@@ -22,6 +21,7 @@ import {
 } from "../member-portal-formatters";
 import { listMemberPortalEvents } from "../member-portal-service";
 import type { MemberPortalEvent } from "../member-portal-types";
+import { MemberPortalImagePreview } from "./member-portal-image-preview";
 
 function getPortalRange() {
   const now = new Date();
@@ -184,21 +184,17 @@ export function MemberPortalEventsPageClient() {
                     </span>
                   ) : null}
                 </div>
-                {event.imageUrl ? (
-                  <div className="mt-3 overflow-hidden rounded-lg border border-border bg-surface">
-                    <img
-                      src={event.imageUrl}
-                      alt=""
-                      className="aspect-video w-full object-cover"
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                ) : null}
                 {event.description ? (
                   <p className="mt-2 text-sm leading-6 text-muted">
                     {event.description}
                   </p>
+                ) : null}
+                {event.imageUrl ? (
+                  <MemberPortalImagePreview
+                    src={event.imageUrl}
+                    label={`imagem do evento ${event.title}`}
+                    className="mt-3"
+                  />
                 ) : null}
               </article>
             ))}
