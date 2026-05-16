@@ -85,15 +85,16 @@ const plans = [
     price: "39,90",
     period: "/mês",
     description:
-      "Preço planejado para o lançamento comercial. Nesta fase, você pode testar gratuitamente.",
+      "Preço planejado para o lançamento comercial. Você pode testar gratuitamente durante 7 dias.",
     highlight: false,
     badge: "Flexível",
     benefits: [
       "Cadastro de igreja e acesso administrativo.",
       "Gestão de membros, obreiros, ministérios e funções.",
-      "Eventos, cultos recorrentes e compartilhamento de links.",
-      "Escalas com aceite ou recusa por link exclusivo.",
+      "Eventos, cultos recorrentes e comunicados para os membros.",
+      "Escalas com envio automático para os obreiros.",
       "Controle financeiro com receitas, despesas, saldo e pendências.",
+      "Portal exclusivo para membros e obreiros.",
       "Acesso gratuito nesta fase para testar e enviar feedback.",
     ],
   },
@@ -110,7 +111,6 @@ const plans = [
       "Planejamento anual de cultos, eventos e escalas com mais previsibilidade.",
       "Base financeira organizada para acompanhar a saúde da igreja mês a mês.",
       "Prioridade nas melhorias pensadas para rotinas recorrentes de igrejas.",
-      "Valor anual previsto para a etapa comercial, ainda sem cobrança nesta fase.",
     ],
   },
 ];
@@ -352,7 +352,7 @@ export default function LandingPage() {
                     icon: Clock3,
                   },
                   {
-                    title: "Sem cobrança manual",
+                    title: "Tudo automático",
                     description:
                       "Aceites e recusas continuam centralizados no acompanhamento da escala.",
                     icon: BellRing,
@@ -505,11 +505,11 @@ export default function LandingPage() {
                 </div>
                 {plan.name === "Anual" ? (
                   <p className="mt-2 text-xs opacity-70">
-                    Preço previsto para cobrança anual futura.
+                    Preço de lançamento para cobrança anual.
                   </p>
                 ) : (
                   <p className="mt-2 text-xs text-muted">
-                    Preço previsto para cobrança mensal futura.
+                    Preço de lançamento para cobrança mensal.
                   </p>
                 )}
               </div>
