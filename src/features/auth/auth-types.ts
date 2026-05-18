@@ -55,7 +55,6 @@ export interface RegisterPayload {
   email: string;
   whatsapp: string;
   password: string;
-  passwordConfirmation: string;
   acceptedTerms: boolean;
   acceptedPrivacyPolicy: boolean;
 }
@@ -82,5 +81,4 @@ export interface ResetPasswordPayload {
   email: string;
   resetToken: string;
   password: string;
-  passwordConfirmation: string;
 }

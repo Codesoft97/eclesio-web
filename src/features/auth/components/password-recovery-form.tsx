@@ -6,7 +6,6 @@ import { FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
-import { PasswordField } from "@/components/ui/password-field";
 import { getApiErrorMessage } from "@/lib/api";
 
 import {
@@ -28,7 +27,6 @@ export function PasswordRecoveryForm() {
     email: "",
     code: "",
     password: "",
-    passwordConfirmation: "",
   });
 
   function updateField(field: keyof typeof form, value: string) {
@@ -86,7 +84,6 @@ export function PasswordRecoveryForm() {
           email: form.email,
           resetToken,
           password: form.password,
-          passwordConfirmation: form.passwordConfirmation,
         });
         setMessage(response.message);
         setStep("success");
@@ -95,7 +92,6 @@ export function PasswordRecoveryForm() {
           ...current,
           code: "",
           password: "",
-          passwordConfirmation: "",
         }));
       } catch (err) {
         setError(getApiErrorMessage(err));
@@ -153,16 +149,6 @@ export function PasswordRecoveryForm() {
           value={form.password}
           onChange={(event) => updateField("password", event.target.value)}
           placeholder="Mínimo 8 caracteres"
-          autoComplete="new-password"
-          required
-        />
-        <PasswordField
-          label="Confirmar nova senha"
-          value={form.passwordConfirmation}
-          onChange={(event) =>
-            updateField("passwordConfirmation", event.target.value)
-          }
-          placeholder="Repita a nova senha"
           autoComplete="new-password"
           required
         />

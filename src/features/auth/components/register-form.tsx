@@ -1,6 +1,6 @@
 "use client";
 
-import { Church } from "lucide-react";
+import { Check, Church } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
@@ -16,6 +16,12 @@ import { register } from "../auth-service";
 import { useAuth } from "../auth-provider";
 import { getHomePathForRole } from "../role-redirect";
 
+const signupBenefits = [
+  "Escalas com convite pelo WhatsApp",
+  "Cadastro de membros e obreiros",
+  "Controle financeiro e relatórios",
+];
+
 export function RegisterForm() {
   const router = useRouter();
   const { setSession } = useAuth();
@@ -27,7 +33,6 @@ export function RegisterForm() {
     email: "",
     whatsapp: "",
     password: "",
-    passwordConfirmation: "",
     acceptedTerms: false,
     acceptedPrivacyPolicy: false,
   });
@@ -115,25 +120,21 @@ export function RegisterForm() {
           required
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <PasswordField
-          label="Senha"
-          value={form.password}
-          onChange={(event) => updateField("password", event.target.value)}
-          placeholder="Minimo 8 caracteres"
-          autoComplete="new-password"
-          required
-        />
-        <PasswordField
-          label="Confirmar senha"
-          value={form.passwordConfirmation}
-          onChange={(event) =>
-            updateField("passwordConfirmation", event.target.value)
-          }
-          placeholder="Repita a senha"
-          autoComplete="new-password"
-          required
-        />
+      <PasswordField
+        label="Senha"
+        value={form.password}
+        onChange={(event) => updateField("password", event.target.value)}
+        placeholder="Minimo 8 caracteres"
+        autoComplete="new-password"
+        required
+      />
+      <div className="grid gap-2 rounded-lg border border-accent/20 bg-accent/5 p-3 text-xs font-medium text-foreground sm:grid-cols-3">
+        {signupBenefits.map((benefit) => (
+          <span key={benefit} className="flex items-start gap-2 leading-5">
+            <Check size={14} className="mt-0.5 shrink-0 text-accent" />
+            {benefit}
+          </span>
+        ))}
       </div>
       <div className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-4 text-sm text-muted">
         <label className="flex cursor-pointer items-start gap-3">

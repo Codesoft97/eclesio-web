@@ -22,14 +22,6 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
     "password must be shorter than or equal to 72 characters",
     "A senha deve ter no máximo 72 caracteres.",
   ],
-  [
-    "passwordconfirmation must be longer than or equal to 8 characters",
-    "A confirmação de senha deve ter pelo menos 8 caracteres.",
-  ],
-  [
-    "passwordconfirmation must be shorter than or equal to 72 characters",
-    "A confirmação de senha deve ter no máximo 72 caracteres.",
-  ],
   ["email must be an email", "Informe um email válido."],
   [
     "email must be shorter than or equal to 254 characters",
@@ -59,10 +51,6 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
   [
     "objetivo de doacao nao encontrado",
     "Objetivo de doacao nao encontrado.",
-  ],
-  [
-    "a confirmacao de senha nao confere",
-    "A confirmacao de senha nao confere.",
   ],
   [
     "assinatura necessaria para acessar esta funcionalidade",

@@ -41,7 +41,6 @@ export function MemberInvitationPageClient({
   const [form, setForm] = useState({
     email: "",
     password: "",
-    passwordConfirmation: "",
     acceptedTerms: false,
     acceptedPrivacyPolicy: false,
   });
@@ -97,7 +96,6 @@ export function MemberInvitationPageClient({
       token,
       email: form.email.trim().toLowerCase(),
       password: form.password,
-      passwordConfirmation: form.passwordConfirmation,
       acceptedTerms: form.acceptedTerms,
       acceptedPrivacyPolicy: form.acceptedPrivacyPolicy,
     };
@@ -219,17 +217,6 @@ export function MemberInvitationPageClient({
                     autoComplete="new-password"
                     required
                   />
-                  <PasswordField
-                    label="Confirmar senha"
-                    value={form.passwordConfirmation}
-                    onChange={(event) =>
-                      updateField("passwordConfirmation", event.target.value)
-                    }
-                    placeholder="Repita a senha"
-                    autoComplete="new-password"
-                    required
-                  />
-
                   <div className="grid gap-3 rounded-lg border border-border bg-surface-subtle p-4 text-sm text-muted">
                     <label className="flex cursor-pointer items-start gap-3">
                       <input

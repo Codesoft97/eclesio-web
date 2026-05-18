@@ -10,7 +10,6 @@ export interface AcceptMemberAccessInvitationPayload {
   token: string;
   email: string;
   password: string;
-  passwordConfirmation: string;
   acceptedTerms: boolean;
   acceptedPrivacyPolicy: boolean;
 }

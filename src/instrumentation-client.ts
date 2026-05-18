@@ -12,7 +12,6 @@ const SENSITIVE_PROPERTY_KEYS = new Set([
   "telefone",
   "password",
   "senha",
-  "passwordConfirmation",
   "password_confirmation",
   "code",
   "codigo",

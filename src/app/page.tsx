@@ -10,6 +10,7 @@ import {
   HeartHandshake,
   LayoutDashboard,
   Megaphone,
+  MessageCircle,
   Send,
   UserCheck,
   Users,
@@ -22,24 +23,34 @@ import { AnalyticsLink } from "@/components/analytics/analytics-link";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
+const WHATSAPP_CONTACT_URL = `https://wa.me/5551991986528?text=${encodeURIComponent(
+  "Olá! Quero conhecer o Gerencia Igreja.",
+)}`;
+
 const features = [
+  {
+    title: "Escalas de obreiros",
+    description:
+      "Monte escalas por ministério e função, envie confirmações pelo WhatsApp e acompanhe aceites e recusas.",
+    icon: UserCheck,
+  },
+  {
+    title: "Agenda e eventos",
+    description:
+      "Organize cultos, reuniões, eventos recorrentes e escalas vinculadas em poucos cliques.",
+    icon: CalendarDays,
+  },
+  {
+    title: "WhatsApp automático",
+    description:
+      "Envie o convite da escala ao obreiro e lembre quem ainda não respondeu um dia antes do evento.",
+    icon: MessageCircle,
+  },
   {
     title: "Cadastro e membros",
     description:
       "Centralize membros, WhatsApp e informações essenciais em uma base simples de consultar e manter atualizada.",
     icon: Users,
-  },
-  {
-    title: "Agenda e eventos",
-    description:
-      "Organize cultos, reuniões, eventos recorrentes e links públicos para divulgação em poucos cliques.",
-    icon: CalendarDays,
-  },
-  {
-    title: "Escalas de obreiros",
-    description:
-      "Monte escalas por ministério e função, compartilhe links de confirmação e acompanhe aceites e recusas.",
-    icon: UserCheck,
   },
   {
     title: "Portal dos membros",
@@ -95,7 +106,7 @@ const plans = [
       "Escalas com envio automático para os obreiros.",
       "Controle financeiro com receitas, despesas, saldo e pendências.",
       "Portal exclusivo para membros e obreiros.",
-      "Acesso gratuito nesta fase para testar e enviar feedback.",
+      "Acesso gratuito durante 7 dias.",
     ],
   },
   {
@@ -161,6 +172,105 @@ function ProductScreenshot({
   );
 }
 
+function EventsAndAutomationSection() {
+  return (
+    <section className="border-y border-border bg-surface/60">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <ProductScreenshot
+            src="/eventos_screenshot.png"
+            alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
+            label="Eventos e escalas"
+          />
+          <div className="flex flex-col justify-center">
+            <SectionLabel>Escalas e eventos</SectionLabel>
+            <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
+              Escale obreiros, envie pelo WhatsApp e acompanhe as respostas.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-muted">
+              O Gerencia Igreja tira a escala do improviso: você cria o evento,
+              monta a equipe, cada obreiro recebe seu próprio link e o painel
+              mostra quem aceitou, recusou ou ainda está pendente.
+            </p>
+            <div className="mt-8 grid gap-4">
+              {benefits.map((benefit) => (
+                <div
+                  key={benefit}
+                  className="flex gap-3 rounded-lg border border-border bg-surface p-4"
+                >
+                  <Check className="mt-0.5 shrink-0 text-accent" size={18} />
+                  <p className="text-sm leading-6 text-muted">{benefit}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-8 border-t border-border pt-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <SectionLabel>WhatsApp automático</SectionLabel>
+            <h3 className="mt-3 text-2xl font-semibold text-foreground sm:text-3xl">
+              O obreiro recebe a escala sem você precisar cobrar manualmente.
+            </h3>
+
+            <div className="mt-6 grid gap-4">
+              {[
+                {
+                  title: "Convite ao escalar",
+                  description:
+                    "O obreiro recebe a mensagem assim que é vinculado ao evento.",
+                  icon: Send,
+                },
+                {
+                  title: "Lembrete um dia antes",
+                  description:
+                    "Quem ainda não respondeu recebe uma nova mensagem na véspera.",
+                  icon: Clock3,
+                },
+                {
+                  title: "Respostas centralizadas",
+                  description:
+                    "Aceites e recusas ficam organizados no acompanhamento da escala.",
+                  icon: BellRing,
+                },
+              ].map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div key={item.title} className="flex gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                      <Icon size={17} />
+                    </span>
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground">
+                        {item.title}
+                      </h4>
+                      <p className="mt-1 text-sm leading-6 text-muted">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-surface p-3 shadow-md">
+            <Image
+              src="/convite_escala_whatsapp.jpeg"
+              alt="Mensagem automática de convite de escala enviada pelo WhatsApp ao obreiro"
+              width={1080}
+              height={1606}
+              sizes="(min-width: 1024px) 380px, 90vw"
+              className="h-auto w-full rounded-xl border border-border"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
@@ -184,6 +294,17 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <AnalyticsLink
+              href={WHATSAPP_CONTACT_URL}
+              eventName="landing_whatsapp_clicked"
+              eventProperties={{ location: "header" }}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent lg:inline-flex"
+            >
+              <MessageCircle size={16} />
+              WhatsApp
+            </AnalyticsLink>
             <Link
               href="/login"
               className="hidden h-10 cursor-pointer items-center justify-center rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent sm:inline-flex"
@@ -213,22 +334,22 @@ export default function LandingPage() {
             </div>
 
             <h1 className="max-w-4xl text-5xl font-semibold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              Organize a igreja inteira em um só lugar.
+              Escalas, eventos e WhatsApp automático em um só lugar.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-muted sm:text-lg">
-              O Gerencia Igreja ajuda sua igreja a cuidar de membros, eventos,
-              escalas de obreiros e financeiro com uma rotina simples e pronta
-              para crescer junto com o ministério.
+              O Gerencia Igreja ajuda sua igreja a montar escalas, avisar
+              obreiros pelo WhatsApp, acompanhar respostas e manter membros,
+              eventos e financeiro organizados sem depender de planilhas soltas.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <AnalyticsLink
                 href="/cadastro"
                 eventName="landing_cta_clicked"
-                eventProperties={{ location: "final", cta: "comecar_gratis" }}
+                eventProperties={{ location: "hero", cta: "testar_gratis" }}
                 className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400 hover:shadow-md"
               >
-                Começar grátis
+                Começar teste grátis
                 <ArrowRight size={17} />
               </AnalyticsLink>
               <Link
@@ -237,6 +358,17 @@ export default function LandingPage() {
               >
                 Já tenho acesso
               </Link>
+              <AnalyticsLink
+                href={WHATSAPP_CONTACT_URL}
+                eventName="landing_whatsapp_clicked"
+                eventProperties={{ location: "hero" }}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface px-6 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
+              >
+                <MessageCircle size={17} />
+                Falar no WhatsApp
+              </AnalyticsLink>
             </div>
 
             <div className="mt-10 grid gap-3 sm:grid-cols-3">
@@ -266,6 +398,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <EventsAndAutomationSection />
 
       <section
         id="funcionalidades"
@@ -300,96 +434,6 @@ export default function LandingPage() {
               </article>
             );
           })}
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-surface/60">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-          <div className="grid gap-8 lg:grid-cols-2">
-            <ProductScreenshot
-              src="/eventos_screenshot.png"
-              alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
-              label="Eventos e escalas"
-            />
-            <div className="flex flex-col justify-center">
-              <SectionLabel>Operação mais leve</SectionLabel>
-              <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
-                Menos improviso. Mais previsibilidade para servir bem.
-              </h2>
-              <div className="mt-8 grid gap-4">
-                {benefits.map((benefit) => (
-                  <div
-                    key={benefit}
-                    className="flex gap-3 rounded-lg border border-border bg-surface p-4"
-                  >
-                    <Check className="mt-0.5 shrink-0 text-accent" size={18} />
-                    <p className="text-sm leading-6 text-muted">{benefit}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 grid gap-8 border-t border-border pt-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <SectionLabel>WhatsApp automático</SectionLabel>
-              <h3 className="mt-3 text-2xl font-semibold text-foreground sm:text-3xl">
-                A escala chega direto no WhatsApp do obreiro.
-              </h3>
-
-              <div className="mt-6 grid gap-4">
-                {[
-                  {
-                    title: "Convite ao escalar",
-                    description:
-                      "O obreiro recebe a mensagem assim que é vinculado ao evento.",
-                    icon: Send,
-                  },
-                  {
-                    title: "Lembrete um dia antes",
-                    description:
-                      "Quem ainda não respondeu recebe uma nova mensagem na véspera.",
-                    icon: Clock3,
-                  },
-                  {
-                    title: "Tudo automático",
-                    description:
-                      "Aceites e recusas continuam centralizados no acompanhamento da escala.",
-                    icon: BellRing,
-                  },
-                ].map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <div key={item.title} className="flex gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                        <Icon size={17} />
-                      </span>
-                      <div>
-                        <h4 className="text-sm font-semibold text-foreground">
-                          {item.title}
-                        </h4>
-                        <p className="mt-1 text-sm leading-6 text-muted">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-surface p-3 shadow-md">
-              <Image
-                src="/convite_escala_whatsapp.jpeg"
-                alt="Mensagem automática de convite de escala enviada pelo WhatsApp ao obreiro"
-                width={1080}
-                height={1606}
-                sizes="(min-width: 1024px) 380px, 90vw"
-                className="h-auto w-full rounded-xl border border-border"
-              />
-            </div>
-          </div>
         </div>
       </section>
 
@@ -537,7 +581,7 @@ export default function LandingPage() {
                     : "border-border bg-surface-subtle text-foreground hover:border-accent hover:text-accent"
                 }`}
               >
-                Testar grátis
+                Começar teste grátis
                 <ArrowRight size={17} />
               </AnalyticsLink>
             </article>
@@ -565,7 +609,7 @@ export default function LandingPage() {
               eventProperties={{ location: "final", cta: "comecar_gratis" }}
               className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-accent bg-accent px-6 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:bg-yellow-400 hover:shadow-md"
             >
-              Começar grátis
+              Começar teste grátis
               <ArrowRight size={17} />
             </AnalyticsLink>
             <Link
@@ -574,6 +618,17 @@ export default function LandingPage() {
             >
               Acessar sistema
             </Link>
+            <AnalyticsLink
+              href={WHATSAPP_CONTACT_URL}
+              eventName="landing_whatsapp_clicked"
+              eventProperties={{ location: "final" }}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border px-6 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
+            >
+              <MessageCircle size={17} />
+              Falar no WhatsApp
+            </AnalyticsLink>
           </div>
         </div>
       </section>
@@ -639,6 +694,17 @@ export default function LandingPage() {
               >
                 contato@gerenciaigreja.com.br
               </a>
+              <AnalyticsLink
+                href={WHATSAPP_CONTACT_URL}
+                eventName="landing_whatsapp_clicked"
+                eventProperties={{ location: "footer" }}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-fit items-center gap-2 transition hover:text-foreground"
+              >
+                <MessageCircle size={16} />
+                WhatsApp
+              </AnalyticsLink>
             </div>
           </div>
         </div>
