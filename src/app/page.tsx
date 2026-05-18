@@ -93,7 +93,7 @@ const benefits = [
 const plans = [
   {
     name: "Mensal",
-    price: "39,90",
+    price: "49,90",
     period: "/mês",
     description:
       "Preço planejado para o lançamento comercial. Você pode testar gratuitamente durante 7 dias.",
@@ -111,7 +111,7 @@ const plans = [
   },
   {
     name: "Anual",
-    price: "29,90",
+    price: "39,90",
     period: "/mês",
     description: "Economia em relação ao mensal.",
     highlight: true,
