@@ -1,6 +1,9 @@
 ﻿import { api } from "@/lib/api";
 
-import type { PaginatedResponse, PaginationParams } from "@/lib/pagination";
+import type {
+  NameOrCreatedAtSortParams,
+  PaginatedResponse,
+} from "@/lib/pagination";
 
 import type {
   Member,
@@ -8,7 +11,7 @@ import type {
   MemberPayload,
 } from "./member-types";
 
-export async function listMembers(params?: PaginationParams) {
+export async function listMembers(params?: NameOrCreatedAtSortParams) {
   const { data } = await api.get<PaginatedResponse<Member>>("/members", {
     params,
   });

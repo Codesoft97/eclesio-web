@@ -28,6 +28,7 @@ import {
   DEFAULT_PAGE_SIZE,
   MAX_PAGE_SIZE,
   getEmptyPaginationMeta,
+  type NameOrCreatedAtSort,
   type PaginationMeta,
 } from "@/lib/pagination";
 
@@ -98,6 +99,12 @@ const closedRoleModal: RoleModalState = {
   initialMinistryId: "",
 };
 
+const sortOptions: Array<{ value: NameOrCreatedAtSort; label: string }> = [
+  { value: "name_asc", label: "Nome A-Z" },
+  { value: "created_at_desc", label: "Mais recentes" },
+  { value: "created_at_asc", label: "Mais antigos" },
+];
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -118,6 +125,7 @@ export function WorkersPageClient() {
     () => getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState<NameOrCreatedAtSort>("name_asc");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -145,7 +153,7 @@ export function WorkersPageClient() {
       try {
         const [ministriesData, workersData] = await Promise.all([
           listWorkerMinistries({ limit: MAX_PAGE_SIZE }),
-          listWorkers({ page: currentPage, limit: DEFAULT_PAGE_SIZE }),
+          listWorkers({ page: currentPage, limit: DEFAULT_PAGE_SIZE, sort }),
         ]);
 
         if (!ignore) {
@@ -175,10 +183,15 @@ export function WorkersPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, currentPage, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router, sort]);
 
   function refreshWorkers() {
     setReloadKey((current) => current + 1);
+  }
+
+  function handleSortChange(nextSort: NameOrCreatedAtSort) {
+    setCurrentPage(1);
+    setSort(nextSort);
   }
 
   function openCreateWorkerModal() {
@@ -517,19 +530,38 @@ export function WorkersPageClient() {
                 </p>
               </div>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={refreshWorkers}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="animate-spin" size={16} />
-              ) : (
-                <RefreshCw size={16} />
-              )}
-              Atualizar
-            </Button>
+            <div className="grid gap-3 sm:flex sm:items-center">
+              <label className="grid gap-1 text-xs font-medium text-muted sm:min-w-44">
+                <span>Ordenar</span>
+                <select
+                  className="h-10 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                  value={sort}
+                  onChange={(event) =>
+                    handleSortChange(event.target.value as NameOrCreatedAtSort)
+                  }
+                  disabled={isLoading}
+                >
+                  {sortOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={refreshWorkers}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  <RefreshCw size={16} />
+                )}
+                Atualizar
+              </Button>
+            </div>
           </div>
 
           {isLoading ? (

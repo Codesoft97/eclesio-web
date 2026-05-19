@@ -28,6 +28,7 @@ import { formatBrazilianPhone } from "@/lib/formatters/phone";
 import {
   DEFAULT_PAGE_SIZE,
   getEmptyPaginationMeta,
+  type NameOrCreatedAtSort,
   type PaginationMeta,
 } from "@/lib/pagination";
 
@@ -69,6 +70,12 @@ const closedModalState: ModalState = {
   member: null,
 };
 
+const sortOptions: Array<{ value: NameOrCreatedAtSort; label: string }> = [
+  { value: "name_asc", label: "Nome A-Z" },
+  { value: "created_at_desc", label: "Mais recentes" },
+  { value: "created_at_asc", label: "Mais antigos" },
+];
+
 export function MembersPageClient() {
   const router = useRouter();
   const { clearSession } = useAuth();
@@ -77,6 +84,7 @@ export function MembersPageClient() {
     getEmptyPaginationMeta(DEFAULT_PAGE_SIZE),
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState<NameOrCreatedAtSort>("name_asc");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -100,6 +108,7 @@ export function MembersPageClient() {
         const data = await listMembers({
           page: currentPage,
           limit: DEFAULT_PAGE_SIZE,
+          sort,
         });
 
         if (!ignore) {
@@ -128,10 +137,15 @@ export function MembersPageClient() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, currentPage, reloadKey, router]);
+  }, [clearSession, currentPage, reloadKey, router, sort]);
 
   function refreshMembers() {
     setReloadKey((current) => current + 1);
+  }
+
+  function handleSortChange(nextSort: NameOrCreatedAtSort) {
+    setCurrentPage(1);
+    setSort(nextSort);
   }
 
   function openCreateModal() {
@@ -292,10 +306,29 @@ export function MembersPageClient() {
               <p className="text-xs text-muted">Dados sincronizados com o backend</p>
             </div>
           </div>
-          <Button type="button" variant="ghost" onClick={refreshMembers} disabled={isLoading}>
-            {isLoading ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
-            Atualizar
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="grid gap-1 text-xs font-medium text-muted sm:min-w-44">
+              <span>Ordenar</span>
+              <select
+                className="h-10 cursor-pointer rounded-lg border border-border bg-surface px-3 text-sm text-foreground transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                value={sort}
+                onChange={(event) =>
+                  handleSortChange(event.target.value as NameOrCreatedAtSort)
+                }
+                disabled={isLoading}
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button type="button" variant="ghost" onClick={refreshMembers} disabled={isLoading}>
+              {isLoading ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+              Atualizar
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (

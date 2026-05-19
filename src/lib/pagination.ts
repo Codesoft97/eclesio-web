@@ -17,6 +17,15 @@ export interface PaginationParams {
   limit?: number;
 }
 
+export type NameOrCreatedAtSort =
+  | "name_asc"
+  | "created_at_desc"
+  | "created_at_asc";
+
+export interface NameOrCreatedAtSortParams extends PaginationParams {
+  sort?: NameOrCreatedAtSort;
+}
+
 export const DEFAULT_PAGE_SIZE = 10;
 export const MAX_PAGE_SIZE = 100;
 

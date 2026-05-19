@@ -126,13 +126,6 @@ const plans = [
   },
 ];
 
-const workflow = [
-  "Cadastre sua igreja e seja o admin do sistema.",
-  "Organize membros, obreiros, ministérios e funções.",
-  "Crie eventos, cultos recorrentes e monte as escalas.",
-  "Compartilhe confirmações e acompanhe a rotina no painel.",
-];
-
 const faqItems = [
   {
     question: "O Gerencia Igreja substitui planilhas e grupos de WhatsApp?",
@@ -757,6 +750,26 @@ export default function LandingPage() {
                 rel="noreferrer"
               >
                 Instagram
+              </a>
+            </div>
+            <div className="mt-4 grid gap-3 text-sm text-muted">
+              <a
+                className="transition hover:text-foreground"
+                href="https://www.youtube.com/@GerenciaIgreja"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Youtube
+              </a>
+            </div>
+            <div className="mt-4 grid gap-3 text-sm text-muted">
+              <a
+                className="transition hover:text-foreground"
+                href="https://www.facebook.com/share/1G5kuBfgDL/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Facebook
               </a>
             </div>
           </div>
