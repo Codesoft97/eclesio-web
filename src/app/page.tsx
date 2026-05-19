@@ -96,7 +96,7 @@ const plans = [
     price: "49,90",
     period: "/mês",
     description:
-      "Preço planejado para o lançamento comercial. Você pode testar gratuitamente durante 7 dias.",
+      "Você pode testar gratuitamente durante 14 dias sem assinar nada ainda.",
     highlight: false,
     badge: "Flexível",
     benefits: [
@@ -106,7 +106,7 @@ const plans = [
       "Escalas com envio automático para os obreiros.",
       "Controle financeiro com receitas, despesas, saldo e pendências.",
       "Portal exclusivo para membros e obreiros.",
-      "Acesso gratuito durante 7 dias.",
+      "Acesso gratuito durante 14 dias.",
     ],
   },
   {
@@ -131,6 +131,39 @@ const workflow = [
   "Organize membros, obreiros, ministérios e funções.",
   "Crie eventos, cultos recorrentes e monte as escalas.",
   "Compartilhe confirmações e acompanhe a rotina no painel.",
+];
+
+const faqItems = [
+  {
+    question: "O Gerencia Igreja substitui planilhas e grupos de WhatsApp?",
+    answer:
+      "Ele centraliza a rotina principal da igreja: membros, obreiros, eventos, escalas, financeiro, comunicados e doações. O WhatsApp continua sendo usado onde faz sentido, como no envio automático das escalas para os obreiros.",
+  },
+  {
+    question: "Como funciona o envio automático das escalas?",
+    answer:
+      "Quando um obreiro é vinculado à escala de um evento, ele recebe uma mensagem no WhatsApp com o link da própria escala. Um dia antes do evento, quem ainda estiver pendente recebe um lembrete automático.",
+  },
+  {
+    question: "Os membros também conseguem acessar o sistema?",
+    answer:
+      "Sim. O portal dos membros permite acompanhar eventos, comunicados, doações e, quando o membro também for obreiro, suas escalas com opção de aceitar ou recusar.",
+  },
+  {
+    question: "Consigo controlar financeiro e doações?",
+    answer:
+      "Sim. O administrador pode registrar receitas e despesas, criar categorias financeiras e cadastrar objetivos de doação com Pix copia e cola e QR Code para os membros.",
+  },
+  {
+    question: "Preciso cadastrar cartão para testar?",
+    answer:
+      "Não. O cadastro libera um período gratuito para testar o sistema e entender se ele faz sentido para a rotina da sua igreja.",
+  },
+  {
+    question: "Os dados de uma igreja ficam separados das outras?",
+    answer:
+      "Sim. Cada igreja acessa apenas seus próprios dados. As telas administrativas e o portal dos membros respeitam o escopo da igreja autenticada.",
+  },
 ];
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -290,6 +323,9 @@ export default function LandingPage() {
             <a className="transition hover:text-foreground" href="#planos">
               Planos
             </a>
+            <a className="transition hover:text-foreground" href="#faq">
+              Dúvidas
+            </a>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -352,12 +388,12 @@ export default function LandingPage() {
                 Começar teste grátis
                 <ArrowRight size={17} />
               </AnalyticsLink>
-              <Link
+              {/* <Link
                 href="/login"
                 className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-6 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
               >
                 Já tenho acesso
-              </Link>
+              </Link> */}
               <AnalyticsLink
                 href={WHATSAPP_CONTACT_URL}
                 eventName="landing_whatsapp_clicked"
@@ -373,9 +409,9 @@ export default function LandingPage() {
 
             <div className="mt-10 grid gap-3 sm:grid-cols-3">
               {[
-                "Sem complicar a rotina",
-                "Tudo em um só lugar",
-                "Preparado para automações",
+                "Escalas enviadas pelo WhatsApp",
+                "Membros, eventos e financeiro juntos",
+                "Menos cobrança manual na rotina",
               ].map((item) => (
                 <div
                   key={item}
@@ -469,7 +505,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      {/* <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <SectionLabel>Como funciona</SectionLabel>
@@ -488,7 +524,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section
         id="planos"
@@ -589,6 +625,43 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section
+        id="faq"
+        className="border-y border-border bg-surface/60 px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+      >
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <SectionLabel>Dúvidas frequentes</SectionLabel>
+            <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
+              Perguntas comuns antes de organizar sua igreja no sistema.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-muted">
+              Respostas rápidas sobre escalas, membros, financeiro e o período
+              gratuito para começar com tranquilidade.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {faqItems.map((item) => (
+              <details
+                key={item.question}
+                className="group rounded-xl border border-border bg-surface p-5 shadow-sm"
+              >
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-base font-semibold text-foreground">
+                  <span>{item.question}</span>
+                  <span className="mt-1 text-accent transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-4 border-t border-border pt-4 text-sm leading-7 text-muted">
+                  {item.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
         <div className="grid gap-8 rounded-2xl border border-border bg-surface p-6 shadow-sm lg:grid-cols-[1fr_0.8fr] lg:p-10">
           <div>
@@ -612,12 +685,12 @@ export default function LandingPage() {
               Começar teste grátis
               <ArrowRight size={17} />
             </AnalyticsLink>
-            <Link
+            {/* <Link
               href="/login"
               className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border border-border px-6 text-sm font-semibold text-foreground transition-all duration-200 hover:border-accent hover:text-accent"
             >
               Acessar sistema
-            </Link>
+            </Link> */}
             <AnalyticsLink
               href={WHATSAPP_CONTACT_URL}
               eventName="landing_whatsapp_clicked"
@@ -656,6 +729,9 @@ export default function LandingPage() {
               </a>
               <a className="transition hover:text-foreground" href="#planos">
                 Planos
+              </a>
+              <a className="transition hover:text-foreground" href="#faq">
+                Dúvidas frequentes
               </a>
               <Link className="transition hover:text-foreground" href="/termos-de-uso">
                 Termos de uso
