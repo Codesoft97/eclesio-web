@@ -7,6 +7,7 @@ import {
   Loader2,
   Plus,
   RefreshCw,
+  Send,
   ShieldCheck,
   Trash2,
   UserCog,
@@ -22,6 +23,9 @@ import {
 } from "@/components/ui/confirmation-modal";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { useAuth } from "@/features/auth/auth-provider";
+import { MemberAccessInvitationModal } from "@/features/members/components/member-access-invitation-modal";
+import { createMemberAccessInvitation } from "@/features/members/member-service";
+import type { MemberAccessInvitation } from "@/features/members/member-types";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
 import {
@@ -80,6 +84,8 @@ type ConfirmationState = Omit<
   "isConfirming" | "onCancel"
 > | null;
 
+type PortalAccessStatus = Worker["portalAccessStatus"];
+
 const closedWorkerModal: WorkerModalState = {
   isOpen: false,
   mode: "create",
@@ -104,6 +110,30 @@ const sortOptions: Array<{ value: NameOrCreatedAtSort; label: string }> = [
   { value: "created_at_desc", label: "Mais recentes" },
   { value: "created_at_asc", label: "Mais antigos" },
 ];
+
+function getPortalAccessLabel(status: PortalAccessStatus) {
+  if (status === "ACTIVE") {
+    return "Portal ativo";
+  }
+
+  if (status === "INACTIVE") {
+    return "Portal inativo";
+  }
+
+  return "Sem acesso";
+}
+
+function getPortalAccessClassName(status: PortalAccessStatus) {
+  if (status === "ACTIVE") {
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+  }
+
+  if (status === "INACTIVE") {
+    return "border-danger/30 bg-danger/10 text-danger";
+  }
+
+  return "border-border bg-surface-subtle text-muted";
+}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -136,6 +166,9 @@ export function WorkersPageClient() {
   const [roleModal, setRoleModal] = useState<RoleModalState>(closedRoleModal);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [invitingWorkerId, setInvitingWorkerId] = useState<string | null>(null);
+  const [invitation, setInvitation] =
+    useState<MemberAccessInvitation | null>(null);
   const [deletingWorkerId, setDeletingWorkerId] = useState<string | null>(null);
   const [deletingMinistryId, setDeletingMinistryId] = useState<string | null>(
     null,
@@ -339,6 +372,31 @@ export function WorkersPageClient() {
       setSubmitError(getApiErrorMessage(err));
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleCreateInvitation(worker: Worker) {
+    if (!worker.memberId) {
+      setError(
+        "Este obreiro ainda nao possui membro vinculado para receber convite.",
+      );
+      return;
+    }
+
+    setInvitingWorkerId(worker.id);
+    setError(null);
+
+    try {
+      const data = await createMemberAccessInvitation(worker.memberId);
+      setInvitation(data);
+    } catch (err) {
+      if (await handleUnauthorized(err)) {
+        return;
+      }
+
+      setError(getApiErrorMessage(err));
+    } finally {
+      setInvitingWorkerId(null);
     }
   }
 
@@ -622,7 +680,30 @@ export function WorkersPageClient() {
                       </div>
                     </div>
 
-                    <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {worker.hasPortalAccess ? (
+                        <span
+                          className={`inline-flex min-h-10 items-center justify-center rounded-lg border px-3 text-sm font-semibold ${getPortalAccessClassName(
+                            worker.portalAccessStatus,
+                          )}`}
+                        >
+                          {getPortalAccessLabel(worker.portalAccessStatus)}
+                        </span>
+                      ) : worker.memberId ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => void handleCreateInvitation(worker)}
+                          disabled={invitingWorkerId === worker.id}
+                        >
+                          {invitingWorkerId === worker.id ? (
+                            <Loader2 className="animate-spin" size={16} />
+                          ) : (
+                            <Send size={16} />
+                          )}
+                          Convidar
+                        </Button>
+                      ) : null}
                       <Button
                         type="button"
                         variant="ghost"
@@ -694,6 +775,33 @@ export function WorkersPageClient() {
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex justify-end gap-2">
+                            {worker.hasPortalAccess ? (
+                              <span
+                                className={`inline-flex min-h-10 items-center justify-center rounded-lg border px-3 text-sm font-semibold ${getPortalAccessClassName(
+                                  worker.portalAccessStatus,
+                                )}`}
+                              >
+                                {getPortalAccessLabel(
+                                  worker.portalAccessStatus,
+                                )}
+                              </span>
+                            ) : worker.memberId ? (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() =>
+                                  void handleCreateInvitation(worker)
+                                }
+                                disabled={invitingWorkerId === worker.id}
+                              >
+                                {invitingWorkerId === worker.id ? (
+                                  <Loader2 className="animate-spin" size={16} />
+                                ) : (
+                                  <Send size={16} />
+                                )}
+                                Convidar
+                              </Button>
+                            ) : null}
                             <Button
                               type="button"
                               variant="ghost"
@@ -873,6 +981,13 @@ export function WorkersPageClient() {
           error={submitError}
           onClose={closeModals}
           onSubmit={(payload) => void handleRoleSubmit(payload)}
+        />
+      ) : null}
+
+      {invitation ? (
+        <MemberAccessInvitationModal
+          invitation={invitation}
+          onClose={() => setInvitation(null)}
         />
       ) : null}
 

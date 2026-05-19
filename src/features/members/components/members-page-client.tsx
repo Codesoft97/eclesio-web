@@ -57,6 +57,8 @@ type ConfirmationState = Omit<
   "isConfirming" | "onCancel"
 > | null;
 
+type PortalAccessStatus = Member["portalAccessStatus"];
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -75,6 +77,30 @@ const sortOptions: Array<{ value: NameOrCreatedAtSort; label: string }> = [
   { value: "created_at_desc", label: "Mais recentes" },
   { value: "created_at_asc", label: "Mais antigos" },
 ];
+
+function getPortalAccessLabel(status: PortalAccessStatus) {
+  if (status === "ACTIVE") {
+    return "Portal ativo";
+  }
+
+  if (status === "INACTIVE") {
+    return "Portal inativo";
+  }
+
+  return "Sem acesso";
+}
+
+function getPortalAccessClassName(status: PortalAccessStatus) {
+  if (status === "ACTIVE") {
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+  }
+
+  if (status === "INACTIVE") {
+    return "border-danger/30 bg-danger/10 text-danger";
+  }
+
+  return "border-border bg-surface-subtle text-muted";
+}
 
 export function MembersPageClient() {
   const router = useRouter();
@@ -413,19 +439,29 @@ export function MembersPageClient() {
                     <td className="px-4 py-4 text-muted">{formatDate(member.createdAt)}</td>
                     <td className="px-4 py-4">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => void handleCreateInvitation(member)}
-                          disabled={!member.isActive || invitingId === member.id}
-                        >
-                          {invitingId === member.id ? (
-                            <Loader2 className="animate-spin" size={16} />
-                          ) : (
-                            <Send size={16} />
-                          )}
-                          Convidar
-                        </Button>
+                        {member.hasPortalAccess ? (
+                          <span
+                            className={`inline-flex min-h-10 items-center justify-center rounded-lg border px-3 text-sm font-semibold ${getPortalAccessClassName(
+                              member.portalAccessStatus,
+                            )}`}
+                          >
+                            {getPortalAccessLabel(member.portalAccessStatus)}
+                          </span>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => void handleCreateInvitation(member)}
+                            disabled={!member.isActive || invitingId === member.id}
+                          >
+                            {invitingId === member.id ? (
+                              <Loader2 className="animate-spin" size={16} />
+                            ) : (
+                              <Send size={16} />
+                            )}
+                            Convidar
+                          </Button>
+                        )}
                         <Button type="button" variant="ghost" onClick={() => openEditModal(member)}>
                           <Edit3 size={16} />
                           Editar

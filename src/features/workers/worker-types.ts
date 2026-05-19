@@ -1,3 +1,5 @@
+export type PortalAccessStatus = "NONE" | "ACTIVE" | "INACTIVE";
+
 export interface WorkerRole {
   id: string;
   ministryId: string;
@@ -16,6 +18,7 @@ export interface WorkerMinistry {
 
 export interface Worker {
   id: string;
+  memberId: string | null;
   name: string;
   whatsapp: string;
   ministryId: string;
@@ -28,6 +31,8 @@ export interface Worker {
     id: string;
     name: string;
   };
+  hasPortalAccess: boolean;
+  portalAccessStatus: PortalAccessStatus;
   createdAt: string;
   updatedAt: string;
 }

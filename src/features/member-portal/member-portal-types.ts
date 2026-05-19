@@ -36,6 +36,25 @@ export interface MemberPortalEvent {
   recurrenceGroupId: string | null;
   recurrenceEndsAt: string | null;
   recurrenceWeekday: number | null;
+  myScheduleAssignments: MemberPortalEventScheduleAssignment[];
+}
+
+export interface MemberPortalEventScheduleAssignment {
+  id: string;
+  ministry: {
+    id: string;
+    name: string;
+  };
+  role: {
+    id: string;
+    name: string;
+  };
+  worker: {
+    id: string;
+    name: string;
+  };
+  confirmationStatus: MemberPortalScheduleStatus;
+  respondedAt: string | null;
 }
 
 export interface MemberPortalScheduleAssignment {
