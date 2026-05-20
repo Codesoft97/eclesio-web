@@ -583,9 +583,6 @@ export function WorkersPageClient() {
                 <h2 className="text-base font-semibold text-foreground sm:text-lg">
                   Lista de obreiros
                 </h2>
-                <p className="text-xs text-muted">
-                  Dados sincronizados com o backend
-                </p>
               </div>
             </div>
             <div className="grid gap-3 sm:flex sm:items-center">

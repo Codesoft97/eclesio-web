@@ -2,7 +2,7 @@
 
 import { CreditCard, Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useTransition } from "react";
+import { useEffect, useSyncExternalStore, useTransition } from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -18,6 +18,32 @@ import {
 import { MemberPortalMobileHeader } from "./member-portal-mobile-header";
 import { MemberPortalMobileNav } from "./member-portal-mobile-nav";
 import { MemberPortalSidebar } from "./member-portal-sidebar";
+
+const SIDEBAR_STORAGE_KEY = "gerencia-igreja.member-sidebar-collapsed";
+const SIDEBAR_EVENT = "gerencia-igreja-member-sidebar-change";
+
+function subscribeSidebar(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(SIDEBAR_EVENT, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(SIDEBAR_EVENT, callback);
+  };
+}
+
+function getSidebarSnapshot() {
+  return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) ?? "false";
+}
+
+function getServerSidebarSnapshot() {
+  return "false";
+}
+
+function setSidebarPreference(isCollapsed: boolean) {
+  window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isCollapsed));
+  window.dispatchEvent(new Event(SIDEBAR_EVENT));
+}
 
 function readStoredRole(): UserRole | null {
   const storedSession = window.localStorage.getItem(AUTH_STORAGE_KEY);
@@ -42,6 +68,16 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { session, clearSession } = useAuth();
   const [isLoggingOut, startLogoutTransition] = useTransition();
+  const sidebarSnapshot = useSyncExternalStore(
+    subscribeSidebar,
+    getSidebarSnapshot,
+    getServerSidebarSnapshot,
+  );
+  const isSidebarCollapsed = sidebarSnapshot === "true";
+
+  function toggleSidebar() {
+    setSidebarPreference(!isSidebarCollapsed);
+  }
 
   function handleLogout() {
     startLogoutTransition(async () => {
@@ -140,9 +176,19 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
       data-ph-mask
     >
       <MemberPortalMobileHeader />
-      <div className="grid min-h-screen lg:h-screen lg:min-h-0 lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <div
+        className="grid min-h-screen transition-[grid-template-columns] duration-300 ease-in-out lg:h-screen lg:min-h-0 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
+        style={
+          {
+            "--sidebar-width": isSidebarCollapsed ? "5.5rem" : "17rem",
+          } as React.CSSProperties
+        }
+      >
         <div className="hidden lg:block">
-          <MemberPortalSidebar />
+          <MemberPortalSidebar
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={toggleSidebar}
+          />
         </div>
         <main className="min-w-0 px-4 pb-24 pt-5 sm:px-6 lg:h-screen lg:overflow-y-auto lg:px-8 lg:pb-8">
           <div className="mb-6 hidden justify-end lg:flex">

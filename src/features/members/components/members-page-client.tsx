@@ -329,7 +329,6 @@ export function MembersPageClient() {
             </span>
             <div>
               <h2 className="text-sm font-semibold text-foreground">Lista de membros</h2>
-              <p className="text-xs text-muted">Dados sincronizados com o backend</p>
             </div>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

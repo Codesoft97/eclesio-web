@@ -199,7 +199,7 @@ function formatRecurrence(event: ChurchEvent) {
       ? recurrenceWeekDays[event.recurrenceWeekday]
       : null;
 
-  return weekday ? `Toda ${weekday}` : "Recorrente";
+  return weekday ? `Todo(a) ${weekday}` : "Recorrente";
 }
 
 function getEventsForDate(events: ChurchEvent[], date: Date) {
