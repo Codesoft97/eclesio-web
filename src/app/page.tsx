@@ -198,16 +198,34 @@ function ProductScreenshot({
   );
 }
 
+function ProductVideoSection() {
+  return (
+    <section className="mt-4 max-w-3xl">
+      {/* <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
+        Veja o Gerencia Igreja funcionando na pratica.
+      </h2> */}
+      <div className="mt-5 overflow-hidden rounded-xl border border-border bg-surface p-3 shadow-md">
+        <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-surface-subtle">
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src="https://www.youtube-nocookie.com/embed/6Jt262NK-pU?rel=0&modestbranding=1"
+            title="Demonstracao do Gerencia Igreja"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function EventsAndAutomationSection() {
   return (
     <section className="border-y border-border bg-surface/60">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid gap-8 lg:grid-cols-2">
-          <ProductScreenshot
-            src="/eventos_screenshot.png"
-            alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
-            label="Eventos e escalas"
-          />
+          
           <div className="flex flex-col justify-center">
             <SectionLabel>Escalas e eventos</SectionLabel>
             <h2 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
@@ -230,6 +248,11 @@ function EventsAndAutomationSection() {
               ))}
             </div>
           </div>
+          <ProductScreenshot
+            src="/eventos_screenshot.png"
+            alt="Tela de eventos do Gerencia Igreja com calendário mensal e escala de obreiros"
+            label="Eventos e escalas"
+          />
         </div>
 
         <div className="mt-10 grid gap-8 border-t border-border pt-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -415,16 +438,18 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+
+            <ProductVideoSection />
           </div>
 
-          <div className="relative">
+          {/* <div className="relative">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border border-accent/30" />
             <ProductScreenshot
               src="/home_screenshot.png"
               alt="Tela inicial do Gerencia Igreja com resumo, agenda e calendário mensal"
               label="Painel Gerencia Igreja"
             />
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -655,7 +680,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24 mt-12">
         <div className="grid gap-8 rounded-2xl border border-border bg-surface p-6 shadow-sm lg:grid-cols-[1fr_0.8fr] lg:p-10">
           <div>
             <SectionLabel>Próximo passo</SectionLabel>
