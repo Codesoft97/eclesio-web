@@ -105,7 +105,7 @@ const plans = [
       "Eventos, cultos recorrentes e calendário.",
       "Escalas com envio automático pelo WhatsApp.",
       "Lembrete automático um dia antes do evento.",
-      "Teste gratuito de 7 dias no plano básico.",
+      "Teste gratuito de 14 dias no plano básico.",
     ],
   },
   {
