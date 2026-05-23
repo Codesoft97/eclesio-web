@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   UserCog,
+  UserRound,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,18 +22,40 @@ import { useState, useTransition } from "react";
 
 import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/features/auth/auth-service";
 import { useAuth } from "@/features/auth/auth-provider";
+import { logout } from "@/features/auth/auth-service";
+import { hasCompletePlan } from "@/features/subscriptions/subscription-features";
 
 const navItems = [
   { href: "/app", label: "Início", icon: Home },
-  { href: "/app/membros", label: "Membros", icon: Users },
+  { href: "/app/perfil", label: "Perfil", icon: UserRound },
+  { href: "/app/membros", label: "Membros", icon: Users, completeOnly: true },
   { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
-  { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
-  { href: "/app/doacoes", label: "Doações", icon: HeartHandshake },
+  {
+    href: "/app/financeiro",
+    label: "Financeiro",
+    icon: HandCoins,
+    completeOnly: true,
+  },
+  {
+    href: "/app/doacoes",
+    label: "Doações",
+    icon: HeartHandshake,
+    completeOnly: true,
+  },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
-  { href: "/app/comunicados", label: "Comunicados", icon: Megaphone },
-  { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  {
+    href: "/app/comunicados",
+    label: "Comunicados",
+    icon: Megaphone,
+    completeOnly: true,
+  },
+  {
+    href: "/app/relatorios",
+    label: "Relatórios",
+    icon: BarChart3,
+    completeOnly: true,
+  },
   { href: "/app/assinatura", label: "Assinatura", icon: CreditCard },
 ];
 
@@ -50,12 +73,26 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
+function getDisplayEmail(email: string | undefined) {
+  if (!email) {
+    return "Aguardando sessão";
+  }
+
+  return email.endsWith("@gerenciaigreja.local")
+    ? "Complete seu email"
+    : email;
+}
+
 export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { session, clearSession } = useAuth();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const canAccessCompleteFeatures = hasCompletePlan(session?.subscription);
+  const visibleNavItems = navItems.filter(
+    (item) => !item.completeOnly || canAccessCompleteFeatures,
+  );
 
   function handleLogout() {
     setError(null);
@@ -100,7 +137,11 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
           aria-expanded={!isCollapsed}
           title={isCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
         >
-          {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          {isCollapsed ? (
+            <PanelLeftOpen size={16} />
+          ) : (
+            <PanelLeftClose size={16} />
+          )}
         </button>
       </div>
 
@@ -112,9 +153,13 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-xs text-foreground">
               <Church size={12} />
-              <span className="font-semibold">Conta ativa</span>
+              <span className="font-semibold">
+                {canAccessCompleteFeatures ? "Plano completo" : "Plano básico"}
+              </span>
             </div>
-            <p className="truncate text-xs text-muted">{session?.user.email ?? "Aguardando sessão"}</p>
+            <p className="truncate text-xs text-muted">
+              {getDisplayEmail(session?.user.email)}
+            </p>
           </div>
         </div>
       )}
@@ -124,7 +169,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse }: AppSidebarProps) {
           isCollapsed ? "" : "pr-1"
         }`}
       >
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
             pathname === item.href ||

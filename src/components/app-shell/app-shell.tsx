@@ -11,13 +11,23 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { AUTH_STORAGE_KEY, useAuth } from "@/features/auth/auth-provider";
 import type { UserRole } from "@/features/auth/auth-types";
 import {
-  LegalAcceptancePage,
-  needsLegalAcceptance,
-} from "@/features/legal/components/legal-acceptance-page";
+  hasCompletePlan,
+  isCompleteOnlyPath,
+} from "@/features/subscriptions/subscription-features";
 
 const SIDEBAR_STORAGE_KEY = "gerencia-igreja.sidebar-collapsed";
 const SIDEBAR_EVENT = "gerencia-igreja-sidebar-change";
 const SUBSCRIPTION_PATH = "/app/assinatura";
+const PROFILE_PATH = "/app/perfil";
+
+function isAccountMaintenancePath(pathname: string) {
+  return (
+    pathname === SUBSCRIPTION_PATH ||
+    pathname.startsWith(`${SUBSCRIPTION_PATH}/`) ||
+    pathname === PROFILE_PATH ||
+    pathname.startsWith(`${PROFILE_PATH}/`)
+  );
+}
 
 function subscribe(callback: () => void) {
   window.addEventListener("storage", callback);
@@ -84,9 +94,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       }
 
       if (
-        !needsLegalAcceptance(session) &&
         session.subscription?.requiresPayment &&
-        pathname !== SUBSCRIPTION_PATH
+        !isAccountMaintenancePath(pathname)
+      ) {
+        router.replace(SUBSCRIPTION_PATH);
+        return;
+      }
+
+      if (
+        !session.subscription?.requiresPayment &&
+        !hasCompletePlan(session.subscription) &&
+        isCompleteOnlyPath(pathname)
       ) {
         router.replace(SUBSCRIPTION_PATH);
       }
@@ -117,13 +135,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (needsLegalAcceptance(session)) {
-    return <LegalAcceptancePage />;
+  if (
+    session.subscription?.requiresPayment &&
+    !isAccountMaintenancePath(pathname)
+  ) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-muted">
+        <div className="flex items-center gap-2 text-sm">
+          <Loader2 className="animate-spin text-accent" size={18} />
+          Redirecionando para assinatura...
+        </div>
+      </div>
+    );
   }
 
   if (
-    session.subscription?.requiresPayment &&
-    pathname !== SUBSCRIPTION_PATH
+    !session.subscription?.requiresPayment &&
+    !hasCompletePlan(session.subscription) &&
+    isCompleteOnlyPath(pathname)
   ) {
     return (
       <div className="grid min-h-screen place-items-center bg-background text-muted">

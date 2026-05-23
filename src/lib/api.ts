@@ -47,6 +47,11 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
     "e-mail ou whatsapp ja cadastrado para esta igreja",
     "E-mail ou WhatsApp ja cadastrado para esta igreja.",
   ],
+  ["whatsapp ja cadastrado", "WhatsApp ja cadastrado."],
+  [
+    "e-mail ou whatsapp ja cadastrado",
+    "E-mail ou WhatsApp ja cadastrado.",
+  ],
   ["e-mail ja cadastrado", "E-mail ja cadastrado."],
   [
     "objetivo de doacao nao encontrado",
@@ -59,6 +64,10 @@ const MESSAGE_TRANSLATIONS: Array<[string, string]> = [
   [
     "chave pix de assinatura nao configurada",
     "O Pix de assinatura ainda nao foi configurado. Fale com o suporte.",
+  ],
+  [
+    "funcionalidade disponivel apenas no plano completo",
+    "Esta funcionalidade esta disponivel no plano completo.",
   ],
   ["envie uma imagem", "Envie uma imagem para continuar."],
   [

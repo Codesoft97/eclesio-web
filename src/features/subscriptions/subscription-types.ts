@@ -1,6 +1,7 @@
 import type {
   SubscriptionAccessStatus,
   SubscriptionBillingInterval,
+  SubscriptionPlanCode,
 } from "@/features/auth/auth-types";
 
 export type SubscriptionInvoiceStatus =
@@ -12,6 +13,7 @@ export type SubscriptionInvoiceStatus =
 export type SubscriptionPaymentProvider = "MANUAL_PIX";
 
 export interface SubscriptionPlanOption {
+  planCode: SubscriptionPlanCode;
   billingInterval: SubscriptionBillingInterval;
   amount: string;
 }
@@ -19,6 +21,7 @@ export interface SubscriptionPlanOption {
 export interface SubscriptionInvoice {
   id: string;
   paymentReference: string;
+  planCode: SubscriptionPlanCode;
   billingInterval: SubscriptionBillingInterval;
   status: SubscriptionInvoiceStatus;
   paymentProvider: SubscriptionPaymentProvider;
@@ -42,5 +45,6 @@ export interface SubscriptionOverview {
 }
 
 export interface CreateSubscriptionInvoicePayload {
+  planCode: SubscriptionPlanCode;
   billingInterval: SubscriptionBillingInterval;
 }

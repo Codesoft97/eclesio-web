@@ -22,3 +22,11 @@ export async function createSubscriptionInvoice(
 
   return data;
 }
+
+export async function upgradeTrialToComplete() {
+  const { data } = await api.post<SubscriptionOverview>(
+    "/subscriptions/trial/upgrade-to-complete",
+  );
+
+  return data;
+}

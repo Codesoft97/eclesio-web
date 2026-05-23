@@ -26,6 +26,7 @@ import { useAuth } from "@/features/auth/auth-provider";
 import { MemberAccessInvitationModal } from "@/features/members/components/member-access-invitation-modal";
 import { createMemberAccessInvitation } from "@/features/members/member-service";
 import type { MemberAccessInvitation } from "@/features/members/member-types";
+import { hasCompletePlan } from "@/features/subscriptions/subscription-features";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { formatBrazilianPhone } from "@/lib/formatters/phone";
 import {
@@ -148,7 +149,7 @@ function countRoles(ministries: WorkerMinistry[]) {
 
 export function WorkersPageClient() {
   const router = useRouter();
-  const { clearSession } = useAuth();
+  const { session, clearSession } = useAuth();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [ministries, setMinistries] = useState<WorkerMinistry[]>([]);
   const [workersPagination, setWorkersPagination] = useState<PaginationMeta>(
@@ -175,6 +176,7 @@ export function WorkersPageClient() {
   );
   const [deletingRoleId, setDeletingRoleId] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
+  const canInviteToPortal = hasCompletePlan(session?.subscription);
 
   useEffect(() => {
     let ignore = false;
@@ -376,6 +378,11 @@ export function WorkersPageClient() {
   }
 
   async function handleCreateInvitation(worker: Worker) {
+    if (!canInviteToPortal) {
+      setError("Convites para o portal estao disponiveis no plano completo.");
+      return;
+    }
+
     if (!worker.memberId) {
       setError(
         "Este obreiro ainda nao possui membro vinculado para receber convite.",
@@ -686,7 +693,7 @@ export function WorkersPageClient() {
                         >
                           {getPortalAccessLabel(worker.portalAccessStatus)}
                         </span>
-                      ) : worker.memberId ? (
+                      ) : worker.memberId && canInviteToPortal ? (
                         <Button
                           type="button"
                           variant="outline"
@@ -782,7 +789,7 @@ export function WorkersPageClient() {
                                   worker.portalAccessStatus,
                                 )}
                               </span>
-                            ) : worker.memberId ? (
+                            ) : worker.memberId && canInviteToPortal ? (
                               <Button
                                 type="button"
                                 variant="outline"

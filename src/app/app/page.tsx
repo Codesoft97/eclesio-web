@@ -6,6 +6,7 @@ import {
   HandCoins,
   Loader2,
   RefreshCw,
+  Sparkles,
   UserCog,
   Users,
 } from "lucide-react";
@@ -23,6 +24,11 @@ import {
   listFinancialTransactions,
 } from "@/features/finance/finance-service";
 import { listMembers } from "@/features/members/member-service";
+import {
+  canTryCompletePlan,
+  hasCompletePlan,
+} from "@/features/subscriptions/subscription-features";
+import { upgradeTrialToComplete } from "@/features/subscriptions/subscription-service";
 import { listWorkers } from "@/features/workers/worker-service";
 import { getApiErrorMessage, isUnauthorizedApiError } from "@/lib/api";
 import { fetchAllPaginatedItems, MAX_PAGE_SIZE } from "@/lib/pagination";
@@ -124,15 +130,18 @@ function getUpcomingEvents(events: ChurchEvent[]) {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { clearSession } = useAuth();
+  const { session, setSession, clearSession } = useAuth();
   const [events, setEvents] = useState<ChurchEvent[]>([]);
   const [schedules, setSchedules] = useState<ScheduleMap>({});
   const [summary, setSummary] = useState<DashboardSummary>(initialSummary);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpgradingTrial, setIsUpgradingTrial] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [calendarMonth] = useState(() => startOfMonth(new Date()));
   const [today] = useState(() => new Date());
+  const canAccessCompleteFeatures = hasCompletePlan(session?.subscription);
+  const canTryComplete = canTryCompletePlan(session?.subscription);
 
   useEffect(() => {
     let ignore = false;
@@ -142,19 +151,17 @@ export default function DashboardPage() {
       setError(null);
 
       try {
-        const [
-          eventsData,
-          membersData,
-          workersData,
-          accountData,
-          transactionsData,
-        ] = await Promise.all([
+        const [eventsData, workersData] = await Promise.all([
           fetchAllPaginatedItems(listEvents),
-          listMembers({ limit: MAX_PAGE_SIZE }),
           listWorkers({ limit: MAX_PAGE_SIZE }),
-          getFinanceAccount(),
-          listFinancialTransactions({ limit: MAX_PAGE_SIZE }),
         ]);
+        const completeData = canAccessCompleteFeatures
+          ? await Promise.all([
+              listMembers({ limit: MAX_PAGE_SIZE }),
+              getFinanceAccount(),
+              listFinancialTransactions({ limit: MAX_PAGE_SIZE }),
+            ])
+          : null;
         const upcomingEvents = getUpcomingEvents(eventsData).slice(0, 5);
         const scheduleEntries = await Promise.all(
           upcomingEvents.map(async (event) => [
@@ -167,10 +174,10 @@ export default function DashboardPage() {
           setEvents(eventsData);
           setSchedules(Object.fromEntries(scheduleEntries));
           setSummary({
-            membersCount: membersData.meta.totalItems,
+            membersCount: completeData?.[0].meta.totalItems ?? 0,
             workersCount: workersData.meta.totalItems,
-            financialBalance: accountData.balance,
-            pendingTransactionsCount: transactionsData.items.filter(
+            financialBalance: completeData?.[1].balance ?? "0.00",
+            pendingTransactionsCount: (completeData?.[2].items ?? []).filter(
               (transaction) => !transaction.isEffective,
             ).length,
           });
@@ -197,7 +204,7 @@ export default function DashboardPage() {
     return () => {
       ignore = true;
     };
-  }, [clearSession, reloadKey, router]);
+  }, [canAccessCompleteFeatures, clearSession, reloadKey, router]);
 
   const upcomingEvents = useMemo(() => getUpcomingEvents(events), [events]);
   const visibleUpcomingEvents = upcomingEvents.slice(0, 5);
@@ -227,27 +234,71 @@ export default function DashboardPage() {
   );
 
   const summaryCards = [
-    { label: "Membros ativos", value: String(summary.membersCount), icon: Users },
+    ...(canAccessCompleteFeatures
+      ? [
+          {
+            label: "Membros ativos",
+            value: String(summary.membersCount),
+            icon: Users,
+          },
+        ]
+      : []),
     { label: "Obreiros", value: String(summary.workersCount), icon: UserCog },
-    {
-      label: "Saldo financeiro",
-      value: formatCurrency(summary.financialBalance),
-      icon: HandCoins,
-    },
+    ...(canAccessCompleteFeatures
+      ? [
+          {
+            label: "Saldo financeiro",
+            value: formatCurrency(summary.financialBalance),
+            icon: HandCoins,
+          },
+        ]
+      : []),
     {
       label: "Eventos próximos",
       value: String(upcomingEvents.length),
       icon: CalendarDays,
     },
-    {
-      label: "Pendências",
-      value: String(summary.pendingTransactionsCount),
-      icon: Activity,
-    },
+    ...(canAccessCompleteFeatures
+      ? [
+          {
+            label: "Pendências",
+            value: String(summary.pendingTransactionsCount),
+            icon: Activity,
+          },
+        ]
+      : []),
   ];
 
   function refreshDashboard() {
     setReloadKey((current) => current + 1);
+  }
+
+  async function handleUpgradeTrial() {
+    if (!session) {
+      return;
+    }
+
+    setIsUpgradingTrial(true);
+    setError(null);
+
+    try {
+      const data = await upgradeTrialToComplete();
+      setSession({
+        ...session,
+        subscription: data.subscription,
+      });
+      setReloadKey((current) => current + 1);
+    } catch (err) {
+      if (isUnauthorizedApiError(err)) {
+        clearSession();
+        router.push("/login");
+        return;
+      }
+
+      setError(getApiErrorMessage(err));
+    } finally {
+      setIsUpgradingTrial(false);
+    }
   }
 
   return (
@@ -279,6 +330,42 @@ export default function DashboardPage() {
           Atualizar
         </Button>
       </div>
+
+      {canTryComplete ? (
+        <section className="mb-6 rounded-xl border border-accent/40 bg-accent/10 p-5 shadow-sm">
+          <div className="grid gap-4 md:flex md:items-center md:justify-between">
+            <div className="flex gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                <Sparkles size={20} />
+              </span>
+              <div>
+                <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
+                  Teste gratuito
+                </p>
+                <h2 className="mt-1 text-lg font-semibold text-foreground">
+                  Você pode testar o plano completo agora
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-muted">
+                  Libere membros, financeiro, comunicados, doações, relatórios
+                  e portal dos membros até o fim do seu período de teste.
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              onClick={() => void handleUpgradeTrial()}
+              disabled={isUpgradingTrial}
+            >
+              {isUpgradingTrial ? (
+                <Loader2 className="animate-spin" size={17} />
+              ) : (
+                <Sparkles size={17} />
+              )}
+              Testar completo
+            </Button>
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {summaryCards.map((card) => {

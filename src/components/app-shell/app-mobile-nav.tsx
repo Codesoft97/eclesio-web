@@ -9,29 +9,59 @@ import {
   Home,
   Megaphone,
   UserCog,
+  UserRound,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useAuth } from "@/features/auth/auth-provider";
+import { hasCompletePlan } from "@/features/subscriptions/subscription-features";
+
 const navItems = [
   { href: "/app", label: "Início", icon: Home },
-  { href: "/app/membros", label: "Membros", icon: Users },
+  { href: "/app/perfil", label: "Perfil", icon: UserRound },
+  { href: "/app/membros", label: "Membros", icon: Users, completeOnly: true },
   { href: "/app/obreiros", label: "Obreiros", icon: UserCog },
-  { href: "/app/financeiro", label: "Financeiro", icon: HandCoins },
-  { href: "/app/doacoes", label: "Doações", icon: HeartHandshake },
+  {
+    href: "/app/financeiro",
+    label: "Financeiro",
+    icon: HandCoins,
+    completeOnly: true,
+  },
+  {
+    href: "/app/doacoes",
+    label: "Doações",
+    icon: HeartHandshake,
+    completeOnly: true,
+  },
   { href: "/app/eventos", label: "Eventos", icon: CalendarDays },
-  { href: "/app/comunicados", label: "Comunicados", icon: Megaphone },
-  { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  {
+    href: "/app/comunicados",
+    label: "Comunicados",
+    icon: Megaphone,
+    completeOnly: true,
+  },
+  {
+    href: "/app/relatorios",
+    label: "Relatórios",
+    icon: BarChart3,
+    completeOnly: true,
+  },
   { href: "/app/assinatura", label: "Assinatura", icon: CreditCard },
 ];
 
 export function AppMobileNav() {
   const pathname = usePathname();
+  const { session } = useAuth();
+  const canAccessCompleteFeatures = hasCompletePlan(session?.subscription);
+  const visibleNavItems = navItems.filter(
+    (item) => !item.completeOnly || canAccessCompleteFeatures,
+  );
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 flex overflow-x-auto border-t border-border bg-surface/90 backdrop-blur-xl lg:hidden">
-      {navItems.map((item) => {
+      {visibleNavItems.map((item) => {
         const Icon = item.icon;
         const isActive =
           pathname === item.href ||
@@ -42,14 +72,14 @@ export function AppMobileNav() {
             key={item.href}
             href={item.href}
             className={`flex min-h-16 min-w-20 flex-1 flex-col items-center justify-center gap-1 px-1 text-[10px] font-medium transition-all duration-200 sm:text-[11px] ${
-              isActive
-                ? "text-accent"
-                : "text-muted hover:text-foreground"
+              isActive ? "text-accent" : "text-muted hover:text-foreground"
             }`}
           >
-            <span className={`flex items-center justify-center rounded-lg p-1.5 transition-all duration-200 ${
-              isActive ? "bg-accent/15" : ""
-            }`}>
+            <span
+              className={`flex items-center justify-center rounded-lg p-1.5 transition-all duration-200 ${
+                isActive ? "bg-accent/15" : ""
+              }`}
+            >
               <Icon size={18} />
             </span>
             <span className="truncate">{item.label}</span>

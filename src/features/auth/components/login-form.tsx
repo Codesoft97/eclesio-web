@@ -48,14 +48,14 @@ export function LoginForm() {
       className="grid gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm"
     >
       <Field
-        label="Email"
-        type="email"
+        label="Email ou WhatsApp"
+        type="text"
         value={form.email}
         onChange={(event) =>
           setForm((current) => ({ ...current, email: event.target.value }))
         }
-        placeholder="email@exemplo.com"
-        autoComplete="email"
+        placeholder="email@exemplo.com ou (11) 99999-9999"
+        autoComplete="username"
         required
       />
       <PasswordField

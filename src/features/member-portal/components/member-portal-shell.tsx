@@ -10,10 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AUTH_STORAGE_KEY, useAuth } from "@/features/auth/auth-provider";
 import { logout } from "@/features/auth/auth-service";
 import type { UserRole } from "@/features/auth/auth-types";
-import {
-  LegalAcceptancePage,
-  needsLegalAcceptance,
-} from "@/features/legal/components/legal-acceptance-page";
+import { hasCompletePlan } from "@/features/subscriptions/subscription-features";
 
 import { MemberPortalMobileHeader } from "./member-portal-mobile-header";
 import { MemberPortalMobileNav } from "./member-portal-mobile-nav";
@@ -122,11 +119,7 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (needsLegalAcceptance(session)) {
-    return <LegalAcceptancePage />;
-  }
-
-  if (session.subscription?.requiresPayment) {
+  if (session.subscription?.requiresPayment || !hasCompletePlan(session.subscription)) {
     return (
       <main className="min-h-screen bg-background px-4 py-6 text-foreground sm:px-6">
         <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-5xl flex-col">
@@ -159,8 +152,8 @@ export function MemberPortalShell({ children }: { children: React.ReactNode }) {
                 Acesso temporariamente indisponivel
               </h1>
               <p className="mt-3 text-sm leading-7 text-muted">
-                A igreja precisa regularizar a assinatura para liberar o portal
-                dos membros novamente. O administrador consegue fazer isso na
+                A igreja precisa estar com o plano completo ativo para liberar
+                o portal dos membros. O administrador consegue ajustar isso na
                 tela de assinatura.
               </p>
             </div>

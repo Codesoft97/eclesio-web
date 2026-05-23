@@ -27,10 +27,13 @@ export interface LegalAcceptanceStatus {
 
 export type SubscriptionStatus = "FREE_TRIAL" | "FREE" | "PAID";
 
+export type SubscriptionPlanCode = "BASIC" | "COMPLETE";
+
 export type SubscriptionBillingInterval = "MONTHLY" | "YEARLY";
 
 export interface SubscriptionAccessStatus {
   status: SubscriptionStatus;
+  planCode: SubscriptionPlanCode | null;
   billingInterval: SubscriptionBillingInterval | null;
   trialEndsAt: string | null;
   currentPeriodEndsAt: string | null;
@@ -50,13 +53,16 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  churchName: string;
-  representativeName: string;
-  email: string;
   whatsapp: string;
+  name: string;
   password: string;
-  acceptedTerms: boolean;
-  acceptedPrivacyPolicy: boolean;
+}
+
+export interface UpdateCurrentAccountPayload {
+  name?: string;
+  churchName?: string;
+  email?: string;
+  whatsapp?: string;
 }
 
 export interface MessageResponse {

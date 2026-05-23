@@ -92,36 +92,40 @@ const benefits = [
 
 const plans = [
   {
-    name: "Mensal",
-    price: "49,90",
+    name: "Básico",
+    price: "29,90",
+    annualPrice: "299,00",
     period: "/mês",
     description:
-      "Você pode testar gratuitamente durante 14 dias sem assinar nada ainda.",
+      "Para começar com escalas, obreiros, eventos e WhatsApp automático.",
     highlight: false,
-    badge: "Flexível",
+    badge: "Essencial",
     benefits: [
-      "Cadastro de igreja e acesso administrativo.",
-      "Gestão de membros, obreiros, ministérios e funções.",
-      "Eventos, cultos recorrentes e comunicados para os membros.",
-      "Escalas com envio automático para os obreiros.",
-      "Controle financeiro com receitas, despesas, saldo e pendências.",
-      "Portal exclusivo para membros e obreiros.",
-      "Acesso gratuito durante 14 dias.",
+      "Gestão de obreiros, ministérios e funções.",
+      "Eventos, cultos recorrentes e calendário.",
+      "Escalas com envio automático pelo WhatsApp.",
+      "Lembrete automático um dia antes do evento.",
+      "Teste gratuito de 7 dias no plano básico.",
     ],
   },
   {
-    name: "Anual",
-    price: "39,90",
+    name: "Completo",
+    price: "49,90",
+    annualPrice: "499,00",
     period: "/mês",
-    description: "Economia em relação ao mensal.",
+    description:
+      "Para igrejas que querem membros, portal, financeiro e comunicação em um só lugar.",
     highlight: true,
     badge: "Mais escolhido",
     benefits: [
-      "Todos os recursos do plano mensal incluídos.",
-      "Economia prevista em relação ao pagamento mês a mês quando houver cobrança.",
-      "Planejamento anual de cultos, eventos e escalas com mais previsibilidade.",
-      "Base financeira organizada para acompanhar a saúde da igreja mês a mês.",
-      "Prioridade nas melhorias pensadas para rotinas recorrentes de igrejas.",
+      "Tudo do plano básico incluído.",
+      "Gestão completa de membros e obreiros.",
+      "Portal exclusivo para membros e obreiros.",
+      "Criação e publicação de comunicados para os membros.",
+      "Criação de doações disponibilizadas no portal de membros.",
+      "Obreiros podem acompanhar escalas no portal.",
+      "Financeiro completo e relatórios.",
+      "Teste completo disponível durante o período gratuito.",
     ],
   },
 ];
@@ -601,15 +605,11 @@ export default function LandingPage() {
                     {plan.period}
                   </span>
                 </div>
-                {plan.name === "Anual" ? (
-                  <p className="mt-2 text-xs opacity-70">
-                    Preço de lançamento para cobrança anual.
-                  </p>
-                ) : (
-                  <p className="mt-2 text-xs text-muted">
-                    Preço de lançamento para cobrança mensal.
-                  </p>
-                )}
+                <p
+                  className={`mt-2 text-xs ${plan.highlight ? "opacity-70" : "text-muted"}`}
+                >
+                  Plano anual: R$ {plan.annualPrice}/ano.
+                </p>
               </div>
 
               <div className="grid gap-3">

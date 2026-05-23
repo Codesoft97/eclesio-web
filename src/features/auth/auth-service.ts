@@ -8,6 +8,7 @@ import type {
   RegisterPayload,
   RequestPasswordRecoveryPayload,
   ResetPasswordPayload,
+  UpdateCurrentAccountPayload,
   VerifyPasswordRecoveryCodePayload,
 } from "./auth-types";
 
@@ -27,6 +28,11 @@ export async function logout() {
 
 export async function acceptLegalDocuments() {
   const { data } = await api.post<AuthSession>("/auth/legal-acceptance");
+  return data;
+}
+
+export async function updateCurrentAccount(payload: UpdateCurrentAccountPayload) {
+  const { data } = await api.patch<AuthSession>("/auth/me", payload);
   return data;
 }
 
